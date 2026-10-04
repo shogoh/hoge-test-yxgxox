@@ -106,7 +106,7 @@
                         <span id="opp-hand-count" class="text-xs bg-slate-800 px-2 py-1 rounded border border-slate-700 text-slate-300">手札: --枚</span>
                     </div>
 
-                    <!-- Opponent LP & Adjustment Buttons (+1000, +100, +50, -50, -100, -1000) -->
+                    <!-- Opponent LP & Adjustment Buttons -->
                     <div class="flex items-center space-x-2">
                         <span class="text-xs text-slate-400 font-semibold">LP:</span>
                         <span id="opp-lp" class="text-xl md:text-2xl font-black text-red-500 font-mono">8000</span>
@@ -121,10 +121,8 @@
                     </div>
                 </div>
 
-                <!-- Opponent Hand Area (Hidden Cards) -->
-                <div id="opp-hand-container" class="flex justify-center -space-x-4 h-20 mb-2 overflow-x-auto py-1">
-                    <!-- Opponent Hand Rendered dynamically -->
-                </div>
+                <!-- Opponent Hand Area -->
+                <div id="opp-hand-container" class="flex justify-center -space-x-4 h-20 mb-2 overflow-x-auto py-1"></div>
 
                 <!-- Opponent Field Grid -->
                 <div class="grid grid-cols-5 gap-2 my-2 text-xs">
@@ -207,12 +205,10 @@
                         <span class="font-bold text-amber-400"><i class="fa-solid fa-hand mr-1"></i> 自分の手札 (クリックで操作)</span>
                         <span id="my-hand-count-text">0枚</span>
                     </div>
-                    <div id="my-hand-container" class="flex justify-center -space-x-2 md:space-x-1 h-28 overflow-x-auto p-2 bg-slate-950/60 rounded-lg border border-slate-800">
-                        <!-- My Hand Cards Rendered Dynamically -->
-                    </div>
+                    <div id="my-hand-container" class="flex justify-center -space-x-2 md:space-x-1 h-28 overflow-x-auto p-2 bg-slate-950/60 rounded-lg border border-slate-800"></div>
                 </div>
 
-                <!-- My Footer Info & LP (+1000, +100, +50, -50, -100, -1000) -->
+                <!-- My Footer Info & LP -->
                 <div class="flex flex-wrap items-center justify-between mt-3 pt-2 border-t border-slate-800">
                     <div class="flex items-center space-x-2">
                         <span id="my-name" class="font-bold text-blue-400 text-sm md:text-base"><i class="fa-solid fa-user-shield mr-1"></i> 自分 (P1)</span>
@@ -274,7 +270,7 @@
             <div class="bg-slate-800 p-4 border-b border-slate-700 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <i class="fa-solid fa-boxes-packing text-amber-400 text-xl"></i>
-                    <h2 class="font-bold text-lg text-slate-100">デッキ構築 (30枚〜60枚制限)</h2>
+                    <h2 class="font-bold text-lg text-slate-100">デッキ構築 (40枚〜60枚制限)</h2>
                 </div>
                 <button onclick="closeDeckEditor()" class="text-slate-400 hover:text-white text-xl px-2"><i class="fa-solid fa-xmark"></i></button>
             </div>
@@ -284,13 +280,16 @@
 
                 <!-- LEFT COLUMN: Selected Main Deck (5 Cols) -->
                 <div class="md:col-span-5 bg-slate-950 border border-slate-800 rounded-xl p-3 flex flex-col overflow-hidden">
-                    <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-800 flex-wrap gap-1">
                         <div>
                             <span class="text-xs text-slate-400 font-bold">メインデッキ: </span>
                             <span id="deck-count" class="text-base font-black text-amber-400">0 / 60</span>
-                            <span id="deck-count-status" class="text-[10px] ml-2 px-2 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700">30枚未満</span>
+                            <span id="deck-count-status" class="text-[10px] ml-2 px-2 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700">40枚未満</span>
                         </div>
-                        <div class="flex space-x-1">
+                        <div class="flex space-x-1 flex-wrap gap-1">
+                            <button onclick="exportDeckJSON()" class="text-xs bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-2 py-1 rounded">JSON保存</button>
+                            <button onclick="document.getElementById('deck-file-input').click()" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-2 py-1 rounded">JSON読込</button>
+                            <input type="file" id="deck-file-input" class="hidden" accept=".json" onchange="importDeckJSON(event)">
                             <button onclick="clearDeck()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded">クリア</button>
                             <button onclick="shuffleDeckAction()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded">シャッフル</button>
                         </div>
@@ -299,14 +298,12 @@
                     <!-- Preset Samples Button -->
                     <div class="my-2 flex space-x-2">
                         <button onclick="loadPresetDeck('vol1')" class="text-xs bg-amber-900/40 border border-amber-700 hover:bg-amber-800/50 text-amber-200 px-2 py-1 rounded flex-1 font-semibold">
-                            Vol.1 サンプルデッキ構築
+                            Vol.1 サンプルデッキ構築 (40枚)
                         </button>
                     </div>
 
                     <!-- Deck Card List -->
-                    <div id="deck-card-list" class="flex-1 overflow-y-auto space-y-1.5 my-2 pr-1">
-                        <!-- Dynamic Selected Cards List -->
-                    </div>
+                    <div id="deck-card-list" class="flex-1 overflow-y-auto space-y-1.5 my-2 pr-1"></div>
 
                     <!-- Confirm Button -->
                     <button id="save-deck-btn" onclick="confirmDeck()" class="w-full py-2 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-slate-950 font-black rounded text-sm transition">
@@ -327,9 +324,7 @@
                     </div>
 
                     <!-- Pool Cards Grid -->
-                    <div id="card-pool-grid" class="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 gap-2.5 p-2 my-2">
-                        <!-- Dynamic Cards Rendered -->
-                    </div>
+                    <div id="card-pool-grid" class="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 gap-2.5 p-2 my-2"></div>
                 </div>
 
             </div>
@@ -343,9 +338,7 @@
                 <span id="action-modal-title">カード操作</span>
                 <button onclick="closeActionModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="action-modal-buttons" class="grid grid-cols-1 gap-2">
-                <!-- Dynamic Action Buttons -->
-            </div>
+            <div id="action-modal-buttons" class="grid grid-cols-1 gap-2"></div>
         </div>
     </div>
 
@@ -356,112 +349,45 @@
                 <h3 id="grave-modal-title" class="font-bold text-slate-200 text-sm">墓地のカード</h3>
                 <button onclick="closeGraveViewer()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="grave-modal-content" class="flex-1 overflow-y-auto grid grid-cols-3 sm:grid-cols-4 gap-2 p-2">
-                <!-- Graveyard Cards -->
-            </div>
+            <div id="grave-modal-content" class="flex-1 overflow-y-auto grid grid-cols-3 sm:grid-cols-4 gap-2 p-2"></div>
         </div>
     </div>
 
     <script>
         /* ==========================================================================
-           1. CARD DATABASE (VOL.1 COMPLETE 40 CARDS + STARTER / GEN 2)
+           1. CARD DATABASE (LOADED FROM EXTERNAL cards.json)
            ========================================================================== */
         
-        // Vol.1 Full 40 Cards List
-        const GEN1_CARDS = [
-            // Vol.1 Monsters (29)
-            { id: 'v1-1', name: 'ブラック・マジシャン', type: 'monster', sub: 'normal', attr: '闇', race: '魔法使い', level: 7, atk: 2500, def: 2100, desc: '魔法使いとしては、攻撃力・守備力ともに最高クラス。' },
-            { id: 'v1-2', name: '暗黒騎士ガイア', type: 'monster', sub: 'normal', attr: '地', race: '戦士', level: 7, atk: 2300, def: 2100, desc: '風よりも速い馬に乗った騎士。突撃攻撃に注意。' },
-            { id: 'v1-3', name: '怒りの海王', type: 'monster', sub: 'normal', attr: '水', race: '水', level: 3, atk: 800, def: 700, desc: '大海原の主。津波を起こしてすべてを呑み込んでしまう。' },
-            { id: 'v1-4', name: '命の砂時計', type: 'monster', sub: 'normal', attr: '光', race: '天使', level: 2, atk: 700, def: 600, desc: '命を縮める悪魔の砂時計。命をあげればパワーアップする。' },
-            { id: 'v1-5', name: '運命のろうそく', type: 'monster', sub: 'normal', attr: '闇', race: '悪魔', level: 2, atk: 600, def: 600, desc: 'ろうそくの炎の中に浮かぶ不気味な顔。その炎は命の灯火。' },
-            { id: 'v1-6', name: '火炎草', type: 'monster', sub: 'normal', attr: '地', race: '植物', level: 1, atk: 300, def: 100, desc: '火を吹く珍しい植物。花から噴き出す炎はかなり熱い。' },
-            { id: 'v1-7', name: '黒魔族のカーテン', type: 'monster', sub: 'normal', attr: '闇', race: '魔法使い', level: 2, atk: 600, def: 500, desc: '魔法使いを引き寄せるカーテン。このカーテンに入ると闇の世界に引きずり込まれる。' },
-            { id: 'v1-8', name: 'コピックス', type: 'monster', sub: 'normal', attr: '光', race: '魔法使い', level: 2, atk: 600, def: 500, desc: '自分に変身して襲いかかってくる不気味なモンスター。' },
-            { id: 'v1-9', name: 'サイクロプス', type: 'monster', sub: 'normal', attr: '地', race: '獣戦士', level: 4, atk: 1200, def: 1000, desc: '一つ目の巨人。一つ目で睨まれると動けなくなってしまう。' },
-            { id: 'v1-10', name: 'サンダー・キッズ', type: 'monster', sub: 'normal', attr: '光', race: '雷', level: 3, atk: 1000, def: 500, desc: '小さな雷小僧。怒ると雷を落とし攻撃してくる。' },
-            { id: 'v1-11', name: '紫炎の影武者', type: 'monster', sub: 'normal', attr: '地', race: '戦士', level: 3, atk: 800, def: 1000, desc: '紫炎の影武者。主君の身代わりとなり相手を撹乱する。' },
-            { id: 'v1-12', name: '死者の腕', type: 'monster', sub: 'normal', attr: '闇', race: 'アンデット', level: 2, atk: 600, def: 600, desc: '沼地から伸びる死者の腕。引きずり込まれると抜け出せない。' },
-            { id: 'v1-13', name: 'シルバー・フォング', type: 'monster', sub: 'normal', attr: '地', race: '獣', level: 3, atk: 1200, def: 800, desc: '全身が銀色の毛で覆われた狼。見た目は美しいが気性は荒い。' },
-            { id: 'v1-14', name: 'ダークキラー', type: 'monster', sub: 'normal', attr: '闇', race: '悪魔', level: 4, atk: 1400, def: 1200, desc: '闇に潜みターゲットを狙う殺人鬼。背後からの奇襲が得意。' },
-            { id: 'v1-15', name: 'ダーク・グレイ', type: 'monster', sub: 'normal', attr: '地', race: '獣', level: 3, atk: 800, def: 900, desc: '全身が灰色で覆われた謎の生物。素早い動きで敵を翻弄。' },
-            { id: 'v1-16', name: '悪魔の鏡', type: 'monster', sub: 'normal', attr: '闇', race: '悪魔', level: 2, atk: 700, def: 600, desc: '見つめると悪魔に魂を奪われてしまう呪われた鏡。' },
-            { id: 'v1-17', name: 'デーモン・ビーバー', type: 'monster', sub: 'normal', attr: '地', race: '獣', level: 2, atk: 400, def: 600, desc: '悪魔の角と翼を持つビーバー。硬い歯で木を削り落とす。' },
-            { id: 'v1-18', name: 'デス・フット', type: 'monster', sub: 'normal', attr: '闇', race: '悪魔', level: 3, atk: 700, def: 400, desc: '一つ目の巨大な足のモンスター。強烈な蹴りで攻撃する。' },
-            { id: 'v1-19', name: 'トモザウルス', type: 'monster', sub: 'normal', attr: '地', race: '恐竜', level: 2, atk: 500, def: 400, desc: '体の小さな恐竜。おとなしい性格だが仲間が集まると暴れる。' },
-            { id: 'v1-20', name: 'ドレイク', type: 'monster', sub: 'normal', attr: '風', race: '鳥獣', level: 3, atk: 800, def: 800, desc: '鋭い爪を持つ怪鳥。空から急降下して獲物を襲う。' },
-            { id: 'v1-21', name: '眠り子', type: 'monster', sub: 'normal', attr: '闇', race: '魔法使い', level: 3, atk: 800, def: 700, desc: '相手を眠らせる魔法を使う幼子。見た目に騙されると危険。' },
-            { id: 'v1-22', name: 'はにわ', type: 'monster', sub: 'normal', attr: '地', race: '岩石', level: 2, atk: 500, def: 500, desc: '土から作られたハニワ。土の中に潜み相手を奇襲する。' },
-            { id: 'v1-23', name: 'バビロン', type: 'monster', sub: 'normal', attr: '地', race: '獣', level: 2, atk: 700, def: 600, desc: '二つの頭を持つ狂暴な獣。素早い動きで同時に攻撃する。' },
-            { id: 'v1-24', name: 'ヒトデンチャク', type: 'monster', sub: 'normal', attr: '水', race: '水', level: 2, atk: 600, def: 700, desc: 'ヒトデとイソギンチャクが合体したモンスター。酸性の液を吐く。' },
-            { id: 'v1-25', name: 'ファイヤー・デビル', type: 'monster', sub: 'normal', attr: '火', race: '悪魔', level: 2, atk: 700, def: 500, desc: '地獄の炎から生まれた悪魔。触れたものをすべて焼き尽くす。' },
-            { id: 'v1-26', name: 'プチテンシ', type: 'monster', sub: 'normal', attr: '光', race: '天使', level: 3, atk: 600, def: 900, desc: '小さな天使。光の矢を放ち攻撃する。可愛らしい見た目。' },
-            { id: 'v1-27', name: 'プチリュウ', type: 'monster', sub: 'normal', attr: '光', race: 'ドラゴン', level: 2, atk: 600, def: 700, desc: '小さなドラゴン。体は小さくても立派なドラゴンの仲間。' },
-            { id: 'v1-28', name: 'マンモスの墓場', type: 'monster', sub: 'normal', attr: '地', race: '恐竜', level: 3, atk: 1200, def: 800, desc: '仲間の墓場を守るマンモス。荒らすものには容赦しない。' },
-            { id: 'v1-29', name: '闇にしたがう者', type: 'monster', sub: 'normal', attr: '闇', race: '魔法使い', level: 2, atk: 700, def: 500, desc: '闇の力に身を捧げた魔法使い。暗闇の中から呪文を唱える。' },
-            { id: 'v1-30', name: 'ララ・ライウーン', type: 'monster', sub: 'normal', attr: '風', race: '雷', level: 2, atk: 600, def: 600, desc: '雷雲の中に潜む精霊。放電攻撃で相手を痺れさせる。' },
+        let GEN1_CARDS = [];
+        let GEN2_CARDS = [];
+        let ALL_CARDS = [];
 
-            // Vol.1 Spells & Traps (10)
-            { id: 'v1-31', name: '地割れ', type: 'spell', sub: 'normal', desc: '相手フィールド上に表側表示で存在する攻撃力が一番低いモンスター１体を破壊する。' },
-            { id: 'v1-32', name: 'ブラック・ホール', type: 'spell', sub: 'normal', desc: 'フィールド上のモンスターを全て破壊する。' },
-            { id: 'v1-33', name: '守備封印', type: 'spell', sub: 'normal', desc: '相手フィールド上の守備表示モンスター１体を選択して表側攻撃表示にする。' },
-            { id: 'v1-34', name: '秘術の書', type: 'spell', sub: 'equip', desc: '魔法使い族のみ装備可能。攻撃力・守備力が300ポイントアップ。' },
-            { id: 'v1-35', name: '紫水晶', type: 'spell', sub: 'equip', desc: 'アンデット族のみ装備可能。攻撃力・守備力が300ポイントアップ。' },
-            { id: 'v1-36', name: '猛獣の歯', type: 'spell', sub: 'equip', desc: '獣族のみ装備可能。攻撃力・守備力が300ポイントアップ。' },
-            { id: 'v1-37', name: 'ポセイドンの力', type: 'spell', sub: 'equip', desc: '水族のみ装備可能。攻撃力・守備力が300ポイントアップ。' },
-            { id: 'v1-38', name: '火の粉', type: 'spell', sub: 'normal', desc: '相手プレイヤーに200ポイントのダメージを与える。' },
-            { id: 'v1-39', name: 'レッド・ポーション', type: 'spell', sub: 'normal', desc: '自分のライフポイントを500ポイント回復する。' },
-            { id: 'v1-40', name: '落とし穴', type: 'trap', sub: 'normal', desc: '相手が攻撃力1000以上のモンスターの召喚・反転召喚に成功した時に発動できる。そのモンスターを破壊する。' },
-
-            // Additional Major Gen 1 Cards (STARTER BOX / Booster 1)
-            { id: 'g1-s1', name: '青眼の白龍', type: 'monster', sub: 'normal', attr: '光', race: 'ドラゴン', level: 8, atk: 3000, def: 2500, desc: '高い攻撃力を誇る伝説のドラゴン。どんな相手でも粉砕する。' },
-            { id: 'g1-s2', name: 'デーモンの召喚', type: 'monster', sub: 'normal', attr: '闇', race: '悪魔', level: 6, atk: 2500, def: 1200, desc: '闇の力を使い、人の心を惑わす悪魔。悪魔族の中でも高い攻撃力を誇る。' },
-            { id: 'g1-s3', name: '真紅眼の黒竜', type: 'monster', sub: 'normal', attr: '闇', race: 'ドラゴン', level: 7, atk: 2400, def: 2000, desc: '真紅の眼を持つ黒竜。怒りの黒き炎はその眼に映る者全てを焼き尽くす。' },
-            { id: 'g1-s4', name: 'ホーリー・エルフ', type: 'monster', sub: 'normal', attr: '光', race: '魔法使い', level: 4, atk: 800, def: 2000, desc: '華奢な女性の姿をしているが、高い守備力を誇る魔法使い。' },
-            { id: 'g1-s5', name: '砦を守る翼竜', type: 'monster', sub: 'normal', attr: '風', race: 'ドラゴン', level: 4, atk: 1400, def: 1200, desc: '山に潜み、砦を守るドラゴン。空から急降下して敵を噛み砕く。' },
-            { id: 'g1-s6', name: '封印されしエクゾディア', type: 'monster', sub: 'effect', attr: '闇', race: '魔法使い', level: 3, atk: 1000, def: 1000, desc: 'このカードと「右腕・左腕・右足・左足」が手札に揃った時、勝利する。' },
-            { id: 'g1-s7', name: '封印されし者の右腕', type: 'monster', sub: 'normal', attr: '闇', race: '魔法使い', level: 1, atk: 200, def: 300, desc: '封印された右腕。封印を解くと無限の力を発揮する。' },
-            { id: 'g1-s8', name: '封印されし者の左腕', type: 'monster', sub: 'normal', attr: '闇', race: '魔法使い', level: 1, atk: 200, def: 300, desc: '封印された左腕。封印を解くと無限の力を発揮する。' },
-            { id: 'g1-s9', name: '封印されし者の右足', type: 'monster', sub: 'normal', attr: '闇', race: '魔法使い', level: 1, atk: 200, def: 300, desc: '封印された右足。封印を解くと無限の力を発揮する。' },
-            { id: 'g1-s10', name: '封印されし者の左足', type: 'monster', sub: 'normal', attr: '闇', race: '魔法使い', level: 1, atk: 200, def: 300, desc: '封印された左足。封印を解くと無限の力を発揮する。' },
-            { id: 'g1-s11', name: 'サンダー・ボルト', type: 'spell', sub: 'normal', desc: '相手フィールド上のモンスターを全て破壊する。' },
-            { id: 'g1-s12', name: '死者蘇生', type: 'spell', sub: 'normal', desc: '自分または相手の墓地からモンスター１体を選択してフィールドに特殊召喚する。' },
-            { id: 'g1-s13', name: '強欲な壺', type: 'spell', sub: 'normal', desc: '自分のデッキからカードを２枚ドローする。' },
-            { id: 'g1-s14', name: 'ハーピィの羽根帚', type: 'spell', sub: 'normal', desc: '相手フィールド上の魔法・罠カードを全て破壊する。' },
-            { id: 'g1-s15', name: '心変わり', type: 'spell', sub: 'normal', desc: '相手フィールド上のモンスター１体を選択し、このターン終了時までコントロールを得る。' },
-            { id: 'g1-s16', name: '聖なるバリア －ミラーフォース－', type: 'trap', sub: 'normal', desc: '相手モンスターの攻撃宣言時に発動できる。相手フィールドの攻撃表示モンスターを全て破壊する。' },
-            { id: 'g1-s17', name: '竜騎士ガイア', type: 'monster', sub: 'fusion', attr: '風', race: 'ドラゴン', level: 7, atk: 2600, def: 2100, desc: '「暗黒騎士ガイア」＋「カース・オブ・ドラゴン」' }
-        ];
-
-        // Gen 2 Cards List
-        const GEN2_CARDS = [
-            { id: 'g2-1', name: 'サイバー・ドラゴン', type: 'monster', sub: 'effect', attr: '光', race: '機械', level: 5, atk: 2100, def: 1600, desc: '相手フィールド上にモンスターが存在し、自分フィールドにモンスターが存在しない場合、手札から特殊召喚できる。' },
-            { id: 'g2-2', name: '人造人間－サイコ・ショッカー', type: 'monster', sub: 'effect', attr: '闇', race: '機械', level: 6, atk: 2400, def: 1500, desc: 'このカードが表側表示で存在する限り、お互いに罠カードを発動できず、フィールド上の罠カードの効果は無効化される。' },
-            { id: 'g2-3', name: '魔導戦士 ブレイカー', type: 'monster', sub: 'effect', attr: '闇', race: '魔法使い', level: 4, atk: 1600, def: 1000, desc: '召喚成功時に魔力カウンターを１個乗せる(ATK+300)。カウンターを取り除き魔法・罠１枚を破壊できる。' },
-            { id: 'g2-4', name: '聖なる魔術師', type: 'monster', sub: 'effect', attr: '光', race: '魔法使い', level: 1, atk: 300, def: 400, desc: 'リバース：自分の墓地から魔法カード１枚を選択して手札に加える。' },
-            { id: 'g2-5', name: 'クリッター', type: 'monster', sub: 'effect', attr: '闇', race: '悪魔', level: 3, atk: 1000, def: 600, desc: 'このカードがフィールドから墓地へ送られた時、デッキから攻撃力1500以下のモンスター１体を手札に加える。' },
-            { id: 'g2-6', name: 'サイクロン', type: 'spell', sub: 'quick', desc: 'フィールド上の魔法・罠カード１枚を選択して破壊する。' },
-            { id: 'g2-7', name: '早すぎた埋葬', type: 'spell', sub: 'equip', desc: '800LPを払い自分の墓地のモンスター１体を攻撃表示で特殊召喚しこのカードを装備する。' },
-            { id: 'g2-8', name: '押収', type: 'spell', sub: 'normal', desc: '1000LPを払い、相手の手札を確認してその中から魔法・罠・モンスターカード１枚を選んで墓地へ捨てる。' },
-            { id: 'g2-9', name: '強引な番兵', type: 'spell', sub: 'normal', desc: '相手の手札を確認し、その中からカード１枚を選んで相手のデッキに戻してシャッフルする。' },
-            { id: 'g2-10', name: 'いたずら好きな悪魔', type: 'spell', sub: 'normal', desc: '1000LPを払い、相手の手札をランダムに1枚捨てる。' },
-            { id: 'g2-11', name: 'リビングデッドの呼び声', type: 'trap', sub: 'continuous', desc: '自分の墓地のモンスター１体を選択し攻撃表示で特殊召喚する。このカードが破壊された時そのモンスターを破壊。' },
-            { id: 'g2-12', name: '激流葬', type: 'trap', sub: 'normal', desc: 'モンスターが召喚・反転召喚・特殊召喚された時に発動できる。フィールド上のモンスターを全て破壊する。' }
-        ];
+        async function loadCardPool() {
+            try {
+                const response = await fetch('cards.json');
+                if (!response.ok) throw new Error('cards.json の読み込みに失敗しました。');
+                const data = await response.json();
+                GEN1_CARDS = data.gen1 || [];
+                GEN2_CARDS = data.gen2 || [];
+                ALL_CARDS = [...GEN1_CARDS, ...GEN2_CARDS];
+            } catch (err) {
+                console.error('カードデータの取得エラー:', err);
+                addLog('⚠️ カードプール (cards.json) の読み込みに失敗しました。ファイルが同一ディレクトリに配置されているか確認してください。');
+            }
+        }
 
         /* ==========================================================================
            2. APP STATE & VARIABLES
            ========================================================================== */
         
         let activeTab = 'gen1';
-        let currentDeck = []; // Local Deck array
+        let currentDeck = [];
         let peer = null;
         let conn = null;
-        let myPlayerId = 'P1'; // P1: Host, P2: Guest
+        let myPlayerId = 'P1';
         let selectedHandIndex = null;
         let selectedZone = null;
 
-        // Synchronized Game State
         let gameState = {
             turnPlayer: 'P1',
             phase: 'DP',
@@ -475,8 +401,9 @@
            3. PEERJS NETWORK & SYNC
            ========================================================================== */
 
-        window.onload = function() {
+        window.onload = async function() {
             initPeer();
+            await loadCardPool();
             openDeckEditor();
         };
 
@@ -558,7 +485,7 @@
         }
 
         /* ==========================================================================
-           4. DECK BUILDER CONTROLLER (2-COLUMN, 30-60 CARDS)
+           4. DECK BUILDER CONTROLLER (40-60 CARDS & JSON SAVE/LOAD)
            ========================================================================== */
 
         function openDeckEditor() {
@@ -568,8 +495,8 @@
         }
 
         function closeDeckEditor() {
-            if (currentDeck.length < 30 || currentDeck.length > 60) {
-                if (!confirm("メインデッキは30枚〜60枚で設定する必要があります。このまま閉じますか？")) {
+            if (currentDeck.length < 40 || currentDeck.length > 60) {
+                if (!confirm("メインデッキは40枚〜60枚で設定する必要があります。このまま閉じますか？")) {
                     return;
                 }
             }
@@ -623,8 +550,7 @@
         }
 
         function addCardToDeck(cardId) {
-            const pool = [...GEN1_CARDS, ...GEN2_CARDS];
-            const card = pool.find(c => c.id === cardId);
+            const card = ALL_CARDS.find(c => c.id === cardId);
             if (!card) return;
 
             const count = currentDeck.filter(c => c.name === card.name).length;
@@ -654,20 +580,80 @@
             addLog("デッキをシャッフルしました。");
         }
 
+        /* JSON Export & Import */
+        function exportDeckJSON() {
+            if (currentDeck.length === 0) {
+                alert('保存するデッキカードがありません。');
+                return;
+            }
+            const jsonStr = JSON.stringify(currentDeck, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'yugioh_deck.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            addLog('デッキデータをJSON形式で保存（ダウンロード）しました。');
+        }
+
+        function importDeckJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedCards = JSON.parse(e.target.result);
+                    if (!Array.isArray(importedCards)) {
+                        alert('無効なJSONフォーマットです。(配列形式である必要があります)');
+                        return;
+                    }
+
+                    currentDeck = importedCards.map(c => {
+                        const matched = ALL_CARDS.find(poolCard => poolCard.id === c.id || poolCard.name === c.name);
+                        const baseCard = matched || c;
+                        return {
+                            ...baseCard,
+                            uniqueId: 'c_' + Math.random().toString(36).substr(2, 9)
+                        };
+                    });
+
+                    renderDeckList();
+                    renderCardPool();
+                    addLog(`JSONファイルから ${currentDeck.length} 枚のカードを読み込みました。`);
+                } catch (err) {
+                    alert('JSONファイルの読み込みに失敗しました: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
         function loadPresetDeck(type) {
             currentDeck = [];
-            // Vol.1 Goodstuff Starter Preset (30 cards)
+            // Sample Deck Preset (40 Cards)
             const presetNames = [
-                'ブラック・マジシャン', '暗黒騎士ガイア', '暗黒騎士ガイア', 'サイクロプス', 'サイクロプス', 'サイクロプス',
-                'シルバー・フォング', 'シルバー・フォング', 'マンモスの墓場', 'マンモスの墓場', 'ダークキラー', 'ダークキラー',
-                'ホーリー・エルフ', 'ホーリー・エルフ', 'デーモンの召喚', '青眼の白龍',
-                '地割れ', '地割れ', '地割れ', 'ブラック・ホール', '守備封印', 'レッド・ポーション', 'サンダー・ボルト', '死者蘇生', '強欲な壺',
-                '落とし穴', '落とし穴', '落とし穴', '聖なるバリア －ミラーフォース－', '聖なるバリア －ミラーフォース－'
+                'ブラック・マジシャン', 'ブラック・マジシャン',
+                '暗黒騎士ガイア', '暗黒騎士ガイア',
+                '青眼の白龍', '青眼の白龍',
+                'デーモンの召喚', 'デーモンの召喚',
+                'サイクロプス', 'サイクロプス', 'サイクロプス',
+                'シルバー・フォング', 'シルバー・フォング', 'シルバー・フォング',
+                'マンモスの墓場', 'マンモスの墓場', 'マンモスの墓場',
+                'ダークキラー', 'ダークキラー', 'ダークキラー',
+                'ホーリー・エルフ', 'ホーリー・エルフ', 'ホーリー・エルフ',
+                '砦を守る翼竜', '砦を守る翼竜',
+                '地割れ', '地割れ', '地割れ',
+                'ブラック・ホール', '守備封印', '守備封印',
+                'レッド・ポーション', 'レッド・ポーション',
+                'サンダー・ボルト', '死者蘇生',
+                '強欲な壺', '強欲な壺',
+                '落とし穴', '落とし穴', '落とし穴'
             ];
 
-            const pool = [...GEN1_CARDS, ...GEN2_CARDS];
             presetNames.forEach(name => {
-                const template = pool.find(c => c.name === name);
+                const template = ALL_CARDS.find(c => c.name === name);
                 if (template) {
                     currentDeck.push({ ...template, uniqueId: 'c_' + Math.random().toString(36).substr(2, 9) });
                 }
@@ -675,7 +661,7 @@
 
             renderDeckList();
             renderCardPool();
-            addLog("Vol.1 サンプルデッキ(30枚)を読み込みました。");
+            addLog("サンプルデッキ(40枚)を読み込みました。");
         }
 
         function renderDeckList() {
@@ -688,8 +674,8 @@
             const statusEl = document.getElementById('deck-count-status');
             const saveBtn = document.getElementById('save-deck-btn');
 
-            if (count < 30) {
-                statusEl.innerText = '30枚未満 (不可)';
+            if (count < 40) {
+                statusEl.innerText = '40枚未満 (不可)';
                 statusEl.className = 'text-[10px] ml-2 px-2 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700';
                 saveBtn.disabled = true;
             } else if (count > 60) {
@@ -697,7 +683,7 @@
                 statusEl.className = 'text-[10px] ml-2 px-2 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700';
                 saveBtn.disabled = true;
             } else {
-                statusEl.innerText = '適正 (30〜60枚)';
+                statusEl.innerText = '適正 (40〜60枚)';
                 statusEl.className = 'text-[10px] ml-2 px-2 py-0.5 rounded font-bold bg-emerald-900/60 text-emerald-300 border border-emerald-700';
                 saveBtn.disabled = false;
             }
@@ -717,10 +703,9 @@
         }
 
         function confirmDeck() {
-            if (currentDeck.length < 30 || currentDeck.length > 60) return;
+            if (currentDeck.length < 40 || currentDeck.length > 60) return;
 
             const playerKey = myPlayerId === 'P1' ? 'p1' : 'p2';
-            // Set deck and shuffle
             const shuffled = [...currentDeck].sort(() => Math.random() - 0.5);
             gameState[playerKey].deck = shuffled;
             gameState[playerKey].hand = [];
@@ -728,7 +713,6 @@
             gameState[playerKey].spells = Array(5).fill(null);
             gameState[playerKey].graveyard = [];
 
-            // Draw initial 5 cards
             for (let i = 0; i < 5; i++) {
                 if (gameState[playerKey].deck.length > 0) {
                     gameState[playerKey].hand.push(gameState[playerKey].deck.pop());
@@ -741,7 +725,7 @@
         }
 
         /* ==========================================================================
-           5. DUEL BOARD RENDERER (AUTO-FLIPPED VIEW & FAIR PLAY SECRET CARDS)
+           5. DUEL BOARD RENDERER
            ========================================================================== */
 
         function renderBoard() {
@@ -752,25 +736,20 @@
             const me = gameState[meKey];
             const opp = gameState[oppKey];
 
-            // Update Labels
             document.getElementById('my-name').innerHTML = `<i class="fa-solid fa-user-shield mr-1"></i> 自分 (${myPlayerId})`;
             document.getElementById('opp-name').innerHTML = `<i class="fa-solid fa-user-ninja mr-1"></i> 相手 (${isP1 ? 'P2' : 'P1'})`;
 
-            // Update LP
             document.getElementById('my-lp').innerText = me.lp;
             document.getElementById('opp-lp').innerText = opp.lp;
 
-            // Update Deck / Grave Counts
             document.getElementById('my-deck-count').innerText = me.deck.length;
             document.getElementById('opp-deck-count').innerText = `山札: ${opp.deck.length}枚`;
             document.getElementById('my-grave-count').innerText = me.graveyard.length;
             document.getElementById('opp-grave-count').innerText = opp.graveyard.length;
 
-            // Update Turn / Phase
             document.getElementById('turn-display').innerText = `${gameState.turnCount} (${gameState.turnPlayer} ターン)`;
             document.getElementById('phase-display').innerText = getPhaseName(gameState.phase);
 
-            // Render Opponent Hand (Secret ???)
             const oppHandContainer = document.getElementById('opp-hand-container');
             oppHandContainer.innerHTML = '';
             document.getElementById('opp-hand-count').innerText = `手札: ${opp.hand.length}枚`;
@@ -782,7 +761,6 @@
                 oppHandContainer.appendChild(cardBack);
             }
 
-            // Render My Hand
             const myHandContainer = document.getElementById('my-hand-container');
             myHandContainer.innerHTML = '';
             document.getElementById('my-hand-count-text').innerText = `${me.hand.length}枚`;
@@ -801,13 +779,11 @@
                 myHandContainer.appendChild(cardEl);
             });
 
-            // Render Monster & Spell Zones (My & Opponent)
             renderFieldZones('my', me);
             renderFieldZones('opp', opp);
         }
 
         function renderFieldZones(prefix, playerState) {
-            // Monsters
             for (let i = 0; i < 5; i++) {
                 const slot = document.getElementById(`${prefix}-m-${i}`);
                 slot.innerHTML = '';
@@ -821,12 +797,11 @@
                     const cardEl = document.createElement('div');
                     
                     if (isFaceDown && isOpponent) {
-                        // Secret Opponent Card
                         cardEl.className = 'w-14 h-20 rounded border-2 border-slate-700 bg-slate-900 flex items-center justify-center text-xs font-bold text-slate-600 card-back def-position';
                         cardEl.innerText = '???';
                     } else {
                         cardEl.className = `w-14 h-20 rounded p-1 border text-[9px] flex flex-col justify-between ${getCardStyleClass(card)} ${cardData.position === 'ATK' ? 'atk-position' : 'def-position'}`;
-                        if (isFaceDown) cardEl.classList.add('opacity-75'); // My face down card
+                        if (isFaceDown) cardEl.classList.add('opacity-75');
                         
                         cardEl.innerHTML = `
                             <div class="font-bold leading-tight truncate">${card.name}</div>
@@ -838,7 +813,6 @@
                 }
             }
 
-            // Spells / Traps
             for (let i = 0; i < 5; i++) {
                 const slot = document.getElementById(`${prefix}-st-${i}`);
                 slot.innerHTML = '';
@@ -875,9 +849,7 @@
 
         function modifyLP(target, amount) {
             const isP1 = myPlayerId === 'P1';
-            let playerKey;
-            if (target === 'me') playerKey = isP1 ? 'p1' : 'p2';
-            else playerKey = isP1 ? 'p2' : 'p1';
+            let playerKey = target === 'me' ? (isP1 ? 'p1' : 'p2') : (isP1 ? 'p2' : 'p1');
 
             const oldLp = gameState[playerKey].lp;
             gameState[playerKey].lp = Math.max(0, gameState[playerKey].lp + amount);
@@ -963,9 +935,7 @@
 
         function handleZoneClick(side, zoneType, index) {
             const isP1 = myPlayerId === 'P1';
-            let playerKey;
-            if (side === 'me') playerKey = isP1 ? 'p1' : 'p2';
-            else playerKey = isP1 ? 'p2' : 'p1';
+            let playerKey = side === 'me' ? (isP1 ? 'p1' : 'p2') : (isP1 ? 'p2' : 'p1');
 
             const playerState = gameState[playerKey];
             let slotData = null;
@@ -999,7 +969,6 @@
                 buttonsContainer.innerHTML += `<button onclick="sendZoneCardToGrave()" class="w-full py-2 bg-rose-900/60 hover:bg-rose-800 text-rose-300 font-bold rounded text-xs border border-rose-700">墓地へ送る</button>`;
                 buttonsContainer.innerHTML += `<button onclick="returnZoneCardToHand()" class="w-full py-2 bg-indigo-900/60 hover:bg-indigo-800 text-indigo-300 font-bold rounded text-xs border border-indigo-700">手札に戻す</button>`;
             } else {
-                // Opponent card actions
                 buttonsContainer.innerHTML += `<button onclick="sendZoneCardToGrave()" class="w-full py-2 bg-rose-900/60 hover:bg-rose-800 text-rose-300 font-bold rounded text-xs border border-rose-700">破壊 / 墓地へ送る</button>`;
             }
 
@@ -1095,9 +1064,7 @@
 
         function openGraveViewer(side) {
             const isP1 = myPlayerId === 'P1';
-            let playerKey;
-            if (side === 'me') playerKey = isP1 ? 'p1' : 'p2';
-            else playerKey = isP1 ? 'p2' : 'p1';
+            let playerKey = side === 'me' ? (isP1 ? 'p1' : 'p2') : (isP1 ? 'p2' : 'p1');
 
             const grave = gameState[playerKey].graveyard;
             const content = document.getElementById('grave-modal-content');
