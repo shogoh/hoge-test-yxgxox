@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>遊戯王 初期環境 WebRTC P2P対戦シミュレーター</title>
+    <title>遊☆戯☆王のお遊戯会場</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- PeerJS -->
@@ -28,7 +28,8 @@
             transform: translateY(-4px) scale(1.02);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.7);
         }
-        .card-normal { background: linear-gradient(135deg, #d97706, #b45309); color: #fff; border: 2px solid #fef08a; }
+        /* 通常モンスターの背景色・文字色を調整 */
+        .card-normal { background: linear-gradient(135deg, #e0a93b, #ab791d); color: #1e1b4b; border: 2px solid #fef08a; font-weight: bold; }
         .card-effect { background: linear-gradient(135deg, #ea580c, #c2410c); color: #fff; border: 2px solid #fed7aa; }
         .card-spell { background: linear-gradient(135deg, #0d9488, #0f766e); color: #fff; border: 2px solid #99f6e4; }
         .card-trap { background: linear-gradient(135deg, #be185d, #9d174d); color: #fff; border: 2px solid #fbcfe8; }
@@ -68,7 +69,7 @@
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center space-x-3">
                 <i class="fa-solid font-bold text-amber-500 text-2xl">🎴</i>
-                <h1 class="font-bold text-lg text-amber-400">遊戯王 初期環境 P2Pシミュレーター</h1>
+                <h1 class="font-bold text-lg text-amber-400">遊☆戯☆王のお遊戯会場</h1>
                 <span id="role-badge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-400 border border-slate-700">未接続</span>
             </div>
 
@@ -532,7 +533,7 @@
                     <div>
                         <div class="flex items-center justify-between font-bold text-xs">
                             <span class="truncate">${card.name}</span>
-                            <span class="bg-slate-950/80 px-1.5 py-0.5 rounded text-[10px] border border-slate-700">${count}/3</span>
+                            <span class="bg-slate-950/80 px-1.5 py-0.5 rounded text-[10px] border border-slate-700 text-white">${count}/3</span>
                         </div>
                         ${statsHtml}
                         <p class="text-[10px] opacity-80 line-clamp-2 my-1 leading-tight">${card.desc}</p>
@@ -774,7 +775,7 @@
                 let stats = card.type === 'monster' ? `攻${card.atk}` : (card.type === 'spell' ? '魔法' : '罠');
                 cardEl.innerHTML = `
                     <div class="font-bold leading-tight truncate">${card.name}</div>
-                    <div class="text-[9px] font-mono text-slate-200 mt-auto font-bold">${stats}</div>
+                    <div class="text-[9px] font-mono mt-auto font-bold opacity-90">${stats}</div>
                 `;
                 myHandContainer.appendChild(cardEl);
             });
@@ -895,8 +896,14 @@
             me.monsters[freeIndex] = { card: card, position: position, isAttacked: false };
             me.hand.splice(selectedHandIndex, 1);
 
-            const posName = position === 'ATK' ? '攻撃表示で召喚' : '裏側守備表示でセット';
-            addLog(`${myPlayerId} は [${card.name}] をモンスターゾーン ${freeIndex + 1} に${posName}しました。`);
+            if (position === 'DEF_FACE_DOWN') {
+                const myMsg = `${myPlayerId} は [${card.name}] をモンスターゾーン ${freeIndex + 1} に裏側守備表示でセットしました。`;
+                const oppMsg = `${myPlayerId} は カード をモンスターゾーン ${freeIndex + 1} に裏側守備表示でセットしました。`;
+                addLogWithOpponentMask(myMsg, oppMsg);
+            } else {
+                const posName = '表側攻撃表示で召喚';
+                addLog(`${myPlayerId} は [${card.name}] をモンスターゾーン ${freeIndex + 1} に${posName}しました。`);
+            }
 
             closeActionModal();
             broadcastGameState();
@@ -913,8 +920,14 @@
             me.spells[freeIndex] = { card: card, position: position };
             me.hand.splice(selectedHandIndex, 1);
 
-            const posName = position === 'FACE_UP' ? '発動' : 'セット';
-            addLog(`${myPlayerId} は [${card.name}] を魔法・罠ゾーン ${freeIndex + 1} に${posName}しました。`);
+            if (position === 'FACE_DOWN') {
+                const myMsg = `${myPlayerId} は [${card.name}] を魔法・罠ゾーン ${freeIndex + 1} にセットしました。`;
+                const oppMsg = `${myPlayerId} は カード を魔法・罠ゾーン ${freeIndex + 1} にセットしました。`;
+                addLogWithOpponentMask(myMsg, oppMsg);
+            } else {
+                const posName = '発動';
+                addLog(`${myPlayerId} は [${card.name}] を魔法・罠ゾーン ${freeIndex + 1} に${posName}しました。`);
+            }
 
             closeActionModal();
             broadcastGameState();
@@ -1103,10 +1116,10 @@
             if (card.type === 'monster') {
                 statsHtml = `
                     <div class="flex items-center space-x-2 my-1 text-xs">
-                        <span class="text-amber-300 font-bold">★${card.level}</span>
-                        <span class="text-slate-300">${card.attr} / ${card.race}</span>
+                        <span class="font-bold text-amber-900">★${card.level}</span>
+                        <span class="text-slate-800">${card.attr} / ${card.race}</span>
                     </div>
-                    <div class="font-mono text-sm font-black text-amber-400">ATK/ ${card.atk}  DEF/ ${card.def}</div>
+                    <div class="font-mono text-sm font-black text-slate-900">ATK/ ${card.atk}  DEF/ ${card.def}</div>
                 `;
             } else {
                 statsHtml = `<div class="text-xs font-bold text-teal-300 my-1">${card.type === 'spell' ? '魔法' : '罠'}カード [${card.sub}]</div>`;
@@ -1116,7 +1129,7 @@
                 <div class="w-full p-3 rounded-lg border flex flex-col items-center ${getCardStyleClass(card)}">
                     <h4 class="font-bold text-sm text-center mb-1">${card.name}</h4>
                     ${statsHtml}
-                    <p class="text-xs opacity-90 mt-2 text-left bg-slate-950/50 p-2 rounded border border-slate-700/50 w-full leading-relaxed">${card.desc}</p>
+                    <p class="text-xs opacity-90 mt-2 text-left bg-slate-950/50 p-2 rounded border border-slate-700/50 w-full leading-relaxed text-slate-100">${card.desc}</p>
                 </div>
             `;
         }
@@ -1152,6 +1165,21 @@
 
             if (sendRemote && conn && conn.open) {
                 conn.send({ type: 'ACTION_LOG', msg: msg });
+            }
+        }
+
+        /* 相手のログでカード名を秘匿するためのログ出力関数 */
+        function addLogWithOpponentMask(myMsg, oppMsg) {
+            gameState.logs.push(myMsg);
+            const logBox = document.getElementById('log-box');
+            const item = document.createElement('div');
+            item.className = 'py-0.5 border-b border-slate-900/50';
+            item.innerText = myMsg;
+            logBox.appendChild(item);
+            logBox.scrollTop = logBox.scrollHeight;
+
+            if (conn && conn.open) {
+                conn.send({ type: 'ACTION_LOG', msg: oppMsg });
             }
         }
 
