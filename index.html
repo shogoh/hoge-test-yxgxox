@@ -137,7 +137,6 @@
 
                 <!-- Opponent Field Grid (7 Columns) -->
                 <div class="grid grid-cols-7 gap-1 h-36 my-0.5">
-                    <!-- 1列目 (Opponent: Deck / Spell 4-0 / EX) -->
                     <div id="opp-deck-zone" class="zone text-center font-bold text-slate-500 bg-slate-800 text-[10px]">デッキ</div>
                     <div id="opp-st-4" onclick="handleZoneClick('opp', 'spell', 4)" class="zone cursor-pointer"></div>
                     <div id="opp-st-3" onclick="handleZoneClick('opp', 'spell', 3)" class="zone cursor-pointer"></div>
@@ -146,7 +145,6 @@
                     <div id="opp-st-0" onclick="handleZoneClick('opp', 'spell', 0)" class="zone cursor-pointer"></div>
                     <div id="opp-extra-zone" onclick="openExtraViewer('opp')" class="zone text-center font-bold text-purple-400/60 bg-purple-950/20 text-[10px] cursor-pointer">EX</div>
 
-                    <!-- 2列目 (Opponent: Grave / Monster 4-0 / Field) -->
                     <div id="opp-grave-zone" onclick="openGraveViewer('opp')" class="zone text-center font-bold text-slate-400 cursor-pointer text-[10px]">墓地<br><span id="opp-grave-count">0</span></div>
                     <div id="opp-m-4" onclick="handleZoneClick('opp', 'monster', 4)" class="zone cursor-pointer"></div>
                     <div id="opp-m-3" onclick="handleZoneClick('opp', 'monster', 3)" class="zone cursor-pointer"></div>
@@ -165,7 +163,6 @@
                     <span id="phase-display" class="px-2 py-0.5 rounded bg-blue-900 text-blue-200 text-[10px] font-bold border border-blue-700">ドローフェイズ</span>
                 </div>
 
-                <!-- Phase Progression Buttons -->
                 <div class="flex gap-1 text-[10px]">
                     <button onclick="setPhase('DP')" class="bg-slate-800 hover:bg-slate-700 px-2 py-0.5 rounded text-slate-300 font-semibold">DP</button>
                     <button onclick="setPhase('SP')" class="bg-slate-800 hover:bg-slate-700 px-2 py-0.5 rounded text-slate-300 font-semibold">SP</button>
@@ -179,10 +176,7 @@
 
             <!-- MY ZONE (Bottom) -->
             <div id="my-area" class="bg-slate-900/80 rounded-lg p-2 border border-slate-800 shadow flex flex-col justify-between flex-1 overflow-hidden">
-                
-                <!-- My Field Grid (7 Columns) -->
                 <div class="grid grid-cols-7 gap-1 h-36 my-0.5">
-                    <!-- 1列目 -->
                     <div id="my-field-zone" onclick="handleZoneClick('me', 'field', 0)" class="zone text-center font-bold text-slate-400 cursor-pointer text-[10px]">フィールド</div>
                     <div id="my-m-0" onclick="handleZoneClick('me', 'monster', 0)" class="zone cursor-pointer"></div>
                     <div id="my-m-1" onclick="handleZoneClick('me', 'monster', 1)" class="zone cursor-pointer"></div>
@@ -191,7 +185,6 @@
                     <div id="my-m-4" onclick="handleZoneClick('me', 'monster', 4)" class="zone cursor-pointer"></div>
                     <div id="my-grave-zone" onclick="openGraveViewer('me')" class="zone text-center font-bold text-slate-400 cursor-pointer hover:bg-slate-800 text-[10px]">墓地<br><span id="my-grave-count">0</span></div>
 
-                    <!-- 2列目 -->
                     <div id="my-extra-zone" onclick="openExtraViewer('me')" class="zone text-center font-bold text-purple-400 bg-purple-950/30 border-purple-700 cursor-pointer hover:bg-purple-900/40 text-[10px]">EXデッキ<br><span id="my-extra-count">0</span></div>
                     <div id="my-st-0" onclick="handleZoneClick('me', 'spell', 0)" class="zone cursor-pointer"></div>
                     <div id="my-st-1" onclick="handleZoneClick('me', 'spell', 1)" class="zone cursor-pointer"></div>
@@ -201,9 +194,7 @@
                     <div id="my-deck-zone" onclick="openDeckSearchModal()" class="zone text-center font-bold text-amber-400 bg-amber-950/40 border-amber-600 cursor-pointer hover:bg-amber-900/40 text-[10px]">デッキ<br><span id="my-deck-count">0</span></div>
                 </div>
 
-                <!-- My Hand & Banish Area -->
                 <div class="mt-1 flex gap-2 items-end">
-                    <!-- 左寄せ手札エリア -->
                     <div class="flex-1 overflow-hidden">
                         <div class="flex items-center justify-between text-[10px] text-slate-400 mb-0.5">
                             <div class="flex items-center space-x-2">
@@ -217,7 +208,6 @@
                         <div id="my-hand-container" class="flex justify-start space-x-1 h-16 overflow-x-auto p-1 bg-slate-950/60 rounded border border-slate-800 items-center"></div>
                     </div>
 
-                    <!-- 右側除外ゾーン -->
                     <div class="w-12 flex-none flex flex-col items-center">
                         <div id="my-banish-zone" onclick="openBanishViewer('me')" class="w-12 h-16 zone text-center font-bold text-purple-300 bg-purple-950/40 border-purple-600 cursor-pointer hover:bg-purple-900/40 text-[9px] flex flex-col justify-center items-center rounded">
                             除外<br><span id="my-banish-count" class="text-[10px]">0</span>
@@ -225,7 +215,6 @@
                     </div>
                 </div>
 
-                <!-- My Footer Info & LP -->
                 <div class="flex items-center justify-between border-t border-slate-800 pt-1 text-xs">
                     <div class="flex items-center space-x-2">
                         <span id="my-name" class="font-bold text-blue-400 text-xs"><i class="fa-solid fa-user-shield mr-1"></i> 自分 (P1)</span>
@@ -247,10 +236,7 @@
 
         </div>
 
-        <!-- Right Side: Card Preview & Duel Logs (3 cols) -->
         <div class="col-span-3 flex flex-col space-y-2 h-full overflow-hidden">
-
-            <!-- Card Detail Preview Box -->
             <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 shadow flex flex-col h-1/2 overflow-hidden">
                 <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between flex-none">
                     <span><i class="fa-solid fa-magnifying-glass mr-1"></i> カード詳細情報</span>
@@ -260,7 +246,6 @@
                 </div>
             </div>
 
-            <!-- Duel Action Log -->
             <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 shadow flex flex-col h-1/2 overflow-hidden">
                 <div class="flex items-center justify-between mb-1 flex-none">
                     <h3 class="text-[10px] font-bold text-amber-400 flex items-center">
@@ -272,7 +257,6 @@
                     <div class="text-slate-500 italic">対戦ログがここに記録されます...</div>
                 </div>
             </div>
-
         </div>
 
     </main>
@@ -327,6 +311,16 @@
                             <button onclick="clearDeck()" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded">クリア</button>
                         </div>
                     </div>
+                    
+                    <!-- Banlist Selector -->
+                    <div class="flex items-center justify-between pb-1.5 border-b border-slate-800 flex-wrap gap-1 mt-1.5">
+                        <div class="flex items-center space-x-2 text-xs">
+                            <span class="text-slate-400 font-bold">制限ルール:</span>
+                            <select id="banlist-select" onchange="changeBanlist()" class="bg-slate-800 border border-slate-700 text-slate-200 rounded px-2 py-0.5 text-xs focus:outline-none focus:border-amber-500">
+                                <option value="none">無制限 (全て3枚まで)</option>
+                            </select>
+                        </div>
+                    </div>
 
                     <div class="my-1.5 flex space-x-2">
                         <button onclick="loadPresetDeck('vol1')" class="text-[10px] bg-amber-900/40 border border-amber-700 hover:bg-amber-800/50 text-amber-200 px-2 py-1 rounded flex-1 font-semibold">
@@ -362,7 +356,7 @@
         </div>
     </div>
 
-    <!-- CARD ACTION MODAL (UNIFIED DYNAMIC MODAL) -->
+    <!-- CARD ACTION MODAL -->
     <div id="action-modal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-[70] flex items-center justify-center hidden" onclick="closeActionModal(event)">
         <div class="bg-slate-900 border border-slate-700 rounded-xl p-3.5 max-w-sm w-full shadow-2xl space-y-2.5" onclick="event.stopPropagation()">
             <div id="action-modal-header" class="font-bold text-amber-400 text-xs border-b border-slate-800 pb-1.5 flex items-center justify-between">
@@ -386,12 +380,14 @@
 
     <script>
         /* ==========================================================================
-           1. CARD DATABASE
+           1. CARD DATABASE & BANLISTS
            ========================================================================== */
         
         let GEN1_CARDS = [];
         let GEN2_CARDS = [];
         let ALL_CARDS = [];
+        let BANLISTS = [];
+        let currentBanlist = null; // nullなら無制限ルール
 
         async function loadCardPool() {
             try {
@@ -405,6 +401,88 @@
                 console.error('カードデータの取得エラー:', err);
                 addLog('⚠️ cards.json の読み込みに失敗しました。');
             }
+        }
+
+        async function loadBanlists() {
+            try {
+                const response = await fetch('banlists.json');
+                if (!response.ok) throw new Error('banlists.json の読み込みに失敗しました。');
+                const data = await response.json();
+                BANLISTS = data.banlists || [];
+                renderBanlistOptions();
+            } catch (err) {
+                console.error('禁止制限リストデータの取得エラー:', err);
+                addLog('⚠️ banlists.json の読み込みに失敗しました。(無制限ルールとなります)');
+            }
+        }
+
+        function renderBanlistOptions() {
+            const select = document.getElementById('banlist-select');
+            select.innerHTML = '<option value="none">無制限 (全て3枚まで)</option>';
+            BANLISTS.forEach(list => {
+                const option = document.createElement('option');
+                option.value = list.id;
+                option.textContent = list.name;
+                select.appendChild(option);
+            });
+        }
+
+        function getCardLimit(cardName) {
+            if (!currentBanlist) return 3;
+            if (currentBanlist.forbidden && currentBanlist.forbidden.includes(cardName)) return 0;
+            if (currentBanlist.limited && currentBanlist.limited.includes(cardName)) return 1;
+            if (currentBanlist.semiLimited && currentBanlist.semiLimited.includes(cardName)) return 2;
+            return 3;
+        }
+
+        function changeBanlist() {
+            const select = document.getElementById('banlist-select');
+            const selectedId = select.value;
+            
+            if (selectedId === 'none') {
+                currentBanlist = null;
+            } else {
+                currentBanlist = BANLISTS.find(b => b.id === selectedId);
+            }
+            
+            const removed = validateDeckWithBanlist();
+            if (removed > 0) {
+                alert(`制限ルールの変更により、制限枚数を超過していた ${removed} 枚のカードがデッキから外されました。`);
+            }
+            renderDeckList();
+            renderCardPool();
+        }
+
+        function validateDeckWithBanlist() {
+            if (!currentBanlist) return 0;
+            
+            let removedCount = 0;
+            const cardCounts = {};
+            
+            // メインデッキの検査
+            for (let i = currentDeck.length - 1; i >= 0; i--) {
+                const cardName = currentDeck[i].name;
+                cardCounts[cardName] = (cardCounts[cardName] || 0) + 1;
+                const limit = getCardLimit(cardName);
+                if (cardCounts[cardName] > limit) {
+                    currentDeck.splice(i, 1);
+                    cardCounts[cardName]--;
+                    removedCount++;
+                }
+            }
+            
+            // EXデッキの検査
+            for (let i = currentExtraDeck.length - 1; i >= 0; i--) {
+                const cardName = currentExtraDeck[i].name;
+                cardCounts[cardName] = (cardCounts[cardName] || 0) + 1;
+                const limit = getCardLimit(cardName);
+                if (cardCounts[cardName] > limit) {
+                    currentExtraDeck.splice(i, 1);
+                    cardCounts[cardName]--;
+                    removedCount++;
+                }
+            }
+            return removedCount;
         }
 
         /* ==========================================================================
@@ -443,6 +521,7 @@
         window.onload = async function() {
             initPeer();
             await loadCardPool();
+            await loadBanlists();
             openDeckEditor();
         };
 
@@ -562,6 +641,7 @@
             pool.filter(c => c.name.toLowerCase().includes(search)).forEach(card => {
                 const isExtra = isExtraCard(card);
                 const count = [...currentDeck, ...currentExtraDeck].filter(c => c.name === card.name).length;
+                const maxCount = getCardLimit(card.name);
 
                 const cardEl = document.createElement('div');
                 cardEl.className = `p-1.5 rounded cursor-pointer border flex flex-col justify-between text-[10px] transition transform hover:scale-102 ${getCardStyleClass(card)}`;
@@ -577,11 +657,11 @@
                     <div>
                         <div class="flex items-center justify-between font-bold text-[11px]">
                             <span class="truncate">${card.name}</span>
-                            <span class="bg-slate-950/80 px-1 py-0.2 rounded text-[9px] border border-slate-700 text-white">${count}/3</span>
+                            <span class="bg-slate-950/80 px-1 py-0.2 rounded text-[9px] border border-slate-700 text-white">${count}/${maxCount}</span>
                         </div>
                         ${statsHtml}
                     </div>
-                    <button onclick="addCardToDeck('${card.id}')" ${count >= 3 || (isExtra ? currentExtraDeck.length >= 15 : currentDeck.length >= 60) ? 'disabled' : ''} class="w-full mt-1 bg-slate-950/60 hover:bg-slate-950 disabled:opacity-40 text-amber-400 border border-slate-700 rounded py-0.5 text-[10px] font-bold">
+                    <button onclick="addCardToDeck('${card.id}')" ${count >= maxCount || (isExtra ? currentExtraDeck.length >= 15 : currentDeck.length >= 60) ? 'disabled' : ''} class="w-full mt-1 bg-slate-950/60 hover:bg-slate-950 disabled:opacity-40 text-amber-400 border border-slate-700 rounded py-0.5 text-[10px] font-bold">
                         + 追加 ${isExtra ? '(EX)' : ''}
                     </button>
                 `;
@@ -598,7 +678,12 @@
             if (!card) return;
 
             const totalCount = [...currentDeck, ...currentExtraDeck].filter(c => c.name === card.name).length;
-            if (totalCount >= 3) return alert('同名カードは3枚までしか入れられません。');
+            const limit = getCardLimit(card.name);
+            
+            if (totalCount >= limit) {
+                let limitName = limit === 0 ? "禁止カード" : (limit === 1 ? "制限カード" : (limit === 2 ? "準制限カード" : "3枚"));
+                return alert(`現在のルールでは、このカードは${limitName}の指定を受けているため、これ以上デッキに入れられません。`);
+            }
 
             const isExtra = isExtraCard(card);
             if (isExtra) {
@@ -680,6 +765,11 @@
                         return { ...(matched || c), uniqueId: 'c_' + Math.random().toString(36).substr(2, 9) };
                     });
 
+                    const removed = validateDeckWithBanlist();
+                    if (removed > 0) {
+                        alert(`読み込んだデッキに制限ルールを超過するカードが含まれていたため、${removed} 枚を除外しました。`);
+                    }
+
                     renderDeckList();
                     renderCardPool();
                     addLog(`JSONからメイン${currentDeck.length}枚 / EX${currentExtraDeck.length}枚を読み込みました。`);
@@ -710,6 +800,9 @@
                     else currentDeck.push({ ...template, uniqueId: 'c_' + Math.random().toString(36).substr(2, 9) });
                 }
             });
+
+            const removed = validateDeckWithBanlist();
+            if(removed > 0) alert(`プリセットデッキ内の ${removed} 枚のカードが現在の制限ルールに引っかかったため除外されました。`);
 
             renderDeckList();
             renderCardPool();
@@ -909,7 +1002,6 @@
             document.getElementById('turn-display').innerText = `${gameState.turnCount} (${gameState.turnPlayer})`;
             document.getElementById('phase-display').innerText = getPhaseName(gameState.phase);
 
-            // Opponent Hand
             const oppHandContainer = document.getElementById('opp-hand-container');
             oppHandContainer.innerHTML = '';
             document.getElementById('opp-hand-count').innerText = `手札: ${opp.hand.length}枚`;
@@ -921,7 +1013,6 @@
                 oppHandContainer.appendChild(cardBack);
             }
 
-            // My Hand
             const myHandContainer = document.getElementById('my-hand-container');
             myHandContainer.innerHTML = '';
             document.getElementById('my-hand-count-text').innerText = `${me.hand.length}枚`;
@@ -945,7 +1036,6 @@
         }
 
         function renderFieldZones(prefix, playerState) {
-            // Monsters
             for (let i = 0; i < 5; i++) {
                 const slot = document.getElementById(`${prefix}-m-${i}`);
                 slot.innerHTML = '';
@@ -976,7 +1066,6 @@
                 }
             }
 
-            // Spells & Traps
             for (let i = 0; i < 5; i++) {
                 const slot = document.getElementById(`${prefix}-st-${i}`);
                 slot.innerHTML = '';
@@ -1006,7 +1095,6 @@
                 }
             }
 
-            // Field Zone
             const fieldSlot = document.getElementById(`${prefix}-field-zone`);
             fieldSlot.innerHTML = '';
             const fieldData = playerState.field;
@@ -1111,12 +1199,10 @@
             const buttonsContainer = document.getElementById('action-modal-buttons');
             buttonsContainer.innerHTML = '';
 
-            // 1. 【最優先】手札に加える / 手札に戻す (手札以外の場所にある場合)
             if (sourceType !== 'hand') {
                 buttonsContainer.innerHTML += `<button onclick="executeAction('hand')" class="${BTN_STYLE_HAND}">手札に戻す / 加える</button>`;
             }
 
-            // 2. フィールド上のカード専用アクション (表示形式変更・攻撃宣言・発動)
             if (sourceType === 'monster' && side === 'me' && slotData) {
                 const pos = slotData.position;
                 if (pos !== 'ATK') {
@@ -1138,7 +1224,6 @@
                 buttonsContainer.innerHTML += `<button onclick="activateSetSpellTrap()" class="${BTN_STYLE_FIELD}">表側にして発動</button>`;
             }
 
-            // 3. フィールドへの配置 (手札、墓地、除外、EXデッキ、デッキから)
             if (sourceType !== 'monster' && sourceType !== 'spell' && sourceType !== 'field') {
                 if (card.type === 'monster') {
                     buttonsContainer.innerHTML += `<button onclick="executeAction('field_atk')" class="${BTN_STYLE_FIELD}">攻撃表示で出す / 特殊召喚</button>`;
@@ -1150,7 +1235,6 @@
                 }
             }
 
-            // 4. 各エリアへのカード移動オプション
             if (sourceType !== 'graveyard') {
                 buttonsContainer.innerHTML += `<button onclick="executeAction('grave')" class="${BTN_STYLE_GRAVE}">墓地へ送る</button>`;
             }
