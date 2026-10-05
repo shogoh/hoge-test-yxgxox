@@ -298,8 +298,9 @@
             </div>
 
             <div class="flex-1 grid grid-cols-12 gap-3 p-3 overflow-hidden">
-
-                <div class="col-span-5 bg-slate-950 border border-slate-800 rounded-lg p-2.5 flex flex-col overflow-hidden">
+                <!-- 1. デッキリスト (col-span-5 から col-span-4 に変更) -->
+                <div class="col-span-4 bg-slate-950 border border-slate-800 rounded-lg p-2.5 flex flex-col overflow-hidden">
+                    <!-- 中身は既存のまま変更なし -->
                     <div class="flex items-center justify-between pb-1.5 border-b border-slate-800 flex-wrap gap-1">
                         <div class="text-xs">
                             <span class="text-slate-400 font-bold">メイン: </span>
@@ -315,7 +316,6 @@
                         </div>
                     </div>
                     
-                    <!-- Banlist Selector -->
                     <div class="flex items-center justify-between pb-1.5 border-b border-slate-800 flex-wrap gap-1 mt-1.5">
                         <div class="flex items-center space-x-2 text-xs">
                             <span class="text-slate-400 font-bold">制限ルール:</span>
@@ -343,7 +343,8 @@
                     </button>
                 </div>
 
-                <div class="col-span-7 bg-slate-950 border border-slate-800 rounded-lg p-2.5 flex flex-col overflow-hidden">
+                <!-- 2. カードプール (col-span-7 から col-span-5 に変更) -->
+                <div class="col-span-5 bg-slate-950 border border-slate-800 rounded-lg p-2.5 flex flex-col overflow-hidden">
                     <div class="flex items-center justify-between pb-1.5 border-b border-slate-800 gap-2 flex-wrap">
                         <div class="flex space-x-1">
                             <button id="tab-gen1" onclick="switchCardTab('gen1')" class="px-2.5 py-1 text-[10px] font-bold rounded bg-amber-600 text-slate-950">第1期</button>
@@ -351,10 +352,19 @@
                         </div>
                         <input id="card-search-input" oninput="filterCardPool()" type="text" placeholder="カード名で検索..." class="bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-xs text-slate-200 w-32 focus:outline-none focus:border-amber-500">
                     </div>
-
-                    <div id="card-pool-grid" class="flex-1 overflow-y-auto grid grid-cols-3 gap-2 p-1 my-1"></div>
+                    <!-- 少し幅が狭くなるため、小さい画面では2列(sm:grid-cols-2)になるように調整 -->
+                    <div id="card-pool-grid" class="flex-1 overflow-y-auto grid grid-cols-2 lg:grid-cols-3 gap-2 p-1 my-1"></div>
                 </div>
 
+                <!-- 3. 詳細プレビュー (新規追加: col-span-3) -->
+                <div class="col-span-3 bg-slate-900 border border-slate-800 rounded-lg p-2.5 flex flex-col shadow overflow-hidden">
+                    <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between flex-none border-b border-slate-800 pb-1.5">
+                        <span><i class="fa-solid fa-magnifying-glass mr-1"></i> カード詳細情報</span>
+                    </h3>
+                    <div id="deck-preview-container" class="flex-1 flex flex-col items-center justify-center text-center overflow-y-auto p-1 mt-1">
+                        <p class="text-xs text-slate-500">カードをクリックすると<br>詳細が表示されます</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -649,6 +659,8 @@
                 const cardEl = document.createElement('div');
                 cardEl.className = `p-1.5 rounded cursor-pointer border flex flex-col justify-between text-[10px] transition transform hover:scale-102 ${getCardStyleClass(card)}`;
                 
+                cardEl.onclick = () => updatePreview(card);
+
                 let statsHtml = '';
                 if (card.type === 'monster') {
                     statsHtml = `<div class="font-bold text-[10px] text-amber-200">★${card.level} ATK/${card.atk} DEF/${card.def}</div>`;
@@ -664,7 +676,7 @@
                         </div>
                         ${statsHtml}
                     </div>
-                    <button onclick="addCardToDeck('${card.id}')" ${count >= maxCount || (isExtra ? currentExtraDeck.length >= 15 : currentDeck.length >= 60) ? 'disabled' : ''} class="w-full mt-1 bg-slate-950/60 hover:bg-slate-950 disabled:opacity-40 text-amber-400 border border-slate-700 rounded py-0.5 text-[10px] font-bold">
+                    <button onclick="event.stopPropagation(); addCardToDeck('${card.id}')" ${count >= maxCount || (isExtra ? currentExtraDeck.length >= 15 : currentDeck.length >= 60) ? 'disabled' : ''} class="w-full mt-1 bg-slate-950/60 hover:bg-slate-950 disabled:opacity-40 text-amber-400 border border-slate-700 rounded py-0.5 text-[10px] font-bold">
                         + 追加 ${isExtra ? '(EX)' : ''}
                     </button>
                 `;
@@ -860,10 +872,12 @@
 
                 currentExtraDeck.forEach((card, index) => {
                     const item = document.createElement('div');
-                    item.className = 'flex items-center justify-between bg-purple-950/30 px-2 py-1 rounded border border-purple-900/50 text-[11px]';
+                    item.className = 'flex items-center justify-between bg-purple-950/30 px-2 py-1 rounded border border-purple-900/50 text-[11px] cursor-pointer hover:bg-purple-900/50';
+                    item.onclick = () => updatePreview(card);
+
                     item.innerHTML = `
                         <span class="font-bold text-purple-300 truncate">${card.name}</span>
-                        <button onclick="removeCardFromExtraDeck(${index})" class="text-rose-400 hover:text-rose-300 text-xs px-1 font-bold">✕</button>
+                        <button onclick="event.stopPropagation(); removeCardFromExtraDeck(${index})" class="text-rose-400 hover:text-rose-300 text-xs px-1 font-bold">✕</button>
                     `;
                     listEl.appendChild(item);
                 });
@@ -876,13 +890,15 @@
 
             currentDeck.forEach((card, index) => {
                 const item = document.createElement('div');
-                item.className = 'flex items-center justify-between bg-slate-900 px-2 py-0.5 rounded border border-slate-800 text-[11px]';
+                item.className = 'flex items-center justify-between bg-slate-900 px-2 py-0.5 rounded border border-slate-800 text-[11px] cursor-pointer hover:bg-slate-800';
+                item.onclick = () => updatePreview(card);
+                
                 item.innerHTML = `
                     <div class="flex items-center space-x-1.5 truncate">
                         <span class="text-slate-500 font-mono text-[9px]">${index + 1}.</span>
                         <span class="font-bold ${getCardTextColor(card)} truncate">${card.name}</span>
                     </div>
-                    <button onclick="removeCardFromMainDeck(${index})" class="text-rose-400 hover:text-rose-300 text-xs px-1 font-bold">✕</button>
+                    <button onclick="event.stopPropagation(); removeCardFromMainDeck(${index})" class="text-rose-400 hover:text-rose-300 text-xs px-1 font-bold">✕</button>
                 `;
                 listEl.appendChild(item);
             });
@@ -1578,7 +1594,12 @@
            ========================================================================== */
 
         function updatePreview(card) {
-            const container = document.getElementById('card-preview-container');
+            // メイン画面用とデッキ編集画面用の両方の要素を取得
+            const containers = [
+                document.getElementById('card-preview-container'),
+                document.getElementById('deck-preview-container')
+            ];
+            
             let statsHtml = '';
 
             if (card.type === 'monster') {
@@ -1593,13 +1614,20 @@
                 statsHtml = `<div class="text-xs font-bold text-teal-300 my-1">${card.type === 'spell' ? '魔法' : '罠'}カード [${card.sub}]</div>`;
             }
 
-            container.innerHTML = `
+            const html = `
                 <div class="w-full p-2 rounded border flex flex-col items-center ${getCardStyleClass(card)}">
                     <h4 class="font-bold text-xs text-center mb-0.5">${card.name}</h4>
                     ${statsHtml}
                     <p class="text-[10px] opacity-90 mt-1 text-left bg-slate-950/50 p-1.5 rounded border border-slate-700/50 w-full leading-snug text-slate-100">${card.desc}</p>
                 </div>
             `;
+
+            // 存在するコンテナ全てにHTMLを反映
+            containers.forEach(container => {
+                if (container) {
+                    container.innerHTML = html;
+                }
+            });
         }
 
         function getCardStyleClass(card) {
