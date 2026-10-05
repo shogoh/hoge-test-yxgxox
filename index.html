@@ -117,6 +117,8 @@
                         <div class="flex gap-0.5">
                             <button onclick="modifyLP('opp', 1000)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1 py-0.2 text-[9px] rounded font-bold">+1000</button>
                             <button onclick="modifyLP('opp', 100)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1 py-0.2 text-[9px] rounded font-bold">+100</button>
+                            <button onclick="modifyLP('opp', 50)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1 py-0.2 text-[9px] rounded font-bold">+50</button>
+                            <button onclick="modifyLP('opp', -50)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1 py-0.2 text-[9px] rounded font-bold">-50</button>
                             <button onclick="modifyLP('opp', -100)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1 py-0.2 text-[9px] rounded font-bold">-100</button>
                             <button onclick="modifyLP('opp', -1000)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1 py-0.2 text-[9px] rounded font-bold">-1000</button>
                         </div>
@@ -191,17 +193,16 @@
                     <div id="my-st-2" onclick="handleZoneClick('me', 'spell', 2)" class="zone cursor-pointer"></div>
                     <div id="my-st-3" onclick="handleZoneClick('me', 'spell', 3)" class="zone cursor-pointer"></div>
                     <div id="my-st-4" onclick="handleZoneClick('me', 'spell', 4)" class="zone cursor-pointer"></div>
-                    <div id="my-deck-zone" onclick="openDeckSearchModal()" class="zone text-center font-bold text-amber-400 bg-amber-950/40 border-amber-600 cursor-pointer hover:bg-amber-900/40 text-[10px]">デッキ<br><span id="my-deck-count">0</span></div>
-                </div>
+                    <div id="my-deck-zone" onclick="drawCard()" class="zone text-center font-bold text-amber-400 bg-amber-950/40 border-amber-600 cursor-pointer hover:bg-amber-900/40 text-[10px]">デッキ<br><span id="my-deck-count">0</span></div>                </div>
 
                 <div class="mt-1 flex gap-2 items-end">
                     <div class="flex-1 overflow-hidden">
                         <div class="flex items-center justify-between text-[10px] text-slate-400 mb-0.5">
                             <div class="flex items-center space-x-2">
                                 <span class="font-bold text-amber-400"><i class="fa-solid fa-hand mr-1"></i> 手札</span>
-                                <button onclick="drawCard()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-2 py-0.5 rounded text-[10px] transition flex items-center gap-1">
+                                <!-- <button onclick="drawCard()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-2 py-0.5 rounded text-[10px] transition flex items-center gap-1">
                                     🎴 ドロー
-                                </button>
+                                </button> -->
                             </div>
                             <span id="my-hand-count-text">0枚</span>
                         </div>
@@ -227,6 +228,8 @@
                         <div class="flex gap-0.5">
                             <button onclick="modifyLP('me', 1000)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1 py-0.2 text-[9px] rounded font-bold">+1000</button>
                             <button onclick="modifyLP('me', 100)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1 py-0.2 text-[9px] rounded font-bold">+100</button>
+                            <button onclick="modifyLP('me', 50)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1 py-0.2 text-[9px] rounded font-bold">+50</button>
+                            <button onclick="modifyLP('me', -50)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1 py-0.2 text-[9px] rounded font-bold">-50</button>
                             <button onclick="modifyLP('me', -100)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1 py-0.2 text-[9px] rounded font-bold">-100</button>
                             <button onclick="modifyLP('me', -1000)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1 py-0.2 text-[9px] rounded font-bold">-1000</button>
                         </div>
