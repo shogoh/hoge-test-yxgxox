@@ -113,9 +113,9 @@
                 <div class="flex items-center justify-between pb-0.5 sm:pb-1 border-b border-slate-800 text-[10px] sm:text-xs">
                     <div class="flex items-center space-x-1 sm:space-x-2">
                         <span id="opp-name" class="font-bold text-red-400"><i class="fa-solid fa-user-ninja mr-1"></i> <span class="hidden sm:inline">相手</span></span>
-                        <span id="opp-deck-count" class="bg-slate-800 px-1 py-0.5 rounded border border-slate-700 text-slate-300">山: --</span>
+                        <span id="opp-deck-count" class="bg-slate-800 px-1 py-0.5 rounded border border-slate-700 text-slate-300">山札: --</span>
                         <span id="opp-extra-count" class="bg-slate-800 px-1 py-0.5 rounded border border-slate-700 text-purple-300 cursor-pointer" onclick="openExtraViewer('opp')">EX: --</span>
-                        <span id="opp-hand-count" class="bg-slate-800 px-1 py-0.5 rounded border border-slate-700 text-slate-300">手: --</span>
+                        <span id="opp-hand-count" class="bg-slate-800 px-1 py-0.5 rounded border border-slate-700 text-slate-300">手札: --</span>
                     </div>
 
                     <!-- Opponent LP -->
@@ -124,8 +124,10 @@
                         <span id="opp-lp" class="text-sm sm:text-base font-black text-red-500 font-mono mr-1">8000</span>
                         <div class="flex gap-0.5 text-[8px] sm:text-[9px]">
                             <button onclick="modifyLP('opp', 1000)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1 py-0.5 rounded font-bold">+1000</button>
-                            <button onclick="modifyLP('opp', 100)" class="hidden sm:inline bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1 py-0.5 rounded font-bold">+100</button>
-                            <button onclick="modifyLP('opp', -100)" class="hidden sm:inline bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1 py-0.5 rounded font-bold">-100</button>
+                            <button onclick="modifyLP('opp', 100)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1 py-0.5 rounded font-bold">+100</button>
+                            <button onclick="modifyLP('opp', 50)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1 py-0.5 rounded font-bold">+50</button>
+                            <button onclick="modifyLP('opp', -50)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1 py-0.5 rounded font-bold">-50</button>
+                            <button onclick="modifyLP('opp', -100)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1 py-0.5 rounded font-bold">-100</button>
                             <button onclick="modifyLP('opp', -1000)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1 py-0.5 rounded font-bold">-1000</button>
                         </div>
                     </div>
@@ -220,7 +222,7 @@
                 <div class="flex items-center justify-between border-t border-slate-800 pt-0.5 sm:pt-1 text-[10px] sm:text-xs">
                     <div class="flex items-center space-x-1 sm:space-x-2">
                         <span id="my-name" class="font-bold text-blue-400"><i class="fa-solid fa-user-shield mr-1"></i> <span class="hidden sm:inline">自分</span></span>
-                        <button onclick="openDeckSearchModal()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px]">確認</button>
+                        <button onclick="openDeckSearchModal()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px]">デッキ確認</button>
                     </div>
 
                     <div class="flex items-center space-x-1">
@@ -305,7 +307,7 @@
                 <div class="col-span-4 bg-slate-950 border border-slate-800 rounded-lg p-1 sm:p-2.5 flex flex-col overflow-hidden">
                     <div class="flex items-center justify-between pb-1 sm:pb-1.5 border-b border-slate-800 flex-wrap gap-0.5 sm:gap-1">
                         <div class="text-[9px] sm:text-xs">
-                            <span class="text-slate-400 font-bold">M: </span><span id="deck-count" class="font-black text-amber-400">0</span>
+                            <span class="text-slate-400 font-bold">メイン: </span><span id="deck-count" class="font-black text-amber-400">0</span>
                             <span class="text-slate-400 font-bold ml-1 sm:ml-2">EX: </span><span id="extra-deck-count" class="font-black text-purple-400">0</span>
                         </div>
                         <div class="flex space-x-0.5 sm:space-x-1">
@@ -819,9 +821,9 @@
             const saveBtn = document.getElementById('save-deck-btn');
 
             let isValid = true;
-            if (mainCount < 40) { statusEl.innerText = 'M不足'; statusEl.className = 'px-1 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700'; isValid = false; }
-            else if (mainCount > 60) { statusEl.innerText = 'M超過'; statusEl.className = 'px-1 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700'; isValid = false; }
-            else { statusEl.innerText = 'M適正'; statusEl.className = 'px-1 py-0.5 rounded font-bold bg-emerald-900/60 text-emerald-300 border border-emerald-700'; }
+            if (mainCount < 40) { statusEl.innerText = 'メイン不足'; statusEl.className = 'px-1 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700'; isValid = false; }
+            else if (mainCount > 60) { statusEl.innerText = 'メイン超過'; statusEl.className = 'px-1 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700'; isValid = false; }
+            else { statusEl.innerText = 'メイン適正'; statusEl.className = 'px-1 py-0.5 rounded font-bold bg-emerald-900/60 text-emerald-300 border border-emerald-700'; }
 
             if (extraCount > 15) { extraStatusEl.innerText = 'EX超過'; extraStatusEl.className = 'px-1 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700'; isValid = false; }
             else { extraStatusEl.innerText = 'EX適正'; extraStatusEl.className = 'px-1 py-0.5 rounded font-bold bg-emerald-900/60 text-emerald-300 border border-emerald-700'; }
@@ -918,7 +920,7 @@
             document.getElementById('my-name').innerHTML = `<i class="fa-solid fa-user-shield mr-1"></i> <span class="hidden sm:inline">自分 </span>(${myPlayerId})`;
             document.getElementById('opp-name').innerHTML = `<i class="fa-solid fa-user-ninja mr-1"></i> <span class="hidden sm:inline">相手 </span>(${isP1 ? 'P2' : 'P1'})`;
             document.getElementById('my-lp').innerText = me.lp; document.getElementById('opp-lp').innerText = opp.lp;
-            document.getElementById('my-deck-count').innerText = me.deck.length; document.getElementById('opp-deck-count').innerText = `山:${opp.deck.length}`;
+            document.getElementById('my-deck-count').innerText = me.deck.length; document.getElementById('opp-deck-count').innerText = `山札:${opp.deck.length}`;
             document.getElementById('my-extra-count').innerText = me.extraDeck.length; document.getElementById('opp-extra-count').innerText = `EX:${opp.extraDeck.length}`;
             document.getElementById('my-grave-count').innerText = me.graveyard.length; document.getElementById('opp-grave-count').innerText = opp.graveyard.length;
             document.getElementById('my-banish-count').innerText = (me.banished || []).length; document.getElementById('opp-banish-count').innerText = (opp.banished || []).length;
@@ -926,7 +928,7 @@
             document.getElementById('phase-display').innerText = gameState.phase;
 
             const oppHandContainer = document.getElementById('opp-hand-container'); oppHandContainer.innerHTML = '';
-            document.getElementById('opp-hand-count').innerText = `手:${opp.hand.length}`;
+            document.getElementById('opp-hand-count').innerText = `手札:${opp.hand.length}`;
             for (let i = 0; i < opp.hand.length; i++) {
                 const cardBack = document.createElement('div');
                 cardBack.className = 'w-7 h-10 sm:w-9 sm:h-12 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[7px] sm:text-[9px] text-slate-600 font-black shadow card-back flex-none';
