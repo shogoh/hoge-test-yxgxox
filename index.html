@@ -866,9 +866,19 @@
         function confirmDeck() {
             if (currentDeck.length < 40 || currentDeck.length > 60 || currentExtraDeck.length > 15) return;
             const playerKey = myPlayerId === 'P1' ? 'p1' : 'p2';
-            const shuffled = [...currentDeck].sort(() => Math.random() - 0.5);
-            gameState[playerKey].deck = shuffled; gameState[playerKey].extraDeck = [...currentExtraDeck];
-            gameState[playerKey].hand = []; gameState[playerKey].monsters = Array(5).fill(null); gameState[playerKey].spells = Array(5).fill(null); gameState[playerKey].field = null; gameState[playerKey].graveyard = []; gameState[playerKey].banished = [];
+            
+            // ★ 初期化時にオーナー情報を付与
+            const shuffled = [...currentDeck].map(c => ({ ...c, owner: myPlayerId })).sort(() => Math.random() - 0.5);
+            gameState[playerKey].deck = shuffled; 
+            gameState[playerKey].extraDeck = [...currentExtraDeck].map(c => ({ ...c, owner: myPlayerId }));
+            
+            gameState[playerKey].hand = []; 
+            gameState[playerKey].monsters = Array(5).fill(null); 
+            gameState[playerKey].spells = Array(5).fill(null); 
+            gameState[playerKey].field = null; 
+            gameState[playerKey].graveyard = []; 
+            gameState[playerKey].banished = [];
+            
             for (let i = 0; i < 5; i++) if (gameState[playerKey].deck.length > 0) gameState[playerKey].hand.push(gameState[playerKey].deck.pop());
             addLog(`${myPlayerId} がデッキをセットし5枚ドローしました。`);
             closeDeckEditor(); broadcastGameState();
@@ -1064,7 +1074,6 @@
             const buttonsContainer = document.getElementById('action-modal-buttons');
             buttonsContainer.innerHTML = '';
 
-            // --- 💡スマホ対応：モーダル内にカードの能力とテキストを表示 ---
             let statsText = '';
             if (card.type === 'monster') statsText = `★${card.level} ${card.attr || '地'}/${card.race || '戦士'} | ATK:${card.atk} DEF:${card.def}`;
             else statsText = `${card.type === 'spell' ? '魔法' : '罠'} [${card.sub || '通常'}]`;
@@ -1076,9 +1085,16 @@
                 </div>
             `;
             buttonsContainer.innerHTML += cardInfoHtml;
-            // ------------------------------------------------------------------
 
             if (sourceType !== 'hand') buttonsContainer.innerHTML += `<button onclick="executeAction('hand')" class="${BTN_STYLE_HAND}">手札に戻す</button>`;
+
+            // ★ コントロール奪取用の追加ボタン
+            if (side === 'opp' && (sourceType === 'monster' || sourceType === 'spell' || sourceType === 'field')) {
+                if (sourceType === 'monster') {
+                    buttonsContainer.innerHTML += `<button onclick="executeAction('steal_monster')" class="${BTN_STYLE_FIELD}">コントロールを得る</button>`;
+                }
+                buttonsContainer.innerHTML += `<button onclick="executeAction('steal_spell')" class="${BTN_STYLE_FIELD}">装備化して奪う</button>`;
+            }
 
             if (sourceType === 'monster' && side === 'me' && slotData) {
                 const pos = slotData.position;
@@ -1113,9 +1129,10 @@
 
         function moveCard(sourceInfo, targetDestination) {
             const { sourceType, index, playerKey, side } = sourceInfo;
-            const player = gameState[playerKey];
+            const player = gameState[playerKey]; // 現在置かれているプレイヤー状態
             let card = null; let originalPosition = null;
 
+            // 元の場所からカードを取り出す
             if (sourceType === 'hand') card = player.hand.splice(index, 1)[0];
             else if (sourceType === 'monster') { const s = player.monsters[index]; if (s) { card = s.card; originalPosition = s.position; player.monsters[index] = null; } }
             else if (sourceType === 'spell') { const s = player.spells[index]; if (s) { card = s.card; originalPosition = s.position; player.spells[index] = null; } }
@@ -1126,39 +1143,86 @@
             else if (sourceType === 'deck') card = player.deck.splice(index, 1)[0];
 
             if (!card) return;
-            const pName = playerKey.toUpperCase();
+            const pName = myPlayerId.toUpperCase();
 
-            if (targetDestination === 'hand') { player.hand.push(card); addLog(`${pName}が[${card.name}]を手札へ`); }
-            else if (targetDestination === 'grave') { player.graveyard.push(card); addLog(`${pName}が[${card.name}]を墓地へ`); }
-            else if (targetDestination === 'banish') { if (!player.banished) player.banished = []; player.banished.push(card); addLog(`${pName}が[${card.name}]を除外`); }
-            else if (targetDestination === 'deck') {
-                if (isExtraCard(card)) { player.extraDeck.push(card); addLog(`${pName}がEXに[${card.name}]を戻した`); }
-                else { player.deck.push(card); player.deck.sort(()=>Math.random()-0.5); addLog(`${pName}がデッキに[${card.name}]を戻した`); }
+            // ★ オーナー判定ロジック
+            const myKey = myPlayerId === 'P1' ? 'p1' : 'p2';
+            // 古いデータとの互換のため、owner未設定時は現在のプレイヤーをオーナーとみなす
+            const ownerKey = card.owner ? (card.owner === 'P1' ? 'p1' : 'p2') : playerKey;
+            const ownerPlayer = gameState[ownerKey];
+            const ownerStr = (card.owner === myPlayerId || (!card.owner && playerKey === myKey)) ? '自分' : '相手';
+
+            // ★ コントロール奪取
+            if (targetDestination === 'steal_monster') {
+                const freeIdx = gameState[myKey].monsters.findIndex(m => m === null);
+                if (freeIdx === -1) { alert('Mゾーンが一杯です。'); restoreCardToSource(playerKey, sourceType, index, card, originalPosition); return; }
+                gameState[myKey].monsters[freeIdx] = { card: card, position: 'ATK', isAttacked: false };
+                addLog(`${pName}が相手の[${card.name}]のコントロールを得た`);
             }
-            else if (targetDestination === 'extra') { player.extraDeck.push(card); addLog(`${pName}がEXに[${card.name}]を戻した`); }
+            else if (targetDestination === 'steal_spell') {
+                const freeIdx = gameState[myKey].spells.findIndex(s => s === null);
+                if (freeIdx === -1) { alert('魔/罠ゾーンが一杯です。'); restoreCardToSource(playerKey, sourceType, index, card, originalPosition); return; }
+                gameState[myKey].spells[freeIdx] = { card: card, position: 'FACE_UP' };
+                addLog(`${pName}が相手の[${card.name}]を装備・永続化して奪った`);
+            }
+            // ★ 通常のゾーン移動 (非フィールド) はオーナーの領域へ
+            else if (targetDestination === 'hand') { 
+                ownerPlayer.hand.push(card); 
+                addLog(`${pName}が[${card.name}]を${ownerStr}の手札へ戻した`); 
+            }
+            else if (targetDestination === 'grave') { 
+                ownerPlayer.graveyard.push(card); 
+                addLog(`${pName}が[${card.name}]を${ownerStr}の墓地へ送った`); 
+            }
+            else if (targetDestination === 'banish') { 
+                if (!ownerPlayer.banished) ownerPlayer.banished = []; 
+                ownerPlayer.banished.push(card); 
+                addLog(`${pName}が[${card.name}]を${ownerStr}の除外へ送った`); 
+            }
+            else if (targetDestination === 'deck') {
+                if (isExtraCard(card)) { 
+                    ownerPlayer.extraDeck.push(card); 
+                    addLog(`${pName}がEXに[${card.name}]を戻した`); 
+                } else { 
+                    ownerPlayer.deck.push(card); 
+                    ownerPlayer.deck.sort(()=>Math.random()-0.5); 
+                    addLog(`${pName}が${ownerStr}のデッキに[${card.name}]を戻した`); 
+                }
+            }
+            else if (targetDestination === 'extra') { 
+                ownerPlayer.extraDeck.push(card); 
+                addLog(`${pName}が${ownerStr}のEXに[${card.name}]を戻した`); 
+            }
+            // ★ フィールドへ配置 (自分の場へ)
             else if (targetDestination.startsWith('field_')) {
+                const targetPlayer = gameState[myKey]; 
                 if (card.sub === 'field') {
-                    if (player.field !== null) player.graveyard.push(player.field.card);
-                    player.field = { card: card, position: targetDestination === 'field_set' ? 'FACE_DOWN' : 'FACE_UP' };
+                    if (targetPlayer.field !== null) {
+                        // 上書きされた古いフィールド魔法は、元の持ち主の墓地へ
+                        const oldCard = targetPlayer.field.card;
+                        const oldOwnerKey = oldCard.owner ? (oldCard.owner === 'P1' ? 'p1' : 'p2') : myKey;
+                        gameState[oldOwnerKey].graveyard.push(oldCard);
+                    }
+                    targetPlayer.field = { card: card, position: targetDestination === 'field_set' ? 'FACE_DOWN' : 'FACE_UP' };
                     if (targetDestination === 'field_set') {
                         addLogWithOpponentMask(`${pName}がフィールド魔法[${card.name}]をセット`, `${pName}がフィールド魔法を裏側でセット`);
                     } else {
                         addLog(`${pName}がフィールド魔法[${card.name}]を配置`);
                     }
                 } else if (card.type === 'monster') {
-                    const freeIdx = player.monsters.findIndex(m => m === null);
+                    const freeIdx = targetPlayer.monsters.findIndex(m => m === null);
                     if (freeIdx === -1) { alert('Mゾーンが一杯です。'); restoreCardToSource(playerKey, sourceType, index, card, originalPosition); return; }
                     let pos = 'ATK'; if(targetDestination==='field_def')pos='DEF_FACE_UP'; if(targetDestination==='field_set')pos='DEF_FACE_DOWN';
-                    player.monsters[freeIdx] = { card: card, position: pos, isAttacked: false };
+                    targetPlayer.monsters[freeIdx] = { card: card, position: pos, isAttacked: false };
                     if (pos === 'DEF_FACE_DOWN') {
                         addLogWithOpponentMask(`${pName}が[${card.name}]を裏側守備でセット`, `${pName}がモンスターを裏側守備でセット`);
                     } else {
                         addLog(`${pName}が[${card.name}]を出した`);
                     }
                 } else {
-                    const freeIdx = player.spells.findIndex(s => s === null);
+                    const freeIdx = targetPlayer.spells.findIndex(s => s === null);
                     if (freeIdx === -1) { alert('魔/罠ゾーンが一杯です。'); restoreCardToSource(playerKey, sourceType, index, card, originalPosition); return; }
-                    player.spells[freeIdx] = { card: card, position: targetDestination === 'field_set' ? 'FACE_DOWN' : 'FACE_UP' };
+                    targetPlayer.spells[freeIdx] = { card: card, position: targetDestination === 'field_set' ? 'FACE_DOWN' : 'FACE_UP' };
                     if (targetDestination === 'field_set') {
                         addLogWithOpponentMask(`${pName}が[${card.name}]をセット`, `${pName}がカードをセット`);
                     } else {
