@@ -173,6 +173,11 @@
                     <span id="phase-display" class="px-1.5 py-0.5 rounded bg-blue-900 text-blue-200 text-[9px] sm:text-[10px] font-bold border border-blue-700">DP</span>
                 </div>
 
+                <div class="flex gap-1 text-[10px]">
+                    <button onclick="rollDice()" class="bg-indigo-900/80 hover:bg-indigo-800 text-indigo-300 border border-indigo-700 px-1.5 py-0.5 rounded font-bold">🎲</button>
+                    <button onclick="tossCoin()" class="bg-yellow-900/80 hover:bg-yellow-800 text-yellow-300 border border-yellow-700 px-1.5 py-0.5 rounded font-bold">🪙</button>
+                </div>
+
                 <div class="flex gap-0.5 sm:gap-1 text-[9px] sm:text-[10px] flex-none">
                     <button onclick="setPhase('DP')" class="bg-slate-800 hover:bg-slate-700 px-1 sm:px-2 py-0.5 rounded text-slate-300 font-semibold">DP</button>
                     <button onclick="setPhase('SP')" class="bg-slate-800 hover:bg-slate-700 px-1 sm:px-2 py-0.5 rounded text-slate-300 font-semibold">SP</button>
@@ -600,7 +605,14 @@
         };
 
         function initPeer() {
-            peer = new Peer();
+            peer = new Peer({
+                config: {
+                    'iceServers': [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' }
+                    ]
+                }
+            });
             peer.on('open', (id) => {
                 document.getElementById('my-peer-id').innerText = id;
                 addLog(`WebRTC ID生成完了: ${id}`);
@@ -629,6 +641,7 @@
         function setupConnectionHandlers() {
             conn.on('open', () => {
                 addLog("通信確立！対戦可能");
+                alert("通信が確立しました！対戦可能です。");
                 if (myPlayerId === 'P1') broadcastGameState();
             });
             conn.on('data', (data) => {
@@ -1127,18 +1140,30 @@
                 if (card.sub === 'field') {
                     if (player.field !== null) player.graveyard.push(player.field.card);
                     player.field = { card: card, position: targetDestination === 'field_set' ? 'FACE_DOWN' : 'FACE_UP' };
-                    addLog(`${pName}がフィールド魔法を配置`);
+                    if (targetDestination === 'field_set') {
+                        addLogWithOpponentMask(`${pName}がフィールド魔法[${card.name}]をセット`, `${pName}がフィールド魔法を裏側でセット`);
+                    } else {
+                        addLog(`${pName}がフィールド魔法[${card.name}]を配置`);
+                    }
                 } else if (card.type === 'monster') {
                     const freeIdx = player.monsters.findIndex(m => m === null);
                     if (freeIdx === -1) { alert('Mゾーンが一杯です。'); restoreCardToSource(playerKey, sourceType, index, card, originalPosition); return; }
                     let pos = 'ATK'; if(targetDestination==='field_def')pos='DEF_FACE_UP'; if(targetDestination==='field_set')pos='DEF_FACE_DOWN';
                     player.monsters[freeIdx] = { card: card, position: pos, isAttacked: false };
-                    addLog(`${pName}が[${card.name}]を出した`);
+                    if (pos === 'DEF_FACE_DOWN') {
+                        addLogWithOpponentMask(`${pName}が[${card.name}]を裏側守備でセット`, `${pName}がモンスターを裏側守備でセット`);
+                    } else {
+                        addLog(`${pName}が[${card.name}]を出した`);
+                    }
                 } else {
                     const freeIdx = player.spells.findIndex(s => s === null);
                     if (freeIdx === -1) { alert('魔/罠ゾーンが一杯です。'); restoreCardToSource(playerKey, sourceType, index, card, originalPosition); return; }
                     player.spells[freeIdx] = { card: card, position: targetDestination === 'field_set' ? 'FACE_DOWN' : 'FACE_UP' };
-                    addLog(`${pName}が魔/罠を配置`);
+                    if (targetDestination === 'field_set') {
+                        addLogWithOpponentMask(`${pName}が[${card.name}]をセット`, `${pName}がカードをセット`);
+                    } else {
+                        addLog(`${pName}が魔/罠[${card.name}]を配置`);
+                    }
                 }
             }
             closeActionModal(); refreshActiveViewers(side || 'me'); broadcastGameState();
@@ -1235,17 +1260,37 @@
 
         function getCardStyleClass(c) { if(c.type==='spell')return'card-spell'; if(c.type==='trap')return'card-trap'; if(c.sub==='fusion')return'card-fusion'; if(c.sub==='ritual')return'card-ritual'; if(c.sub==='effect')return'card-effect'; return'card-normal'; }
         function getCardTextColor(c) { if(c.type==='spell')return'text-teal-400'; if(c.type==='trap')return'text-pink-400'; if(c.sub==='fusion')return'text-purple-400'; if(c.sub==='ritual')return'text-blue-400'; if(c.sub==='effect')return'text-orange-400'; return'text-amber-400'; }
+        
         function addLog(msg, sendRemote = true) {
             gameState.logs.push(msg); const logBox = document.getElementById('log-box');
             if(logBox){ const item = document.createElement('div'); item.className = 'py-0.5 border-b border-slate-900/50'; item.innerText = msg; logBox.appendChild(item); logBox.scrollTop = logBox.scrollHeight; }
             if (sendRemote && conn && conn.open) conn.send({ type: 'ACTION_LOG', msg: msg });
         }
+        
         function addLogWithOpponentMask(myMsg, oppMsg) {
             gameState.logs.push(myMsg); const logBox = document.getElementById('log-box');
             if(logBox){ const item = document.createElement('div'); item.className = 'py-0.5 border-b border-slate-900/50'; item.innerText = myMsg; logBox.appendChild(item); logBox.scrollTop = logBox.scrollHeight; }
             if (conn && conn.open) conn.send({ type: 'ACTION_LOG', msg: oppMsg });
         }
+        
         function clearLog() { const logBox = document.getElementById('log-box'); if(logBox) logBox.innerHTML = ''; }
+
+        /* ==========================================================================
+           9. DICE & COIN
+           ========================================================================== */
+        function rollDice() {
+            const result = Math.floor(Math.random() * 6) + 1;
+            const msg = `🎲 ${myPlayerId} がサイコロを振った: 【 ${result} 】`;
+            addLog(msg, true);
+            alert(`サイコロの結果: ${result}`);
+        }
+
+        function tossCoin() {
+            const result = Math.random() < 0.5 ? 'オモテ' : 'ウラ';
+            const msg = `🪙 ${myPlayerId} がコイントス: 【 ${result} 】`;
+            addLog(msg, true);
+            alert(`コイントスの結果: ${result}`);
+        }
     </script>
 </body>
 </html>
