@@ -20,24 +20,25 @@
 
         /* Card Styling Themes */
         .card-frame {
-            border-radius: 6px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.5);
             transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
         .card-frame:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.7);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.7);
         }
-        /* 通常モンスターの背景色・文字色を調整 */
-        .card-normal { background: linear-gradient(135deg, #e0a93b, #ab791d); color: #1e1b4b; border: 2px solid #fef08a; font-weight: bold; }
-        .card-effect { background: linear-gradient(135deg, #ea580c, #c2410c); color: #fff; border: 2px solid #fed7aa; }
-        .card-spell { background: linear-gradient(135deg, #0d9488, #0f766e); color: #fff; border: 2px solid #99f6e4; }
-        .card-trap { background: linear-gradient(135deg, #be185d, #9d174d); color: #fff; border: 2px solid #fbcfe8; }
-        .card-fusion { background: linear-gradient(135deg, #6b21a8, #581c87); color: #fff; border: 2px solid #e9d5ff; }
-        .card-back { background: linear-gradient(135deg, #1e293b, #0f172a); border: 2px solid #334155; }
+        
+        .card-normal { background: linear-gradient(135deg, #e0a93b, #ab791d); color: #1e1b4b; border: 1.5px solid #fef08a; font-weight: bold; }
+        .card-effect { background: linear-gradient(135deg, #ea580c, #c2410c); color: #fff; border: 1.5px solid #fed7aa; }
+        .card-ritual { background: linear-gradient(135deg, #3a68c0, #1d4ed8); color: #fff; border: 1.5px solid #93c5fd; }
+        .card-spell { background: linear-gradient(135deg, #0d9488, #0f766e); color: #fff; border: 1.5px solid #99f6e4; }
+        .card-trap { background: linear-gradient(135deg, #be185d, #9d174d); color: #fff; border: 1.5px solid #fbcfe8; }
+        .card-fusion { background: linear-gradient(135deg, #6b21a8, #581c87); color: #fff; border: 1.5px solid #e9d5ff; }
+        .card-back { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1.5px solid #334155; }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
@@ -45,13 +46,14 @@
         /* Board Zones */
         .zone {
             background-color: rgba(30, 41, 59, 0.7);
-            border: 2px dashed #475569;
-            border-radius: 8px;
+            border: 1.5px dashed #475569;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            min-height: 90px;
+            height: 100%;
+            min-height: 62px;
         }
         .zone.active {
             border-color: #3b82f6;
@@ -59,173 +61,185 @@
         }
 
         .atk-position { transform: rotate(0deg); }
-        .def-position { transform: rotate(90deg) scale(0.85); }
+        .def-position { transform: rotate(90deg) scale(0.8); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col bg-slate-950 text-slate-100 overflow-x-hidden">
+<body class="h-screen w-screen flex flex-col bg-slate-950 text-slate-100 overflow-hidden">
 
-    <!-- Navigation / Peer Connection Bar -->
-    <header class="bg-slate-900 border-b border-slate-800 p-3 shadow-md sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-            <div class="flex items-center space-x-3">
-                <i class="fa-solid font-bold text-amber-500 text-2xl">🎴</i>
-                <h1 class="font-bold text-lg text-amber-400">遊☆戯☆王のお遊戯会場</h1>
-                <span id="role-badge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-400 border border-slate-700">未接続</span>
+    <!-- Navigation Bar -->
+    <header class="bg-slate-900 border-b border-slate-800 px-3 py-1.5 shadow-md flex-none z-30">
+        <div class="max-w-full mx-auto flex items-center justify-between gap-2">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid font-bold text-amber-500 text-xl">🎴</i>
+                <h1 class="font-bold text-base text-amber-400">遊☆戯☆王のお遊戯会場</h1>
+                <span id="role-badge" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-800 text-slate-400 border border-slate-700">未接続</span>
             </div>
 
             <!-- Network Controllers -->
-            <div class="flex items-center space-x-2 text-sm">
-                <div class="flex items-center bg-slate-800 rounded px-2 py-1 border border-slate-700">
-                    <span class="text-xs text-slate-400 mr-2">My ID:</span>
-                    <span id="my-peer-id" class="font-mono text-amber-300 select-all font-bold">発行中...</span>
-                    <button onclick="copyPeerId()" class="ml-2 text-slate-400 hover:text-white" title="IDをコピー"><i class="fa-regular fa-copy"></i></button>
+            <div class="flex items-center space-x-2 text-xs">
+                <div class="flex items-center bg-slate-800 rounded px-2 py-0.5 border border-slate-700">
+                    <span class="text-[10px] text-slate-400 mr-1.5">My ID:</span>
+                    <span id="my-peer-id" class="font-mono text-amber-300 select-all font-bold text-xs">発行中...</span>
+                    <button onclick="copyPeerId()" class="ml-1.5 text-slate-400 hover:text-white" title="IDをコピー"><i class="fa-regular fa-copy"></i></button>
                 </div>
                 
-                <input id="target-peer-id" type="text" placeholder="相手のPeer IDを入力" class="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs w-40 text-slate-200 focus:outline-none focus:border-amber-500">
-                <button onclick="connectToPeer()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-3 py-1 rounded text-xs transition">接続</button>
+                <input id="target-peer-id" type="text" placeholder="相手のPeer ID" class="bg-slate-800 border border-slate-700 rounded px-2 py-0.5 text-xs w-32 text-slate-200 focus:outline-none focus:border-amber-500">
+                <button onclick="connectToPeer()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-2.5 py-0.5 rounded text-xs transition">接続</button>
 
-                <button onclick="openDeckEditor()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3 py-1 rounded text-xs transition flex items-center gap-1">
+                <button onclick="openDeckEditor()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-2.5 py-0.5 rounded text-xs transition flex items-center gap-1">
                     <i class="fa-solid fa-boxes-packing"></i> デッキ編集
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Main Battle Area -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-2 md:p-4 grid grid-cols-1 lg:grid-cols-4 gap-4">
+    <!-- Main Battle Area (Single Screen Layout) -->
+    <main class="flex-1 max-w-full w-full p-2 grid grid-cols-12 gap-2 overflow-hidden h-[calc(100vh-42px)]">
 
-        <!-- Left / Center: Field Board (3 cols in lg) -->
-        <div class="lg:col-span-3 flex flex-col space-y-3">
+        <!-- Field Board (9 cols) -->
+        <div class="col-span-9 flex flex-col justify-between h-full space-y-1 overflow-hidden">
 
             <!-- OPPONENT ZONE (Top) -->
-            <div id="opponent-area" class="bg-slate-900/80 rounded-xl p-3 border border-slate-800 shadow-lg relative">
+            <div id="opponent-area" class="bg-slate-900/80 rounded-lg p-2 border border-slate-800 shadow flex flex-col justify-between flex-1 overflow-hidden">
                 <!-- Opponent Header & LP -->
-                <div class="flex flex-wrap items-center justify-between mb-2 pb-2 border-b border-slate-800">
-                    <div class="flex items-center space-x-3">
-                        <span id="opp-name" class="font-bold text-red-400 text-sm md:text-base"><i class="fa-solid fa-user-ninja mr-1"></i> 相手プレイヤー</span>
-                        <span id="opp-deck-count" class="text-xs bg-slate-800 px-2 py-1 rounded border border-slate-700 text-slate-300">山札: --枚</span>
-                        <span id="opp-hand-count" class="text-xs bg-slate-800 px-2 py-1 rounded border border-slate-700 text-slate-300">手札: --枚</span>
+                <div class="flex items-center justify-between pb-1 border-b border-slate-800 text-xs">
+                    <div class="flex items-center space-x-2">
+                        <span id="opp-name" class="font-bold text-red-400 text-xs"><i class="fa-solid fa-user-ninja mr-1"></i> 相手プレイヤー</span>
+                        <span id="opp-deck-count" class="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700 text-slate-300">山札: --枚</span>
+                        <span id="opp-extra-count" class="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700 text-purple-300 cursor-pointer" onclick="openExtraViewer('opp')">EX: --枚</span>
+                        <span id="opp-hand-count" class="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700 text-slate-300">手札: --枚</span>
                     </div>
 
-                    <!-- Opponent LP & Adjustment Buttons -->
-                    <div class="flex items-center space-x-2">
-                        <span class="text-xs text-slate-400 font-semibold">LP:</span>
-                        <span id="opp-lp" class="text-xl md:text-2xl font-black text-red-500 font-mono">8000</span>
-                        <div class="flex flex-wrap gap-1">
-                            <button onclick="modifyLP('opp', 1000)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1.5 py-0.5 text-[10px] rounded font-bold">+1000</button>
-                            <button onclick="modifyLP('opp', 100)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1.5 py-0.5 text-[10px] rounded font-bold">+100</button>
-                            <button onclick="modifyLP('opp', 50)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1.5 py-0.5 text-[10px] rounded font-bold">+50</button>
-                            <button onclick="modifyLP('opp', -50)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1.5 py-0.5 text-[10px] rounded font-bold">-50</button>
-                            <button onclick="modifyLP('opp', -100)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1.5 py-0.5 text-[10px] rounded font-bold">-100</button>
-                            <button onclick="modifyLP('opp', -1000)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1.5 py-0.5 text-[10px] rounded font-bold">-1000</button>
+                    <!-- Opponent LP -->
+                    <div class="flex items-center space-x-1">
+                        <span class="text-[10px] text-slate-400 font-semibold">LP:</span>
+                        <span id="opp-lp" class="text-base font-black text-red-500 font-mono mr-1">8000</span>
+                        <div class="flex gap-0.5">
+                            <button onclick="modifyLP('opp', 1000)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1 py-0.2 text-[9px] rounded font-bold">+1000</button>
+                            <button onclick="modifyLP('opp', 100)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1 py-0.2 text-[9px] rounded font-bold">+100</button>
+                            <button onclick="modifyLP('opp', -100)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1 py-0.2 text-[9px] rounded font-bold">-100</button>
+                            <button onclick="modifyLP('opp', -1000)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1 py-0.2 text-[9px] rounded font-bold">-1000</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Opponent Hand Area -->
-                <div id="opp-hand-container" class="flex justify-center -space-x-4 h-20 mb-2 overflow-x-auto py-1"></div>
-
-                <!-- Opponent Field Grid -->
-                <div class="grid grid-cols-5 gap-2 my-2 text-xs">
-                    <!-- Spell / Trap Zone (Opponent) -->
-                    <div id="opp-st-0" onclick="handleZoneClick('opp', 'spell', 0)" class="zone cursor-pointer"></div>
-                    <div id="opp-st-1" onclick="handleZoneClick('opp', 'spell', 1)" class="zone cursor-pointer"></div>
-                    <div id="opp-st-2" onclick="handleZoneClick('opp', 'spell', 2)" class="zone cursor-pointer"></div>
-                    <div id="opp-st-3" onclick="handleZoneClick('opp', 'spell', 3)" class="zone cursor-pointer"></div>
-                    <div id="opp-st-4" onclick="handleZoneClick('opp', 'spell', 4)" class="zone cursor-pointer"></div>
-
-                    <!-- Monster Zone (Opponent) -->
-                    <div id="opp-m-0" onclick="handleZoneClick('opp', 'monster', 0)" class="zone cursor-pointer"></div>
-                    <div id="opp-m-1" onclick="handleZoneClick('opp', 'monster', 1)" class="zone cursor-pointer"></div>
-                    <div id="opp-m-2" onclick="handleZoneClick('opp', 'monster', 2)" class="zone cursor-pointer"></div>
-                    <div id="opp-m-3" onclick="handleZoneClick('opp', 'monster', 3)" class="zone cursor-pointer"></div>
-                    <div id="opp-m-4" onclick="handleZoneClick('opp', 'monster', 4)" class="zone cursor-pointer"></div>
+                <!-- Opponent Hand & Banish Area -->
+                <div class="flex gap-2 items-center my-0.5">
+                    <div class="flex-1 overflow-hidden">
+                        <div id="opp-hand-container" class="flex justify-start -space-x-3 h-12 overflow-x-auto items-center"></div>
+                    </div>
+                    <div class="w-12 flex-none flex flex-col items-center">
+                        <div id="opp-banish-zone" onclick="openBanishViewer('opp')" class="w-10 h-12 zone text-center font-bold text-purple-300 bg-purple-950/30 border-purple-700/60 cursor-pointer text-[9px] flex flex-col justify-center items-center rounded">
+                            除外<br><span id="opp-banish-count" class="text-[9px]">0</span>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Opponent Extra / Graveyard / Deck -->
-                <div class="flex justify-between items-center text-xs mt-2 px-1">
-                    <div id="opp-field-zone" onclick="handleZoneClick('opp', 'field', 0)" class="zone w-16 h-20 text-center font-bold text-slate-500">フィールド</div>
-                    <div class="flex space-x-2">
-                        <div id="opp-grave-zone" onclick="openGraveViewer('opp')" class="zone w-16 h-20 text-center font-bold text-slate-500 cursor-pointer">墓地<br><span id="opp-grave-count">0</span></div>
-                        <div id="opp-deck-zone" class="zone w-16 h-20 text-center font-bold text-slate-500 bg-slate-800">デッキ</div>
-                    </div>
+                <!-- Opponent Field Grid (7 Columns) -->
+                <div class="grid grid-cols-7 gap-1 h-36 my-0.5">
+                    <!-- 1列目 (Opponent: Deck / Spell 4-0 / EX) -->
+                    <div id="opp-deck-zone" class="zone text-center font-bold text-slate-500 bg-slate-800 text-[10px]">デッキ</div>
+                    <div id="opp-st-4" onclick="handleZoneClick('opp', 'spell', 4)" class="zone cursor-pointer"></div>
+                    <div id="opp-st-3" onclick="handleZoneClick('opp', 'spell', 3)" class="zone cursor-pointer"></div>
+                    <div id="opp-st-2" onclick="handleZoneClick('opp', 'spell', 2)" class="zone cursor-pointer"></div>
+                    <div id="opp-st-1" onclick="handleZoneClick('opp', 'spell', 1)" class="zone cursor-pointer"></div>
+                    <div id="opp-st-0" onclick="handleZoneClick('opp', 'spell', 0)" class="zone cursor-pointer"></div>
+                    <div id="opp-extra-zone" onclick="openExtraViewer('opp')" class="zone text-center font-bold text-purple-400/60 bg-purple-950/20 text-[10px] cursor-pointer">EX</div>
+
+                    <!-- 2列目 (Opponent: Grave / Monster 4-0 / Field) -->
+                    <div id="opp-grave-zone" onclick="openGraveViewer('opp')" class="zone text-center font-bold text-slate-400 cursor-pointer text-[10px]">墓地<br><span id="opp-grave-count">0</span></div>
+                    <div id="opp-m-4" onclick="handleZoneClick('opp', 'monster', 4)" class="zone cursor-pointer"></div>
+                    <div id="opp-m-3" onclick="handleZoneClick('opp', 'monster', 3)" class="zone cursor-pointer"></div>
+                    <div id="opp-m-2" onclick="handleZoneClick('opp', 'monster', 2)" class="zone cursor-pointer"></div>
+                    <div id="opp-m-1" onclick="handleZoneClick('opp', 'monster', 1)" class="zone cursor-pointer"></div>
+                    <div id="opp-m-0" onclick="handleZoneClick('opp', 'monster', 0)" class="zone cursor-pointer"></div>
+                    <div id="opp-field-zone" onclick="handleZoneClick('opp', 'field', 0)" class="zone text-center font-bold text-slate-500 text-[10px]">フィールド</div>
                 </div>
             </div>
 
-            <!-- CENTER FIELD CONTROL / PHASE BANNER -->
-            <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 flex flex-wrap items-center justify-between gap-2 shadow">
+            <!-- CENTER PHASE CONTROL -->
+            <div class="bg-slate-900 border border-slate-800 rounded px-2 py-1 flex items-center justify-between gap-2 shadow flex-none">
                 <div class="flex items-center space-x-2">
-                    <span class="text-xs text-slate-400 font-bold">ターン:</span>
-                    <span id="turn-display" class="text-sm font-bold text-amber-400">1 (P1 ターン)</span>
-                    <span id="phase-display" class="px-2 py-0.5 rounded bg-blue-900 text-blue-200 text-xs font-bold border border-blue-700">ドローフェイズ</span>
+                    <span class="text-[10px] text-slate-400 font-bold">ターン:</span>
+                    <span id="turn-display" class="text-xs font-bold text-amber-400">1 (P1)</span>
+                    <span id="phase-display" class="px-2 py-0.5 rounded bg-blue-900 text-blue-200 text-[10px] font-bold border border-blue-700">ドローフェイズ</span>
                 </div>
 
                 <!-- Phase Progression Buttons -->
-                <div class="flex flex-wrap gap-1 text-xs">
-                    <button onclick="setPhase('DP')" class="bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded text-slate-300 font-semibold">DP</button>
-                    <button onclick="setPhase('SP')" class="bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded text-slate-300 font-semibold">SP</button>
-                    <button onclick="setPhase('M1')" class="bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded text-slate-300 font-semibold">M1</button>
-                    <button onclick="setPhase('BP')" class="bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded text-slate-300 font-semibold">BP</button>
-                    <button onclick="setPhase('M2')" class="bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded text-slate-300 font-semibold">M2</button>
-                    <button onclick="setPhase('EP')" class="bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded text-slate-300 font-semibold">EP</button>
-                    <button onclick="nextTurn()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-black px-3 py-1 rounded transition">ターン終了 ➔</button>
+                <div class="flex gap-1 text-[10px]">
+                    <button onclick="setPhase('DP')" class="bg-slate-800 hover:bg-slate-700 px-2 py-0.5 rounded text-slate-300 font-semibold">DP</button>
+                    <button onclick="setPhase('SP')" class="bg-slate-800 hover:bg-slate-700 px-2 py-0.5 rounded text-slate-300 font-semibold">SP</button>
+                    <button onclick="setPhase('M1')" class="bg-slate-800 hover:bg-slate-700 px-2 py-0.5 rounded text-slate-300 font-semibold">M1</button>
+                    <button onclick="setPhase('BP')" class="bg-slate-800 hover:bg-slate-700 px-2 py-0.5 rounded text-slate-300 font-semibold">BP</button>
+                    <button onclick="setPhase('M2')" class="bg-slate-800 hover:bg-slate-700 px-2 py-0.5 rounded text-slate-300 font-semibold">M2</button>
+                    <button onclick="setPhase('EP')" class="bg-slate-800 hover:bg-slate-700 px-2 py-0.5 rounded text-slate-300 font-semibold">EP</button>
+                    <button onclick="nextTurn()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-black px-2.5 py-0.5 rounded transition">ターン終了 ➔</button>
                 </div>
             </div>
 
             <!-- MY ZONE (Bottom) -->
-            <div id="my-area" class="bg-slate-900/80 rounded-xl p-3 border border-slate-800 shadow-lg relative">
-                <!-- My Extra / Graveyard / Deck -->
-                <div class="flex justify-between items-center text-xs mb-2 px-1">
-                    <div id="my-field-zone" onclick="handleZoneClick('me', 'field', 0)" class="zone w-16 h-20 text-center font-bold text-slate-500 cursor-pointer">フィールド</div>
-                    <div class="flex space-x-2">
-                        <div id="my-deck-zone" onclick="drawCardAction()" class="zone w-16 h-20 text-center font-bold text-amber-400 bg-amber-950/40 border-amber-600 cursor-pointer hover:bg-amber-900/40">デッキ<br><span id="my-deck-count">0</span><br><span class="text-[9px] text-amber-300">ドロー</span></div>
-                        <div id="my-grave-zone" onclick="openGraveViewer('me')" class="zone w-16 h-20 text-center font-bold text-slate-400 cursor-pointer hover:bg-slate-800">墓地<br><span id="my-grave-count">0</span></div>
-                    </div>
-                </div>
-
-                <!-- My Field Grid -->
-                <div class="grid grid-cols-5 gap-2 my-2 text-xs">
-                    <!-- Monster Zone (My) -->
+            <div id="my-area" class="bg-slate-900/80 rounded-lg p-2 border border-slate-800 shadow flex flex-col justify-between flex-1 overflow-hidden">
+                
+                <!-- My Field Grid (7 Columns) -->
+                <div class="grid grid-cols-7 gap-1 h-36 my-0.5">
+                    <!-- 1列目 -->
+                    <div id="my-field-zone" onclick="handleZoneClick('me', 'field', 0)" class="zone text-center font-bold text-slate-400 cursor-pointer text-[10px]">フィールド</div>
                     <div id="my-m-0" onclick="handleZoneClick('me', 'monster', 0)" class="zone cursor-pointer"></div>
                     <div id="my-m-1" onclick="handleZoneClick('me', 'monster', 1)" class="zone cursor-pointer"></div>
                     <div id="my-m-2" onclick="handleZoneClick('me', 'monster', 2)" class="zone cursor-pointer"></div>
                     <div id="my-m-3" onclick="handleZoneClick('me', 'monster', 3)" class="zone cursor-pointer"></div>
                     <div id="my-m-4" onclick="handleZoneClick('me', 'monster', 4)" class="zone cursor-pointer"></div>
+                    <div id="my-grave-zone" onclick="openGraveViewer('me')" class="zone text-center font-bold text-slate-400 cursor-pointer hover:bg-slate-800 text-[10px]">墓地<br><span id="my-grave-count">0</span></div>
 
-                    <!-- Spell / Trap Zone (My) -->
+                    <!-- 2列目 -->
+                    <div id="my-extra-zone" onclick="openExtraViewer('me')" class="zone text-center font-bold text-purple-400 bg-purple-950/30 border-purple-700 cursor-pointer hover:bg-purple-900/40 text-[10px]">EXデッキ<br><span id="my-extra-count">0</span></div>
                     <div id="my-st-0" onclick="handleZoneClick('me', 'spell', 0)" class="zone cursor-pointer"></div>
                     <div id="my-st-1" onclick="handleZoneClick('me', 'spell', 1)" class="zone cursor-pointer"></div>
                     <div id="my-st-2" onclick="handleZoneClick('me', 'spell', 2)" class="zone cursor-pointer"></div>
                     <div id="my-st-3" onclick="handleZoneClick('me', 'spell', 3)" class="zone cursor-pointer"></div>
                     <div id="my-st-4" onclick="handleZoneClick('me', 'spell', 4)" class="zone cursor-pointer"></div>
+                    <div id="my-deck-zone" onclick="openDeckSearchModal()" class="zone text-center font-bold text-amber-400 bg-amber-950/40 border-amber-600 cursor-pointer hover:bg-amber-900/40 text-[10px]">デッキ<br><span id="my-deck-count">0</span></div>
                 </div>
 
-                <!-- My Hand Area -->
-                <div class="mt-3">
-                    <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
-                        <span class="font-bold text-amber-400"><i class="fa-solid fa-hand mr-1"></i> 自分の手札 (クリックで操作)</span>
-                        <span id="my-hand-count-text">0枚</span>
+                <!-- My Hand & Banish Area -->
+                <div class="mt-1 flex gap-2 items-end">
+                    <!-- 左寄せ手札エリア -->
+                    <div class="flex-1 overflow-hidden">
+                        <div class="flex items-center justify-between text-[10px] text-slate-400 mb-0.5">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-bold text-amber-400"><i class="fa-solid fa-hand mr-1"></i> 手札</span>
+                                <button onclick="drawCard()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-2 py-0.5 rounded text-[10px] transition flex items-center gap-1">
+                                    🎴 ドロー
+                                </button>
+                            </div>
+                            <span id="my-hand-count-text">0枚</span>
+                        </div>
+                        <div id="my-hand-container" class="flex justify-start space-x-1 h-16 overflow-x-auto p-1 bg-slate-950/60 rounded border border-slate-800 items-center"></div>
                     </div>
-                    <div id="my-hand-container" class="flex justify-center -space-x-2 md:space-x-1 h-28 overflow-x-auto p-2 bg-slate-950/60 rounded-lg border border-slate-800"></div>
+
+                    <!-- 右側除外ゾーン -->
+                    <div class="w-12 flex-none flex flex-col items-center">
+                        <div id="my-banish-zone" onclick="openBanishViewer('me')" class="w-12 h-16 zone text-center font-bold text-purple-300 bg-purple-950/40 border-purple-600 cursor-pointer hover:bg-purple-900/40 text-[9px] flex flex-col justify-center items-center rounded">
+                            除外<br><span id="my-banish-count" class="text-[10px]">0</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- My Footer Info & LP -->
-                <div class="flex flex-wrap items-center justify-between mt-3 pt-2 border-t border-slate-800">
+                <div class="flex items-center justify-between border-t border-slate-800 pt-1 text-xs">
                     <div class="flex items-center space-x-2">
-                        <span id="my-name" class="font-bold text-blue-400 text-sm md:text-base"><i class="fa-solid fa-user-shield mr-1"></i> 自分 (P1)</span>
-                        <button onclick="drawCardAction()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-2 py-1 rounded text-xs">1枚ドロー</button>
+                        <span id="my-name" class="font-bold text-blue-400 text-xs"><i class="fa-solid fa-user-shield mr-1"></i> 自分 (P1)</span>
+                        <button onclick="openDeckSearchModal()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-2 py-0.5 rounded text-[10px]">デッキ確認</button>
                     </div>
 
-                    <div class="flex items-center space-x-2">
-                        <span class="text-xs text-slate-400 font-semibold">LP:</span>
-                        <span id="my-lp" class="text-xl md:text-2xl font-black text-emerald-400 font-mono">8000</span>
-                        <div class="flex flex-wrap gap-1">
-                            <button onclick="modifyLP('me', 1000)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1.5 py-0.5 text-[10px] rounded font-bold">+1000</button>
-                            <button onclick="modifyLP('me', 100)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1.5 py-0.5 text-[10px] rounded font-bold">+100</button>
-                            <button onclick="modifyLP('me', 50)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1.5 py-0.5 text-[10px] rounded font-bold">+50</button>
-                            <button onclick="modifyLP('me', -50)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1.5 py-0.5 text-[10px] rounded font-bold">-50</button>
-                            <button onclick="modifyLP('me', -100)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1.5 py-0.5 text-[10px] rounded font-bold">-100</button>
-                            <button onclick="modifyLP('me', -1000)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1.5 py-0.5 text-[10px] rounded font-bold">-1000</button>
+                    <div class="flex items-center space-x-1">
+                        <span class="text-[10px] text-slate-400 font-semibold">LP:</span>
+                        <span id="my-lp" class="text-base font-black text-emerald-400 font-mono mr-1">8000</span>
+                        <div class="flex gap-0.5">
+                            <button onclick="modifyLP('me', 1000)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1 py-0.2 text-[9px] rounded font-bold">+1000</button>
+                            <button onclick="modifyLP('me', 100)" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 px-1 py-0.2 text-[9px] rounded font-bold">+100</button>
+                            <button onclick="modifyLP('me', -100)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1 py-0.2 text-[9px] rounded font-bold">-100</button>
+                            <button onclick="modifyLP('me', -1000)" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-700 px-1 py-0.2 text-[9px] rounded font-bold">-1000</button>
                         </div>
                     </div>
                 </div>
@@ -233,28 +247,28 @@
 
         </div>
 
-        <!-- Right Side: Card Preview & Duel Logs -->
-        <div class="lg:col-span-1 flex flex-col space-y-4">
+        <!-- Right Side: Card Preview & Duel Logs (3 cols) -->
+        <div class="col-span-3 flex flex-col space-y-2 h-full overflow-hidden">
 
             <!-- Card Detail Preview Box -->
-            <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-lg">
-                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+            <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 shadow flex flex-col h-1/2 overflow-hidden">
+                <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between flex-none">
                     <span><i class="fa-solid fa-magnifying-glass mr-1"></i> カード詳細情報</span>
                 </h3>
-                <div id="card-preview-container" class="flex flex-col items-center min-h-[220px] justify-center text-center">
-                    <p class="text-xs text-slate-500">カードを選択またはホバーすると<br>ここに詳細が表示されます</p>
+                <div id="card-preview-container" class="flex-1 flex flex-col items-center justify-center text-center overflow-y-auto p-1">
+                    <p class="text-xs text-slate-500">カードを選択またはホバーすると<br>詳細が表示されます</p>
                 </div>
             </div>
 
             <!-- Duel Action Log -->
-            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 shadow-lg flex-1 flex flex-col min-h-[250px]">
-                <div class="flex items-center justify-between mb-2">
-                    <h3 class="text-xs font-bold text-amber-400 flex items-center">
+            <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 shadow flex flex-col h-1/2 overflow-hidden">
+                <div class="flex items-center justify-between mb-1 flex-none">
+                    <h3 class="text-[10px] font-bold text-amber-400 flex items-center">
                         <i class="fa-solid fa-scroll mr-1"></i> 対戦ログ
                     </h3>
-                    <button onclick="clearLog()" class="text-[10px] text-slate-500 hover:text-slate-300">消去</button>
+                    <button onclick="clearLog()" class="text-[9px] text-slate-500 hover:text-slate-300">消去</button>
                 </div>
-                <div id="log-box" class="flex-1 bg-slate-950 border border-slate-800 rounded p-2 text-xs font-mono text-slate-300 overflow-y-auto space-y-1 h-48 max-h-60">
+                <div id="log-box" class="flex-1 bg-slate-950 border border-slate-800 rounded p-1.5 text-[10px] font-mono text-slate-300 overflow-y-auto space-y-1">
                     <div class="text-slate-500 italic">対戦ログがここに記録されます...</div>
                 </div>
             </div>
@@ -263,100 +277,116 @@
 
     </main>
 
-    <!-- DECK EDITOR MODAL (2-COLUMN LAYOUT) -->
-    <div id="deck-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm z-50 flex items-center justify-center p-2 md:p-6 hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-6xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
-            
-            <!-- Modal Header -->
-            <div class="bg-slate-800 p-4 border-b border-slate-700 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <i class="fa-solid fa-boxes-packing text-amber-400 text-xl"></i>
-                    <h2 class="font-bold text-lg text-slate-100">デッキ構築 (40枚〜60枚制限)</h2>
+    <!-- DECK SEARCH MODAL -->
+    <div id="deck-search-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-start pt-8 justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-5xl p-3 flex flex-col space-y-3 shadow-2xl max-h-[85vh]">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-layer-group text-amber-400 text-base"></i>
+                    <h3 id="deck-search-modal-title" class="font-bold text-slate-100 text-sm">デッキ内容確認 (クリックで操作モーダル表示)</h3>
                 </div>
-                <button onclick="closeDeckEditor()" class="text-slate-400 hover:text-white text-xl px-2"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeDeckSearchModal()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div id="deck-search-container" class="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-2 p-2 bg-slate-950/80 rounded border border-slate-800 overflow-y-auto max-h-[60vh] items-start">
             </div>
 
-            <!-- Modal Content Body (2 Columns) -->
-            <div class="flex-1 grid grid-cols-1 md:grid-cols-12 gap-4 p-4 overflow-hidden">
+            <div class="flex justify-between items-center text-xs text-slate-400 pt-1">
+                <span>※カードを選択すると操作ダイアログが開きます。</span>
+                <span class="text-amber-400 font-bold">※「✕」ボタンで閉じるとデッキがシャッフルされます。</span>
+            </div>
+        </div>
+    </div>
 
-                <!-- LEFT COLUMN: Selected Main Deck (5 Cols) -->
-                <div class="md:col-span-5 bg-slate-950 border border-slate-800 rounded-xl p-3 flex flex-col overflow-hidden">
-                    <div class="flex items-center justify-between pb-2 border-b border-slate-800 flex-wrap gap-1">
-                        <div>
-                            <span class="text-xs text-slate-400 font-bold">メインデッキ: </span>
-                            <span id="deck-count" class="text-base font-black text-amber-400">0 / 60</span>
-                            <span id="deck-count-status" class="text-[10px] ml-2 px-2 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700">40枚未満</span>
+    <!-- DECK EDITOR MODAL -->
+    <div id="deck-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-6xl max-h-[95vh] flex flex-col shadow-2xl overflow-hidden">
+            
+            <div class="bg-slate-800 p-3 border-b border-slate-700 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <i class="fa-solid fa-boxes-packing text-amber-400 text-lg"></i>
+                    <h2 class="font-bold text-base text-slate-100">デッキ構築 (メイン:40〜60枚 / EX:0〜15枚)</h2>
+                </div>
+                <button onclick="closeDeckEditor()" class="text-slate-400 hover:text-white text-lg px-2"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="flex-1 grid grid-cols-12 gap-3 p-3 overflow-hidden">
+
+                <div class="col-span-5 bg-slate-950 border border-slate-800 rounded-lg p-2.5 flex flex-col overflow-hidden">
+                    <div class="flex items-center justify-between pb-1.5 border-b border-slate-800 flex-wrap gap-1">
+                        <div class="text-xs">
+                            <span class="text-slate-400 font-bold">メイン: </span>
+                            <span id="deck-count" class="font-black text-amber-400">0 / 60</span>
+                            <span class="text-slate-400 font-bold ml-2">EX: </span>
+                            <span id="extra-deck-count" class="font-black text-purple-400">0 / 15</span>
                         </div>
-                        <div class="flex space-x-1 flex-wrap gap-1">
-                            <button onclick="exportDeckJSON()" class="text-xs bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-2 py-1 rounded">JSON保存</button>
-                            <button onclick="document.getElementById('deck-file-input').click()" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-2 py-1 rounded">JSON読込</button>
+                        <div class="flex space-x-1">
+                            <button onclick="exportDeckJSON()" class="text-[10px] bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-1.5 py-0.5 rounded">JSON保存</button>
+                            <button onclick="document.getElementById('deck-file-input').click()" class="text-[10px] bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-1.5 py-0.5 rounded">JSON読込</button>
                             <input type="file" id="deck-file-input" class="hidden" accept=".json" onchange="importDeckJSON(event)">
-                            <button onclick="clearDeck()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded">クリア</button>
-                            <button onclick="shuffleDeckAction()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded">シャッフル</button>
+                            <button onclick="clearDeck()" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded">クリア</button>
                         </div>
                     </div>
 
-                    <!-- Preset Samples Button -->
-                    <div class="my-2 flex space-x-2">
-                        <button onclick="loadPresetDeck('vol1')" class="text-xs bg-amber-900/40 border border-amber-700 hover:bg-amber-800/50 text-amber-200 px-2 py-1 rounded flex-1 font-semibold">
-                            Vol.1 サンプルデッキ構築 (40枚)
+                    <div class="my-1.5 flex space-x-2">
+                        <button onclick="loadPresetDeck('vol1')" class="text-[10px] bg-amber-900/40 border border-amber-700 hover:bg-amber-800/50 text-amber-200 px-2 py-1 rounded flex-1 font-semibold">
+                            Vol.1 サンプルデッキ構築
                         </button>
                     </div>
 
-                    <!-- Deck Card List -->
-                    <div id="deck-card-list" class="flex-1 overflow-y-auto space-y-1.5 my-2 pr-1"></div>
+                    <div class="flex justify-between items-center text-[10px] mb-1">
+                        <span id="deck-count-status" class="px-1.5 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700">メイン40枚未満</span>
+                        <span id="extra-count-status" class="px-1.5 py-0.5 rounded font-bold bg-emerald-900/60 text-emerald-300 border border-emerald-700">EX適正</span>
+                    </div>
 
-                    <!-- Confirm Button -->
-                    <button id="save-deck-btn" onclick="confirmDeck()" class="w-full py-2 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-slate-950 font-black rounded text-sm transition">
+                    <div id="deck-card-list" class="flex-1 overflow-y-auto space-y-1 my-1 pr-1"></div>
+
+                    <button id="save-deck-btn" onclick="confirmDeck()" class="w-full py-1.5 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-slate-950 font-black rounded text-xs transition mt-1">
                         このデッキで決定 (対戦準備OK)
                     </button>
                 </div>
 
-                <!-- RIGHT COLUMN: Card Pool (7 Cols) -->
-                <div class="md:col-span-7 bg-slate-950 border border-slate-800 rounded-xl p-3 flex flex-col overflow-hidden">
-                    <!-- Pool Tabs (1st Gen / 2nd Gen) -->
-                    <div class="flex items-center justify-between pb-2 border-b border-slate-800 gap-2 flex-wrap">
+                <div class="col-span-7 bg-slate-950 border border-slate-800 rounded-lg p-2.5 flex flex-col overflow-hidden">
+                    <div class="flex items-center justify-between pb-1.5 border-b border-slate-800 gap-2 flex-wrap">
                         <div class="flex space-x-1">
-                            <button id="tab-gen1" onclick="switchCardTab('gen1')" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-amber-600 text-slate-950">第1期 (Vol.1全40種+初期)</button>
-                            <button id="tab-gen2" onclick="switchCardTab('gen2')" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">第2期 (+特別収録)</button>
+                            <button id="tab-gen1" onclick="switchCardTab('gen1')" class="px-2.5 py-1 text-[10px] font-bold rounded bg-amber-600 text-slate-950">第1期</button>
+                            <button id="tab-gen2" onclick="switchCardTab('gen2')" class="px-2.5 py-1 text-[10px] font-bold rounded bg-slate-800 text-slate-300 hover:bg-slate-700">第2期</button>
                         </div>
-                        <!-- Search Bar -->
-                        <input id="card-search-input" oninput="filterCardPool()" type="text" placeholder="カード名で検索..." class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200 w-36 focus:outline-none focus:border-amber-500">
+                        <input id="card-search-input" oninput="filterCardPool()" type="text" placeholder="カード名で検索..." class="bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-xs text-slate-200 w-32 focus:outline-none focus:border-amber-500">
                     </div>
 
-                    <!-- Pool Cards Grid -->
-                    <div id="card-pool-grid" class="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 gap-2.5 p-2 my-2"></div>
+                    <div id="card-pool-grid" class="flex-1 overflow-y-auto grid grid-cols-3 gap-2 p-1 my-1"></div>
                 </div>
 
             </div>
         </div>
     </div>
 
-    <!-- CARD ACTION MODAL / CONTEXT MENU -->
-    <div id="action-modal" class="fixed inset-0 bg-slate-950/70 z-50 flex items-center justify-center hidden" onclick="closeActionModal(event)">
-        <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 max-w-sm w-full shadow-2xl space-y-3" onclick="event.stopPropagation()">
-            <div id="action-modal-header" class="font-bold text-amber-400 text-sm border-b border-slate-800 pb-2 flex items-center justify-between">
-                <span id="action-modal-title">カード操作</span>
+    <!-- CARD ACTION MODAL (UNIFIED DYNAMIC MODAL) -->
+    <div id="action-modal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-[70] flex items-center justify-center hidden" onclick="closeActionModal(event)">
+        <div class="bg-slate-900 border border-slate-700 rounded-xl p-3.5 max-w-sm w-full shadow-2xl space-y-2.5" onclick="event.stopPropagation()">
+            <div id="action-modal-header" class="font-bold text-amber-400 text-xs border-b border-slate-800 pb-1.5 flex items-center justify-between">
+                <span id="action-modal-title" class="font-bold text-amber-400 text-xs">カード操作</span>
                 <button onclick="closeActionModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="action-modal-buttons" class="grid grid-cols-1 gap-2"></div>
         </div>
     </div>
 
-    <!-- GRAVEYARD VIEWER MODAL -->
-    <div id="grave-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-xl max-w-2xl w-full p-4 flex flex-col space-y-3 max-h-[80vh]">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-                <h3 id="grave-modal-title" class="font-bold text-slate-200 text-sm">墓地のカード</h3>
+    <!-- GRAVEYARD / BANISH / EXTRA VIEWER MODAL -->
+    <div id="grave-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-start pt-8 justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl max-w-3xl w-full p-3 flex flex-col space-y-2 max-h-[85vh]">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-1.5">
+                <h3 id="grave-modal-title" class="font-bold text-slate-200 text-xs">墓地のカード</h3>
                 <button onclick="closeGraveViewer()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="grave-modal-content" class="flex-1 overflow-y-auto grid grid-cols-3 sm:grid-cols-4 gap-2 p-2"></div>
+            <div id="grave-modal-content" class="flex-1 overflow-y-auto grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 p-1 max-h-[60vh]"></div>
         </div>
     </div>
 
     <script>
         /* ==========================================================================
-           1. CARD DATABASE (LOADED FROM EXTERNAL cards.json)
+           1. CARD DATABASE
            ========================================================================== */
         
         let GEN1_CARDS = [];
@@ -373,7 +403,7 @@
                 ALL_CARDS = [...GEN1_CARDS, ...GEN2_CARDS];
             } catch (err) {
                 console.error('カードデータの取得エラー:', err);
-                addLog('⚠️ カードプール (cards.json) の読み込みに失敗しました。ファイルが同一ディレクトリに配置されているか確認してください。');
+                addLog('⚠️ cards.json の読み込みに失敗しました。');
             }
         }
 
@@ -383,23 +413,31 @@
         
         let activeTab = 'gen1';
         let currentDeck = [];
+        let currentExtraDeck = [];
         let peer = null;
         let conn = null;
         let myPlayerId = 'P1';
-        let selectedHandIndex = null;
-        let selectedZone = null;
+
+        let currentActionContext = null;
 
         let gameState = {
             turnPlayer: 'P1',
             phase: 'DP',
             turnCount: 1,
-            p1: { name: 'Player 1', lp: 8000, deck: [], hand: [], monsters: Array(5).fill(null), spells: Array(5).fill(null), field: null, graveyard: [] },
-            p2: { name: 'Player 2', lp: 8000, deck: [], hand: [], monsters: Array(5).fill(null), spells: Array(5).fill(null), field: null, graveyard: [] },
+            p1: { name: 'Player 1', lp: 8000, deck: [], extraDeck: [], hand: [], monsters: Array(5).fill(null), spells: Array(5).fill(null), field: null, graveyard: [], banished: [] },
+            p2: { name: 'Player 2', lp: 8000, deck: [], extraDeck: [], hand: [], monsters: Array(5).fill(null), spells: Array(5).fill(null), field: null, graveyard: [], banished: [] },
             logs: []
         };
 
+        const BTN_STYLE_GRAVE = "w-full py-2 bg-rose-950/80 hover:bg-rose-900 text-rose-200 font-bold rounded-lg text-xs border border-rose-600 shadow transition flex items-center justify-center gap-1.5";
+        const BTN_STYLE_DECK = "w-full py-2 bg-amber-950/80 hover:bg-amber-900 text-amber-200 font-bold rounded-lg text-xs border border-amber-600 shadow transition flex items-center justify-center gap-1.5";
+        const BTN_STYLE_BANISH = "w-full py-2 bg-purple-950/80 hover:bg-purple-900 text-purple-200 font-bold rounded-lg text-xs border border-purple-500 shadow transition flex items-center justify-center gap-1.5";
+        const BTN_STYLE_HAND = "w-full py-2 bg-blue-950/80 hover:bg-blue-900 text-blue-200 font-bold rounded-lg text-xs border border-blue-600 shadow transition flex items-center justify-center gap-1.5";
+        const BTN_STYLE_FIELD = "w-full py-2 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-200 font-bold rounded-lg text-xs border border-emerald-600 shadow transition flex items-center justify-center gap-1.5";
+        const BTN_STYLE_EXTRA = "w-full py-2 bg-fuchsia-950/80 hover:bg-fuchsia-900 text-fuchsia-200 font-bold rounded-lg text-xs border border-fuchsia-600 shadow transition flex items-center justify-center gap-1.5";
+
         /* ==========================================================================
-           3. PEERJS NETWORK & SYNC
+           3. NETWORK & PEERJS
            ========================================================================== */
 
         window.onload = async function() {
@@ -421,7 +459,7 @@
                 myPlayerId = 'P1';
                 setupConnectionHandlers();
                 document.getElementById('role-badge').innerText = "ホスト (P1)";
-                document.getElementById('role-badge').className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-900 text-emerald-300 border border-emerald-700";
+                document.getElementById('role-badge').className = "px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-900 text-emerald-300 border border-emerald-700";
                 addLog("相手プレイヤーが接続しました。(自分: P1)");
             });
 
@@ -438,7 +476,7 @@
             myPlayerId = 'P2';
             setupConnectionHandlers();
             document.getElementById('role-badge').innerText = "ゲスト (P2)";
-            document.getElementById('role-badge').className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-900 text-blue-300 border border-blue-700";
+            document.getElementById('role-badge').className = "px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-900 text-blue-300 border border-blue-700";
             addLog(`ホスト ${targetId} に接続要求...`);
         }
 
@@ -486,8 +524,12 @@
         }
 
         /* ==========================================================================
-           4. DECK BUILDER CONTROLLER (40-60 CARDS & JSON SAVE/LOAD)
+           4. DECK BUILDER CONTROLLER
            ========================================================================== */
+
+        function isExtraCard(card) {
+            return card.sub === 'fusion' || card.sub === 'synchro' || card.sub === 'xyz';
+        }
 
         function openDeckEditor() {
             document.getElementById('deck-modal').classList.remove('hidden');
@@ -496,8 +538,8 @@
         }
 
         function closeDeckEditor() {
-            if (currentDeck.length < 40 || currentDeck.length > 60) {
-                if (!confirm("メインデッキは40枚〜60枚で設定する必要があります。このまま閉じますか？")) {
+            if (currentDeck.length < 40 || currentDeck.length > 60 || currentExtraDeck.length > 15) {
+                if (!confirm("メインデッキは40〜60枚、エクストラデッキは0〜15枚である必要があります。このまま閉じますか？")) {
                     return;
                 }
             }
@@ -506,8 +548,8 @@
 
         function switchCardTab(tab) {
             activeTab = tab;
-            document.getElementById('tab-gen1').className = tab === 'gen1' ? 'px-3 py-1.5 text-xs font-bold rounded-lg bg-amber-600 text-slate-950' : 'px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700';
-            document.getElementById('tab-gen2').className = tab === 'gen2' ? 'px-3 py-1.5 text-xs font-bold rounded-lg bg-amber-600 text-slate-950' : 'px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700';
+            document.getElementById('tab-gen1').className = tab === 'gen1' ? 'px-2.5 py-1 text-[10px] font-bold rounded bg-amber-600 text-slate-950' : 'px-2.5 py-1 text-[10px] font-bold rounded bg-slate-800 text-slate-300 hover:bg-slate-700';
+            document.getElementById('tab-gen2').className = tab === 'gen2' ? 'px-2.5 py-1 text-[10px] font-bold rounded bg-amber-600 text-slate-950' : 'px-2.5 py-1 text-[10px] font-bold rounded bg-slate-800 text-slate-300 hover:bg-slate-700';
             renderCardPool();
         }
 
@@ -518,28 +560,29 @@
             grid.innerHTML = '';
 
             pool.filter(c => c.name.toLowerCase().includes(search)).forEach(card => {
-                const count = currentDeck.filter(c => c.name === card.name).length;
+                const isExtra = isExtraCard(card);
+                const count = [...currentDeck, ...currentExtraDeck].filter(c => c.name === card.name).length;
+
                 const cardEl = document.createElement('div');
-                cardEl.className = `p-2 rounded-lg cursor-pointer border flex flex-col justify-between text-xs transition transform hover:scale-102 ${getCardStyleClass(card)}`;
+                cardEl.className = `p-1.5 rounded cursor-pointer border flex flex-col justify-between text-[10px] transition transform hover:scale-102 ${getCardStyleClass(card)}`;
                 
                 let statsHtml = '';
                 if (card.type === 'monster') {
-                    statsHtml = `<div class="font-bold text-[11px] text-amber-200">★${card.level} ATK/${card.atk} DEF/${card.def}</div>`;
+                    statsHtml = `<div class="font-bold text-[10px] text-amber-200">★${card.level} ATK/${card.atk} DEF/${card.def}</div>`;
                 } else {
-                    statsHtml = `<div class="font-bold text-[11px] text-teal-200">${card.type === 'spell' ? '魔法' : '罠'} [${card.sub}]</div>`;
+                    statsHtml = `<div class="font-bold text-[10px] text-teal-200">${card.type === 'spell' ? '魔法' : '罠'} [${card.sub}]</div>`;
                 }
 
                 cardEl.innerHTML = `
                     <div>
-                        <div class="flex items-center justify-between font-bold text-xs">
+                        <div class="flex items-center justify-between font-bold text-[11px]">
                             <span class="truncate">${card.name}</span>
-                            <span class="bg-slate-950/80 px-1.5 py-0.5 rounded text-[10px] border border-slate-700 text-white">${count}/3</span>
+                            <span class="bg-slate-950/80 px-1 py-0.2 rounded text-[9px] border border-slate-700 text-white">${count}/3</span>
                         </div>
                         ${statsHtml}
-                        <p class="text-[10px] opacity-80 line-clamp-2 my-1 leading-tight">${card.desc}</p>
                     </div>
-                    <button onclick="addCardToDeck('${card.id}')" ${count >= 3 || currentDeck.length >= 60 ? 'disabled' : ''} class="w-full mt-1 bg-slate-950/60 hover:bg-slate-950 disabled:opacity-40 text-amber-400 border border-slate-700 rounded py-0.5 text-[11px] font-bold">
-                        + デッキに追加
+                    <button onclick="addCardToDeck('${card.id}')" ${count >= 3 || (isExtra ? currentExtraDeck.length >= 15 : currentDeck.length >= 60) ? 'disabled' : ''} class="w-full mt-1 bg-slate-950/60 hover:bg-slate-950 disabled:opacity-40 text-amber-400 border border-slate-700 rounded py-0.5 text-[10px] font-bold">
+                        + 追加 ${isExtra ? '(EX)' : ''}
                     </button>
                 `;
                 grid.appendChild(cardEl);
@@ -554,40 +597,48 @@
             const card = ALL_CARDS.find(c => c.id === cardId);
             if (!card) return;
 
-            const count = currentDeck.filter(c => c.name === card.name).length;
-            if (count >= 3) return alert('同一カードは3枚までしか入れられません。');
-            if (currentDeck.length >= 60) return alert('デッキの上限は60枚です。');
+            const totalCount = [...currentDeck, ...currentExtraDeck].filter(c => c.name === card.name).length;
+            if (totalCount >= 3) return alert('同名カードは3枚までしか入れられません。');
 
-            currentDeck.push({ ...card, uniqueId: 'c_' + Math.random().toString(36).substr(2, 9) });
+            const isExtra = isExtraCard(card);
+            if (isExtra) {
+                if (currentExtraDeck.length >= 15) return alert('エクストラデッキの上限は15枚です。');
+                currentExtraDeck.push({ ...card, uniqueId: 'c_' + Math.random().toString(36).substr(2, 9) });
+            } else {
+                if (currentDeck.length >= 60) return alert('メインデッキの上限は60枚です。');
+                currentDeck.push({ ...card, uniqueId: 'c_' + Math.random().toString(36).substr(2, 9) });
+            }
+
             renderDeckList();
             renderCardPool();
         }
 
-        function removeCardFromDeck(index) {
+        function removeCardFromMainDeck(index) {
             currentDeck.splice(index, 1);
+            renderDeckList();
+            renderCardPool();
+        }
+
+        function removeCardFromExtraDeck(index) {
+            currentExtraDeck.splice(index, 1);
             renderDeckList();
             renderCardPool();
         }
 
         function clearDeck() {
             currentDeck = [];
+            currentExtraDeck = [];
             renderDeckList();
             renderCardPool();
         }
 
-        function shuffleDeckAction() {
-            currentDeck.sort(() => Math.random() - 0.5);
-            renderDeckList();
-            addLog("デッキをシャッフルしました。");
-        }
-
-        /* JSON Export & Import */
         function exportDeckJSON() {
-            if (currentDeck.length === 0) {
-                alert('保存するデッキカードがありません。');
+            if (currentDeck.length === 0 && currentExtraDeck.length === 0) {
+                alert('保存するカードがありません。');
                 return;
             }
-            const jsonStr = JSON.stringify(currentDeck, null, 2);
+            const data = { main: currentDeck, extra: currentExtraDeck };
+            const jsonStr = JSON.stringify(data, null, 2);
             const blob = new Blob([jsonStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -595,7 +646,7 @@
             a.download = 'yugioh_deck.json';
             a.click();
             URL.revokeObjectURL(url);
-            addLog('デッキデータをJSON形式で保存（ダウンロード）しました。');
+            addLog('デッキデータをJSON形式でダウンロードしました。');
         }
 
         function importDeckJSON(event) {
@@ -605,24 +656,33 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const importedCards = JSON.parse(e.target.result);
-                    if (!Array.isArray(importedCards)) {
-                        alert('無効なJSONフォーマットです。(配列形式である必要があります)');
-                        return;
+                    const importedData = JSON.parse(e.target.result);
+                    let mainList = [];
+                    let extraList = [];
+
+                    if (Array.isArray(importedData)) {
+                        importedData.forEach(c => {
+                            if (isExtraCard(c)) extraList.push(c);
+                            else mainList.push(c);
+                        });
+                    } else {
+                        mainList = importedData.main || [];
+                        extraList = importedData.extra || [];
                     }
 
-                    currentDeck = importedCards.map(c => {
+                    currentDeck = mainList.map(c => {
                         const matched = ALL_CARDS.find(poolCard => poolCard.id === c.id || poolCard.name === c.name);
-                        const baseCard = matched || c;
-                        return {
-                            ...baseCard,
-                            uniqueId: 'c_' + Math.random().toString(36).substr(2, 9)
-                        };
+                        return { ...(matched || c), uniqueId: 'c_' + Math.random().toString(36).substr(2, 9) };
+                    });
+
+                    currentExtraDeck = extraList.map(c => {
+                        const matched = ALL_CARDS.find(poolCard => poolCard.id === c.id || poolCard.name === c.name);
+                        return { ...(matched || c), uniqueId: 'c_' + Math.random().toString(36).substr(2, 9) };
                     });
 
                     renderDeckList();
                     renderCardPool();
-                    addLog(`JSONファイルから ${currentDeck.length} 枚のカードを読み込みました。`);
+                    addLog(`JSONからメイン${currentDeck.length}枚 / EX${currentExtraDeck.length}枚を読み込みました。`);
                 } catch (err) {
                     alert('JSONファイルの読み込みに失敗しました: ' + err.message);
                 }
@@ -633,86 +693,119 @@
 
         function loadPresetDeck(type) {
             currentDeck = [];
-            // Sample Deck Preset (40 Cards)
+            currentExtraDeck = [];
+
             const presetNames = [
-                'ブラック・マジシャン', 'ブラック・マジシャン',
-                '暗黒騎士ガイア', '暗黒騎士ガイア',
-                '青眼の白龍', '青眼の白龍',
-                'デーモンの召喚', 'デーモンの召喚',
-                'サイクロプス', 'サイクロプス', 'サイクロプス',
-                'シルバー・フォング', 'シルバー・フォング', 'シルバー・フォング',
-                'マンモスの墓場', 'マンモスの墓場', 'マンモスの墓場',
-                'ダークキラー', 'ダークキラー', 'ダークキラー',
-                'ホーリー・エルフ', 'ホーリー・エルフ', 'ホーリー・エルフ',
-                '砦を守る翼竜', '砦を守る翼竜',
-                '地割れ', '地割れ', '地割れ',
-                'ブラック・ホール', '守備封印', '守備封印',
-                'レッド・ポーション', 'レッド・ポーション',
-                'サンダー・ボルト', '死者蘇生',
-                '強欲な壺', '強欲な壺',
-                '落とし穴', '落とし穴', '落とし穴'
+                '青眼の白龍','青眼の白龍','青眼の白龍','融合','融合','サイクロプス','サイクロプス','サイクロプス',
+                'ブラック・ホール','落とし穴','落とし穴','闇・道化師のサギー','闇・道化師のサギー','闇・道化師のサギー','山','山','サンダー・ボルト','サンダー・ボルト','サンダー・ボルト',
+                'ミノタウルス','ミノタウルス','ミノタウルス','ケンタウロス','ケンタウロス','ケンタウロス','カオス・ソルジャー','カオス・ソルジャー',
+                'カオスの儀式','カオスの儀式','大嵐','ドーピング','サンダー・ドラゴン','サンダー・ドラゴン','サンダー・ドラゴン','はさみ撃ち','援軍','城壁',
+                '血の代償','自業自得','和睦の使者','青眼の究極竜','青眼の究極竜','青眼の究極竜','ミノケンタウロス','双頭の雷龍'
             ];
 
             presetNames.forEach(name => {
                 const template = ALL_CARDS.find(c => c.name === name);
                 if (template) {
-                    currentDeck.push({ ...template, uniqueId: 'c_' + Math.random().toString(36).substr(2, 9) });
+                    if (isExtraCard(template)) currentExtraDeck.push({ ...template, uniqueId: 'c_' + Math.random().toString(36).substr(2, 9) });
+                    else currentDeck.push({ ...template, uniqueId: 'c_' + Math.random().toString(36).substr(2, 9) });
                 }
             });
 
             renderDeckList();
             renderCardPool();
-            addLog("サンプルデッキ(40枚)を読み込みました。");
+            addLog("サンプルデッキ構築を読み込みました。");
         }
 
         function renderDeckList() {
             const listEl = document.getElementById('deck-card-list');
             listEl.innerHTML = '';
 
-            const count = currentDeck.length;
-            document.getElementById('deck-count').innerText = `${count} / 60`;
+            const mainCount = currentDeck.length;
+            const extraCount = currentExtraDeck.length;
+
+            document.getElementById('deck-count').innerText = `${mainCount} / 60`;
+            document.getElementById('extra-deck-count').innerText = `${extraCount} / 15`;
 
             const statusEl = document.getElementById('deck-count-status');
+            const extraStatusEl = document.getElementById('extra-count-status');
             const saveBtn = document.getElementById('save-deck-btn');
 
-            if (count < 40) {
-                statusEl.innerText = '40枚未満 (不可)';
-                statusEl.className = 'text-[10px] ml-2 px-2 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700';
-                saveBtn.disabled = true;
-            } else if (count > 60) {
-                statusEl.innerText = '60枚超過 (不可)';
-                statusEl.className = 'text-[10px] ml-2 px-2 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700';
-                saveBtn.disabled = true;
+            let isValid = true;
+
+            if (mainCount < 40) {
+                statusEl.innerText = 'メイン40枚未満';
+                statusEl.className = 'px-1.5 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700';
+                isValid = false;
+            } else if (mainCount > 60) {
+                statusEl.innerText = 'メイン60枚超過';
+                statusEl.className = 'px-1.5 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700';
+                isValid = false;
             } else {
-                statusEl.innerText = '適正 (40〜60枚)';
-                statusEl.className = 'text-[10px] ml-2 px-2 py-0.5 rounded font-bold bg-emerald-900/60 text-emerald-300 border border-emerald-700';
-                saveBtn.disabled = false;
+                statusEl.innerText = 'メイン適正';
+                statusEl.className = 'px-1.5 py-0.5 rounded font-bold bg-emerald-900/60 text-emerald-300 border border-emerald-700';
             }
+
+            if (extraCount > 15) {
+                extraStatusEl.innerText = 'EX 15枚超過';
+                extraStatusEl.className = 'px-1.5 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700';
+                isValid = false;
+            } else {
+                extraStatusEl.innerText = 'EX適正';
+                extraStatusEl.className = 'px-1.5 py-0.5 rounded font-bold bg-emerald-900/60 text-emerald-300 border border-emerald-700';
+            }
+
+            saveBtn.disabled = !isValid;
+
+            if (currentExtraDeck.length > 0) {
+                const exHeader = document.createElement('div');
+                exHeader.className = 'text-[10px] font-bold text-purple-400 border-b border-purple-800/60 pb-0.5 mb-1 mt-1';
+                exHeader.innerText = `【エクストラデッキ (${currentExtraDeck.length}枚)】`;
+                listEl.appendChild(exHeader);
+
+                currentExtraDeck.forEach((card, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'flex items-center justify-between bg-purple-950/30 px-2 py-1 rounded border border-purple-900/50 text-[11px]';
+                    item.innerHTML = `
+                        <span class="font-bold text-purple-300 truncate">${card.name}</span>
+                        <button onclick="removeCardFromExtraDeck(${index})" class="text-rose-400 hover:text-rose-300 text-xs px-1 font-bold">✕</button>
+                    `;
+                    listEl.appendChild(item);
+                });
+            }
+
+            const mainHeader = document.createElement('div');
+            mainHeader.className = 'text-[10px] font-bold text-amber-400 border-b border-amber-800/60 pb-0.5 mb-1 mt-2';
+            mainHeader.innerText = `【メインデッキ (${currentDeck.length}枚)】`;
+            listEl.appendChild(mainHeader);
 
             currentDeck.forEach((card, index) => {
                 const item = document.createElement('div');
-                item.className = 'flex items-center justify-between bg-slate-900 px-2.5 py-1.5 rounded border border-slate-800 text-xs hover:border-slate-700';
+                item.className = 'flex items-center justify-between bg-slate-900 px-2 py-0.5 rounded border border-slate-800 text-[11px]';
                 item.innerHTML = `
-                    <div class="flex items-center space-x-2 truncate">
-                        <span class="text-slate-500 font-mono text-[10px]">${index + 1}.</span>
+                    <div class="flex items-center space-x-1.5 truncate">
+                        <span class="text-slate-500 font-mono text-[9px]">${index + 1}.</span>
                         <span class="font-bold ${getCardTextColor(card)} truncate">${card.name}</span>
                     </div>
-                    <button onclick="removeCardFromDeck(${index})" class="text-rose-400 hover:text-rose-300 text-xs px-1 font-bold">✕</button>
+                    <button onclick="removeCardFromMainDeck(${index})" class="text-rose-400 hover:text-rose-300 text-xs px-1 font-bold">✕</button>
                 `;
                 listEl.appendChild(item);
             });
         }
 
         function confirmDeck() {
-            if (currentDeck.length < 40 || currentDeck.length > 60) return;
+            if (currentDeck.length < 40 || currentDeck.length > 60 || currentExtraDeck.length > 15) return;
 
             const playerKey = myPlayerId === 'P1' ? 'p1' : 'p2';
             const shuffled = [...currentDeck].sort(() => Math.random() - 0.5);
+
             gameState[playerKey].deck = shuffled;
+            gameState[playerKey].extraDeck = [...currentExtraDeck];
             gameState[playerKey].hand = [];
             gameState[playerKey].monsters = Array(5).fill(null);
             gameState[playerKey].spells = Array(5).fill(null);
+            gameState[playerKey].field = null;
             gameState[playerKey].graveyard = [];
+            gameState[playerKey].banished = [];
 
             for (let i = 0; i < 5; i++) {
                 if (gameState[playerKey].deck.length > 0) {
@@ -720,13 +813,74 @@
                 }
             }
 
-            addLog(`${myPlayerId} がデッキ（${shuffled.length}枚）をセットし初期5枚をドローしました。`);
+            addLog(`${myPlayerId} がデッキ（メイン${shuffled.length}枚/EX${currentExtraDeck.length}枚）をセットし初期5枚をドローしました。`);
             closeDeckEditor();
             broadcastGameState();
         }
 
         /* ==========================================================================
-           5. DUEL BOARD RENDERER
+           5. DECK SEARCH & MODAL CONTROLLERS
+           ========================================================================== */
+
+        function drawCard() {
+            const meKey = myPlayerId === 'P1' ? 'p1' : 'p2';
+            const me = gameState[meKey];
+
+            if (me.deck.length === 0) {
+                alert('デッキにカードがありません！');
+                addLog(`⚠️ ${myPlayerId} はドローしようとしましたが、デッキが0枚です。`);
+                return;
+            }
+
+            const drawnCard = me.deck.pop();
+            me.hand.push(drawnCard);
+
+            addLog(`${myPlayerId} はデッキからカードを1枚ドローしました。（手札: ${me.hand.length}枚 / デッキ残: ${me.deck.length}枚）`);
+            broadcastGameState();
+        }
+
+        function openDeckSearchModal() {
+            const meKey = myPlayerId === 'P1' ? 'p1' : 'p2';
+            const deck = gameState[meKey].deck;
+
+            const container = document.getElementById('deck-search-container');
+            container.innerHTML = '';
+
+            if (deck.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-xs text-slate-500 py-4 w-full text-center">デッキにカードがありません。</div>`;
+            } else {
+                deck.forEach((card, index) => {
+                    const cardEl = document.createElement('div');
+                    cardEl.className = `w-full h-20 rounded p-1 cursor-pointer border flex flex-col justify-between text-[9px] transition transform hover:-translate-y-1 hover:scale-105 select-none ${getCardStyleClass(card)}`;
+                    cardEl.onclick = () => openCardActionModal('deck', index, 'me');
+                    cardEl.onmouseenter = () => updatePreview(card);
+
+                    cardEl.innerHTML = `
+                        <div class="font-bold leading-tight truncate">${card.name}</div>
+                        <div class="text-[8px] font-mono mt-auto font-bold opacity-90">${card.type === 'monster' ? `攻${card.atk}` : card.type}</div>
+                    `;
+                    container.appendChild(cardEl);
+                });
+            }
+
+            document.getElementById('deck-search-modal').classList.remove('hidden');
+        }
+
+        function closeDeckSearchModal() {
+            document.getElementById('deck-search-modal').classList.add('hidden');
+            
+            const meKey = myPlayerId === 'P1' ? 'p1' : 'p2';
+            const me = gameState[meKey];
+
+            if (me.deck.length > 0) {
+                me.deck.sort(() => Math.random() - 0.5);
+                addLog(`${myPlayerId} はデッキをシャッフルしました。`);
+                broadcastGameState();
+            }
+        }
+
+        /* ==========================================================================
+           6. DUEL BOARD RENDERER
            ========================================================================== */
 
         function renderBoard() {
@@ -745,37 +899,43 @@
 
             document.getElementById('my-deck-count').innerText = me.deck.length;
             document.getElementById('opp-deck-count').innerText = `山札: ${opp.deck.length}枚`;
+            document.getElementById('my-extra-count').innerText = me.extraDeck.length;
+            document.getElementById('opp-extra-count').innerText = `EX: ${opp.extraDeck.length}枚`;
             document.getElementById('my-grave-count').innerText = me.graveyard.length;
             document.getElementById('opp-grave-count').innerText = opp.graveyard.length;
+            document.getElementById('my-banish-count').innerText = (me.banished || []).length;
+            document.getElementById('opp-banish-count').innerText = (opp.banished || []).length;
 
-            document.getElementById('turn-display').innerText = `${gameState.turnCount} (${gameState.turnPlayer} ターン)`;
+            document.getElementById('turn-display').innerText = `${gameState.turnCount} (${gameState.turnPlayer})`;
             document.getElementById('phase-display').innerText = getPhaseName(gameState.phase);
 
+            // Opponent Hand
             const oppHandContainer = document.getElementById('opp-hand-container');
             oppHandContainer.innerHTML = '';
             document.getElementById('opp-hand-count').innerText = `手札: ${opp.hand.length}枚`;
 
             for (let i = 0; i < opp.hand.length; i++) {
                 const cardBack = document.createElement('div');
-                cardBack.className = 'w-12 h-16 rounded border-2 border-slate-700 bg-slate-900 flex items-center justify-center text-xs text-slate-600 font-black shadow-md card-back';
+                cardBack.className = 'w-9 h-12 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[9px] text-slate-600 font-black shadow card-back flex-none';
                 cardBack.innerText = '???';
                 oppHandContainer.appendChild(cardBack);
             }
 
+            // My Hand
             const myHandContainer = document.getElementById('my-hand-container');
             myHandContainer.innerHTML = '';
             document.getElementById('my-hand-count-text').innerText = `${me.hand.length}枚`;
 
             me.hand.forEach((card, index) => {
                 const cardEl = document.createElement('div');
-                cardEl.className = `w-16 h-22 min-w-[64px] rounded-md p-1 cursor-pointer border flex flex-col justify-between text-[10px] transition transform hover:-translate-y-2 select-none ${getCardStyleClass(card)}`;
+                cardEl.className = `w-12 h-16 min-w-[48px] rounded p-1 cursor-pointer border flex flex-col justify-between text-[8px] transition transform hover:-translate-y-1 select-none flex-none ${getCardStyleClass(card)}`;
                 cardEl.onclick = () => openHandActionModal(index);
                 cardEl.onmouseenter = () => updatePreview(card);
 
                 let stats = card.type === 'monster' ? `攻${card.atk}` : (card.type === 'spell' ? '魔法' : '罠');
                 cardEl.innerHTML = `
                     <div class="font-bold leading-tight truncate">${card.name}</div>
-                    <div class="text-[9px] font-mono mt-auto font-bold opacity-90">${stats}</div>
+                    <div class="text-[7px] font-mono mt-auto font-bold opacity-90">${stats}</div>
                 `;
                 myHandContainer.appendChild(cardEl);
             });
@@ -785,6 +945,7 @@
         }
 
         function renderFieldZones(prefix, playerState) {
+            // Monsters
             for (let i = 0; i < 5; i++) {
                 const slot = document.getElementById(`${prefix}-m-${i}`);
                 slot.innerHTML = '';
@@ -792,21 +953,22 @@
 
                 if (cardData) {
                     const card = cardData.card;
-                    const isFaceDown = cardData.position === 'DEF_FACE_DOWN';
+                    const isFaceDown = cardData.position === 'DEF_FACE_DOWN' || cardData.position === 'ATK_FACE_DOWN';
                     const isOpponent = prefix === 'opp';
+                    const isAtk = cardData.position === 'ATK' || cardData.position === 'ATK_FACE_DOWN';
 
                     const cardEl = document.createElement('div');
                     
                     if (isFaceDown && isOpponent) {
-                        cardEl.className = 'w-14 h-20 rounded border-2 border-slate-700 bg-slate-900 flex items-center justify-center text-xs font-bold text-slate-600 card-back def-position';
+                        cardEl.className = `w-10 h-14 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[9px] font-bold text-slate-600 card-back ${isAtk ? 'atk-position' : 'def-position'}`;
                         cardEl.innerText = '???';
                     } else {
-                        cardEl.className = `w-14 h-20 rounded p-1 border text-[9px] flex flex-col justify-between ${getCardStyleClass(card)} ${cardData.position === 'ATK' ? 'atk-position' : 'def-position'}`;
+                        cardEl.className = `w-10 h-14 rounded p-0.5 border text-[8px] flex flex-col justify-between ${getCardStyleClass(card)} ${isAtk ? 'atk-position' : 'def-position'}`;
                         if (isFaceDown) cardEl.classList.add('opacity-75');
                         
                         cardEl.innerHTML = `
                             <div class="font-bold leading-tight truncate">${card.name}</div>
-                            <div class="text-[8px] font-mono font-bold">${card.atk}/${card.def}</div>
+                            <div class="text-[7px] font-mono font-bold">${card.atk}/${card.def}</div>
                         `;
                     }
                     cardEl.onmouseenter = () => { if (!isFaceDown || prefix === 'my') updatePreview(card); };
@@ -814,6 +976,7 @@
                 }
             }
 
+            // Spells & Traps
             for (let i = 0; i < 5; i++) {
                 const slot = document.getElementById(`${prefix}-st-${i}`);
                 slot.innerHTML = '';
@@ -827,25 +990,54 @@
                     const cardEl = document.createElement('div');
                     
                     if (isFaceDown && isOpponent) {
-                        cardEl.className = 'w-14 h-20 rounded border-2 border-slate-700 bg-slate-900 flex items-center justify-center text-xs font-bold text-slate-600 card-back';
+                        cardEl.className = 'w-10 h-14 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[9px] font-bold text-slate-600 card-back';
                         cardEl.innerText = '???';
                     } else {
-                        cardEl.className = `w-14 h-20 rounded p-1 border text-[9px] flex flex-col justify-between ${getCardStyleClass(card)}`;
+                        cardEl.className = `w-10 h-14 rounded p-0.5 border text-[8px] flex flex-col justify-between ${getCardStyleClass(card)}`;
                         if (isFaceDown) cardEl.classList.add('opacity-75');
 
                         cardEl.innerHTML = `
                             <div class="font-bold leading-tight truncate">${card.name}</div>
-                            <div class="text-[8px] font-mono font-bold">${card.type === 'spell' ? '魔法' : '罠'}</div>
+                            <div class="text-[7px] font-mono font-bold">${card.type === 'spell' ? '魔法' : '罠'}</div>
                         `;
                     }
                     cardEl.onmouseenter = () => { if (!isFaceDown || prefix === 'my') updatePreview(card); };
                     slot.appendChild(cardEl);
                 }
             }
+
+            // Field Zone
+            const fieldSlot = document.getElementById(`${prefix}-field-zone`);
+            fieldSlot.innerHTML = '';
+            const fieldData = playerState.field;
+
+            if (fieldData) {
+                const card = fieldData.card;
+                const isFaceDown = fieldData.position === 'FACE_DOWN';
+                const isOpponent = prefix === 'opp';
+
+                const cardEl = document.createElement('div');
+                if (isFaceDown && isOpponent) {
+                    cardEl.className = 'w-10 h-14 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[9px] font-bold text-slate-600 card-back';
+                    cardEl.innerText = '???';
+                } else {
+                    cardEl.className = `w-10 h-14 rounded p-0.5 border text-[8px] flex flex-col justify-between ${getCardStyleClass(card)}`;
+                    if (isFaceDown) cardEl.classList.add('opacity-75');
+
+                    cardEl.innerHTML = `
+                        <div class="font-bold leading-tight truncate">${card.name}</div>
+                        <div class="text-[7px] font-mono font-bold">フィールド</div>
+                    `;
+                }
+                cardEl.onmouseenter = () => { if (!isFaceDown || prefix === 'my') updatePreview(card); };
+                fieldSlot.appendChild(cardEl);
+            } else {
+                fieldSlot.innerText = 'フィールド';
+            }
         }
 
         /* ==========================================================================
-           6. CARD ACTIONS & MODALS
+           7. UNIFIED CARD MOVE ENGINE & DYNAMIC ACTION MODAL
            ========================================================================== */
 
         function modifyLP(target, amount) {
@@ -861,89 +1053,7 @@
         }
 
         function openHandActionModal(handIndex) {
-            const meKey = myPlayerId === 'P1' ? 'p1' : 'p2';
-            const card = gameState[meKey].hand[handIndex];
-            if (!card) return;
-
-            selectedHandIndex = handIndex;
-            updatePreview(card);
-
-            const buttonsContainer = document.getElementById('action-modal-buttons');
-            document.getElementById('action-modal-title').innerText = `手札操作: ${card.name}`;
-            buttonsContainer.innerHTML = '';
-
-            if (card.type === 'monster') {
-                buttonsContainer.innerHTML += `<button onclick="playMonsterFromHand('ATK')" class="w-full py-2 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded text-xs">表側攻撃表示で通常召喚</button>`;
-                buttonsContainer.innerHTML += `<button onclick="playMonsterFromHand('DEF_FACE_DOWN')" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded text-xs">裏側守備表示でセット</button>`;
-            } else {
-                buttonsContainer.innerHTML += `<button onclick="playSpellTrapFromHand('FACE_UP')" class="w-full py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded text-xs">カードを発動</button>`;
-                buttonsContainer.innerHTML += `<button onclick="playSpellTrapFromHand('FACE_DOWN')" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded text-xs">フィールドにセット</button>`;
-            }
-
-            buttonsContainer.innerHTML += `<button onclick="discardHandCard()" class="w-full py-2 bg-rose-900/60 hover:bg-rose-800 text-rose-300 font-bold rounded text-xs border border-rose-700">墓地へ送る</button>`;
-
-            document.getElementById('action-modal').classList.remove('hidden');
-        }
-
-        function playMonsterFromHand(position) {
-            const meKey = myPlayerId === 'P1' ? 'p1' : 'p2';
-            const me = gameState[meKey];
-            const card = me.hand[selectedHandIndex];
-
-            const freeIndex = me.monsters.findIndex(m => m === null);
-            if (freeIndex === -1) return alert('モンスターゾーンがいっぱいです。');
-
-            me.monsters[freeIndex] = { card: card, position: position, isAttacked: false };
-            me.hand.splice(selectedHandIndex, 1);
-
-            if (position === 'DEF_FACE_DOWN') {
-                const myMsg = `${myPlayerId} は [${card.name}] をモンスターゾーン ${freeIndex + 1} に裏側守備表示でセットしました。`;
-                const oppMsg = `${myPlayerId} は カード をモンスターゾーン ${freeIndex + 1} に裏側守備表示でセットしました。`;
-                addLogWithOpponentMask(myMsg, oppMsg);
-            } else {
-                const posName = '表側攻撃表示で召喚';
-                addLog(`${myPlayerId} は [${card.name}] をモンスターゾーン ${freeIndex + 1} に${posName}しました。`);
-            }
-
-            closeActionModal();
-            broadcastGameState();
-        }
-
-        function playSpellTrapFromHand(position) {
-            const meKey = myPlayerId === 'P1' ? 'p1' : 'p2';
-            const me = gameState[meKey];
-            const card = me.hand[selectedHandIndex];
-
-            const freeIndex = me.spells.findIndex(s => s === null);
-            if (freeIndex === -1) return alert('魔法・罠ゾーンがいっぱいです。');
-
-            me.spells[freeIndex] = { card: card, position: position };
-            me.hand.splice(selectedHandIndex, 1);
-
-            if (position === 'FACE_DOWN') {
-                const myMsg = `${myPlayerId} は [${card.name}] を魔法・罠ゾーン ${freeIndex + 1} にセットしました。`;
-                const oppMsg = `${myPlayerId} は カード を魔法・罠ゾーン ${freeIndex + 1} にセットしました。`;
-                addLogWithOpponentMask(myMsg, oppMsg);
-            } else {
-                const posName = '発動';
-                addLog(`${myPlayerId} は [${card.name}] を魔法・罠ゾーン ${freeIndex + 1} に${posName}しました。`);
-            }
-
-            closeActionModal();
-            broadcastGameState();
-        }
-
-        function discardHandCard() {
-            const meKey = myPlayerId === 'P1' ? 'p1' : 'p2';
-            const me = gameState[meKey];
-            const card = me.hand[selectedHandIndex];
-
-            me.graveyard.push(card);
-            me.hand.splice(selectedHandIndex, 1);
-
-            addLog(`${myPlayerId} は手札から [${card.name}] を墓地へ送りました。`);
-            closeActionModal();
-            broadcastGameState();
+            openCardActionModal('hand', handIndex, 'me');
         }
 
         function handleZoneClick(side, zoneType, index) {
@@ -955,106 +1065,406 @@
 
             if (zoneType === 'monster') slotData = playerState.monsters[index];
             else if (zoneType === 'spell') slotData = playerState.spells[index];
+            else if (zoneType === 'field') slotData = playerState.field;
 
             if (!slotData) return;
 
-            selectedZone = { side, zoneType, index, playerKey };
-            updatePreview(slotData.card);
+            openCardActionModal(zoneType, index, side);
+        }
+
+        function openCardActionModal(sourceType, index, side = 'me') {
+            const isP1 = myPlayerId === 'P1';
+            const playerKey = side === 'me' ? (isP1 ? 'p1' : 'p2') : (isP1 ? 'p2' : 'p1');
+            const player = gameState[playerKey];
+
+            let card = null;
+            let slotData = null;
+
+            if (sourceType === 'hand') card = player.hand[index];
+            else if (sourceType === 'monster') { slotData = player.monsters[index]; card = slotData ? slotData.card : null; }
+            else if (sourceType === 'spell') { slotData = player.spells[index]; card = slotData ? slotData.card : null; }
+            else if (sourceType === 'field') { slotData = player.field; card = slotData ? slotData.card : null; }
+            else if (sourceType === 'graveyard') card = player.graveyard[index];
+            else if (sourceType === 'banished') card = (player.banished || [])[index];
+            else if (sourceType === 'extra') card = player.extraDeck[index];
+            else if (sourceType === 'deck') card = player.deck[index];
+
+            if (!card) return;
+
+            currentActionContext = { sourceType, index, side, playerKey, card, slotData };
+            updatePreview(card);
+
+            const sourceTitleMap = {
+                hand: '手札操作',
+                monster: `フィールド操作`,
+                spell: `フィールド操作`,
+                field: 'フィールド操作',
+                graveyard: '墓地操作',
+                banished: '除外ゾーン操作',
+                extra: 'EXデッキ操作',
+                deck: 'デッキ操作'
+            };
+
+            const headerTitle = `${sourceTitleMap[sourceType] || 'カード操作'}: ${card.name}`;
+            document.getElementById('action-modal-title').innerText = headerTitle;
 
             const buttonsContainer = document.getElementById('action-modal-buttons');
-            document.getElementById('action-modal-title').innerText = `フィールド操作: ${slotData.card.name}`;
             buttonsContainer.innerHTML = '';
 
-            if (side === 'me') {
-                if (zoneType === 'monster') {
-                    if (slotData.position === 'DEF_FACE_DOWN') {
-                        buttonsContainer.innerHTML += `<button onclick="changePosition('ATK')" class="w-full py-2 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded text-xs">反転召喚 (表側攻撃表示)</button>`;
-                    } else if (slotData.position === 'ATK') {
-                        buttonsContainer.innerHTML += `<button onclick="changePosition('DEF_FACE_UP')" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded text-xs">表側守備表示に変更</button>`;
-                        buttonsContainer.innerHTML += `<button onclick="declareAttack()" class="w-full py-2 bg-red-600 hover:bg-red-500 text-white font-bold rounded text-xs">攻撃宣言 ⚔️</button>`;
-                    } else if (slotData.position === 'DEF_FACE_UP') {
-                        buttonsContainer.innerHTML += `<button onclick="changePosition('ATK')" class="w-full py-2 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded text-xs">表側攻撃表示に変更</button>`;
-                    }
-                } else if (zoneType === 'spell' && slotData.position === 'FACE_DOWN') {
-                    buttonsContainer.innerHTML += `<button onclick="activateSetSpellTrap()" class="w-full py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded text-xs">表側にして発動</button>`;
-                }
+            // 1. 【最優先】手札に加える / 手札に戻す (手札以外の場所にある場合)
+            if (sourceType !== 'hand') {
+                buttonsContainer.innerHTML += `<button onclick="executeAction('hand')" class="${BTN_STYLE_HAND}">手札に戻す / 加える</button>`;
+            }
 
-                buttonsContainer.innerHTML += `<button onclick="sendZoneCardToGrave()" class="w-full py-2 bg-rose-900/60 hover:bg-rose-800 text-rose-300 font-bold rounded text-xs border border-rose-700">墓地へ送る</button>`;
-                buttonsContainer.innerHTML += `<button onclick="returnZoneCardToHand()" class="w-full py-2 bg-indigo-900/60 hover:bg-indigo-800 text-indigo-300 font-bold rounded text-xs border border-indigo-700">手札に戻す</button>`;
+            // 2. フィールド上のカード専用アクション (表示形式変更・攻撃宣言・発動)
+            if (sourceType === 'monster' && side === 'me' && slotData) {
+                const pos = slotData.position;
+                if (pos !== 'ATK') {
+                    buttonsContainer.innerHTML += `<button onclick="changePosition('ATK')" class="${BTN_STYLE_FIELD}">表側攻撃表示に変更${pos === 'DEF_FACE_DOWN' ? ' (反転召喚)' : ''}</button>`;
+                }
+                if (pos !== 'DEF_FACE_UP') {
+                    buttonsContainer.innerHTML += `<button onclick="changePosition('DEF_FACE_UP')" class="${BTN_STYLE_FIELD}">表側守備表示に変更</button>`;
+                }
+                if (pos !== 'DEF_FACE_DOWN') {
+                    buttonsContainer.innerHTML += `<button onclick="changePosition('DEF_FACE_DOWN')" class="${BTN_STYLE_FIELD}">裏側守備表示に変更</button>`;
+                }
+                if (pos !== 'ATK_FACE_DOWN') {
+                    buttonsContainer.innerHTML += `<button onclick="changePosition('ATK_FACE_DOWN')" class="${BTN_STYLE_FIELD}">裏側攻撃表示に変更</button>`;
+                }
+                if (pos === 'ATK') {
+                    buttonsContainer.innerHTML += `<button onclick="declareAttack()" class="w-full py-2 bg-red-950/80 hover:bg-red-900 text-red-200 font-bold rounded-lg text-xs border border-red-600 shadow transition flex items-center justify-center gap-1.5">攻撃宣言 ⚔</button>`;
+                }
+            } else if ((sourceType === 'spell' || sourceType === 'field') && side === 'me' && slotData && slotData.position === 'FACE_DOWN') {
+                buttonsContainer.innerHTML += `<button onclick="activateSetSpellTrap()" class="${BTN_STYLE_FIELD}">表側にして発動</button>`;
+            }
+
+            // 3. フィールドへの配置 (手札、墓地、除外、EXデッキ、デッキから)
+            if (sourceType !== 'monster' && sourceType !== 'spell' && sourceType !== 'field') {
+                if (card.type === 'monster') {
+                    buttonsContainer.innerHTML += `<button onclick="executeAction('field_atk')" class="${BTN_STYLE_FIELD}">攻撃表示で出す / 特殊召喚</button>`;
+                    buttonsContainer.innerHTML += `<button onclick="executeAction('field_def')" class="${BTN_STYLE_FIELD}">守備表示で出す / 特殊召喚</button>`;
+                    buttonsContainer.innerHTML += `<button onclick="executeAction('field_set')" class="${BTN_STYLE_FIELD}">裏側守備表示でセット</button>`;
+                } else if (card.type === 'spell' || card.type === 'trap') {
+                    buttonsContainer.innerHTML += `<button onclick="executeAction('field_atk')" class="${BTN_STYLE_FIELD}">発動 / フィールドに出す</button>`;
+                    buttonsContainer.innerHTML += `<button onclick="executeAction('field_set')" class="${BTN_STYLE_FIELD}">セットする</button>`;
+                }
+            }
+
+            // 4. 各エリアへのカード移動オプション
+            if (sourceType !== 'graveyard') {
+                buttonsContainer.innerHTML += `<button onclick="executeAction('grave')" class="${BTN_STYLE_GRAVE}">墓地へ送る</button>`;
+            }
+
+            if (isExtraCard(card)) {
+                if (sourceType !== 'extra') {
+                    buttonsContainer.innerHTML += `<button onclick="executeAction('extra')" class="${BTN_STYLE_EXTRA}">EXデッキへ戻す</button>`;
+                }
             } else {
-                buttonsContainer.innerHTML += `<button onclick="sendZoneCardToGrave()" class="w-full py-2 bg-rose-900/60 hover:bg-rose-800 text-rose-300 font-bold rounded text-xs border border-rose-700">破壊 / 墓地へ送る</button>`;
+                if (sourceType !== 'deck') {
+                    buttonsContainer.innerHTML += `<button onclick="executeAction('deck')" class="${BTN_STYLE_DECK}">デッキへ戻す</button>`;
+                }
+            }
+
+            if (sourceType !== 'banished') {
+                buttonsContainer.innerHTML += `<button onclick="executeAction('banish')" class="${BTN_STYLE_BANISH}">除外ゾーンへ送る</button>`;
             }
 
             document.getElementById('action-modal').classList.remove('hidden');
         }
 
-        function changePosition(newPos) {
-            const { playerKey, zoneType, index } = selectedZone;
-            const slot = gameState[playerKey].monsters[index];
-            slot.position = newPos;
+        function executeAction(destination) {
+            if (!currentActionContext) return;
+            moveCard(currentActionContext, destination);
+        }
 
-            const nameMap = { ATK: '表側攻撃表示', DEF_FACE_UP: '表側守備表示', DEF_FACE_DOWN: '裏側守備表示' };
-            addLog(`${myPlayerId} は [${slot.card.name}] の表示形式を ${nameMap[newPos]} に変更しました。`);
+        function moveCard(sourceInfo, targetDestination) {
+            const { sourceType, index, playerKey, side } = sourceInfo;
+            const player = gameState[playerKey];
+
+            let card = null;
+            let originalPosition = null;
+
+            if (sourceType === 'hand') {
+                card = player.hand.splice(index, 1)[0];
+            } else if (sourceType === 'monster') {
+                const slot = player.monsters[index];
+                if (slot) {
+                    card = slot.card;
+                    originalPosition = slot.position;
+                    player.monsters[index] = null;
+                }
+            } else if (sourceType === 'spell') {
+                const slot = player.spells[index];
+                if (slot) {
+                    card = slot.card;
+                    originalPosition = slot.position;
+                    player.spells[index] = null;
+                }
+            } else if (sourceType === 'field') {
+                if (player.field) {
+                    card = player.field.card;
+                    originalPosition = player.field.position;
+                    player.field = null;
+                }
+            } else if (sourceType === 'graveyard') {
+                card = player.graveyard.splice(index, 1)[0];
+            } else if (sourceType === 'banished') {
+                if (!player.banished) player.banished = [];
+                card = player.banished.splice(index, 1)[0];
+            } else if (sourceType === 'extra') {
+                card = player.extraDeck.splice(index, 1)[0];
+            } else if (sourceType === 'deck') {
+                card = player.deck.splice(index, 1)[0];
+            }
+
+            if (!card) return;
+
+            const sourceNames = {
+                hand: '手札', monster: 'フィールド', spell: 'フィールド', field: 'フィールドゾーン',
+                graveyard: '墓地', banished: '除外ゾーン', extra: 'EXデッキ', deck: 'デッキ'
+            };
+            const fromName = sourceNames[sourceType] || sourceType;
+            const pName = playerKey.toUpperCase();
+
+            if (targetDestination === 'hand') {
+                player.hand.push(card);
+                addLog(`${pName} は${fromName}から [${card.name}] を手札に戻しました/加えました。`);
+            } else if (targetDestination === 'grave') {
+                player.graveyard.push(card);
+                addLog(`${pName} は${fromName}から [${card.name}] を墓地へ送りました。`);
+            } else if (targetDestination === 'banish') {
+                if (!player.banished) player.banished = [];
+                player.banished.push(card);
+                addLog(`${pName} は${fromName}から [${card.name}] を除外ゾーンへ送りました。`);
+            } else if (targetDestination === 'deck') {
+                if (isExtraCard(card)) {
+                    player.extraDeck.push(card);
+                    addLog(`${pName} は${fromName}から [${card.name}] をEXデッキに戻しました。`);
+                } else {
+                    player.deck.push(card);
+                    player.deck.sort(() => Math.random() - 0.5);
+                    addLog(`${pName} は${fromName}から [${card.name}] をデッキに戻し、シャッフルしました。`);
+                }
+            } else if (targetDestination === 'extra') {
+                player.extraDeck.push(card);
+                addLog(`${pName} は${fromName}から [${card.name}] をEXデッキに戻しました。`);
+            } else if (targetDestination.startsWith('field_')) {
+                if (card.sub === 'field') {
+                    if (player.field !== null) {
+                        const oldCard = player.field.card;
+                        player.graveyard.push(oldCard);
+                        addLog(`${pName} の元のフィールド魔法 [${oldCard.name}] が墓地へ送られました。`);
+                    }
+                    const pos = targetDestination === 'field_set' ? 'FACE_DOWN' : 'FACE_UP';
+                    player.field = { card: card, position: pos };
+                    if (pos === 'FACE_DOWN') {
+                        addLogWithOpponentMask(
+                            `${pName} は${fromName}から [${card.name}] をフィールドゾーンにセットしました。`,
+                            `${pName} は${fromName}から カード をフィールドゾーンにセットしました。`
+                        );
+                    } else {
+                        addLog(`${pName} は${fromName}から [${card.name}] をフィールドゾーンに配置/発動しました。`);
+                    }
+                } else if (card.type === 'monster') {
+                    const freeIdx = player.monsters.findIndex(m => m === null);
+                    if (freeIdx === -1) {
+                        alert('モンスターゾーンがいっぱいです。');
+                        restoreCardToSource(playerKey, sourceType, index, card, originalPosition);
+                        return;
+                    }
+                    let pos = 'ATK';
+                    if (targetDestination === 'field_def') pos = 'DEF_FACE_UP';
+                    if (targetDestination === 'field_set') pos = 'DEF_FACE_DOWN';
+
+                    player.monsters[freeIdx] = { card: card, position: pos, isAttacked: false };
+
+                    if (pos === 'DEF_FACE_DOWN') {
+                        addLogWithOpponentMask(
+                            `${pName} は${fromName}から [${card.name}] をモンスターゾーン ${freeIdx + 1} に裏側守備表示で出しました。`,
+                            `${pName} は${fromName}から カード をモンスターゾーン ${freeIdx + 1} に裏側守備表示で出しました。`
+                        );
+                    } else {
+                        addLog(`${pName} は${fromName}から [${card.name}] をモンスターゾーン ${freeIdx + 1} に${pos === 'ATK' ? '攻撃表示' : '表側守備表示'}で出しました。`);
+                    }
+                } else {
+                    const freeIdx = player.spells.findIndex(s => s === null);
+                    if (freeIdx === -1) {
+                        alert('魔法・罠ゾーンがいっぱいです。');
+                        restoreCardToSource(playerKey, sourceType, index, card, originalPosition);
+                        return;
+                    }
+                    const pos = targetDestination === 'field_set' ? 'FACE_DOWN' : 'FACE_UP';
+                    player.spells[freeIdx] = { card: card, position: pos };
+
+                    if (pos === 'FACE_DOWN') {
+                        addLogWithOpponentMask(
+                            `${pName} は${fromName}から [${card.name}] を魔法・罠ゾーン ${freeIdx + 1} にセットしました。`,
+                            `${pName} は${fromName}から カード を魔法・罠ゾーン ${freeIdx + 1} にセットしました。`
+                        );
+                    } else {
+                        addLog(`${pName} は${fromName}から [${card.name}] を魔法・罠ゾーン ${freeIdx + 1} に発動/配置しました。`);
+                    }
+                }
+            }
 
             closeActionModal();
+            refreshActiveViewers(side || 'me');
             broadcastGameState();
         }
 
+        function restoreCardToSource(playerKey, sourceType, index, card, position) {
+            const player = gameState[playerKey];
+            if (sourceType === 'hand') player.hand.splice(index, 0, card);
+            else if (sourceType === 'monster') player.monsters[index] = { card, position };
+            else if (sourceType === 'spell') player.spells[index] = { card, position };
+            else if (sourceType === 'field') player.field = { card, position };
+            else if (sourceType === 'graveyard') player.graveyard.splice(index, 0, card);
+            else if (sourceType === 'banished') (player.banished = player.banished || []).splice(index, 0, card);
+            else if (sourceType === 'extra') player.extraDeck.splice(index, 0, card);
+            else if (sourceType === 'deck') player.deck.splice(index, 0, card);
+        }
+
+        function refreshActiveViewers(side) {
+            const graveModal = document.getElementById('grave-modal');
+            if (!graveModal.classList.contains('hidden')) {
+                const titleText = document.getElementById('grave-modal-title').innerText;
+                if (titleText.includes('墓地')) openGraveViewer(side);
+                else if (titleText.includes('除外')) openBanishViewer(side);
+                else if (titleText.includes('エクストラ')) openExtraViewer(side);
+            }
+            const deckModal = document.getElementById('deck-search-modal');
+            if (!deckModal.classList.contains('hidden')) {
+                openDeckSearchModal();
+            }
+        }
+
+        function changePosition(newPos) {
+            if (!currentActionContext) return;
+            const { playerKey, index, card } = currentActionContext;
+            const slot = gameState[playerKey].monsters[index];
+            if (slot) {
+                slot.position = newPos;
+                const nameMap = { 
+                    ATK: '表側攻撃表示', 
+                    DEF_FACE_UP: '表側守備表示', 
+                    DEF_FACE_DOWN: '裏側守備表示',
+                    ATK_FACE_DOWN: '裏側攻撃表示'
+                };
+                addLog(`${myPlayerId} は [${card.name}] の表示形式を ${nameMap[newPos]} に変更しました。`);
+                closeActionModal();
+                broadcastGameState();
+            }
+        }
+
         function declareAttack() {
-            const { playerKey, index } = selectedZone;
-            const card = gameState[playerKey].monsters[index].card;
+            if (!currentActionContext) return;
+            const { card } = currentActionContext;
             addLog(`⚔️ ${myPlayerId} の [${card.name}] (ATK:${card.atk}) が攻撃宣言！`);
             closeActionModal();
             broadcastGameState();
         }
 
         function activateSetSpellTrap() {
-            const { playerKey, index } = selectedZone;
-            const slot = gameState[playerKey].spells[index];
-            slot.position = 'FACE_UP';
+            if (!currentActionContext) return;
+            const { playerKey, sourceType, index } = currentActionContext;
+            let slot = null;
+            if (sourceType === 'spell') slot = gameState[playerKey].spells[index];
+            else if (sourceType === 'field') slot = gameState[playerKey].field;
 
-            addLog(`${myPlayerId} はセットされていた [${slot.card.name}] を発動！`);
-            closeActionModal();
-            broadcastGameState();
+            if (slot) {
+                slot.position = 'FACE_UP';
+                addLog(`${myPlayerId} はセットされていた [${slot.card.name}] を表側にして発動！`);
+                closeActionModal();
+                broadcastGameState();
+            }
         }
 
-        function sendZoneCardToGrave() {
-            const { playerKey, zoneType, index } = selectedZone;
-            const list = zoneType === 'monster' ? gameState[playerKey].monsters : gameState[playerKey].spells;
-            const slot = list[index];
+        function openExtraViewer(side) {
+            const isP1 = myPlayerId === 'P1';
+            let playerKey = side === 'me' ? (isP1 ? 'p1' : 'p2') : (isP1 ? 'p2' : 'p1');
 
-            gameState[playerKey].graveyard.push(slot.card);
-            list[index] = null;
+            const extra = gameState[playerKey].extraDeck;
+            const content = document.getElementById('grave-modal-content');
+            document.getElementById('grave-modal-title').innerText = `${side === 'me' ? '自分' : '相手'}のエクストラデッキ (${extra.length}枚)`;
+            content.innerHTML = '';
 
-            addLog(`[${slot.card.name}] がフィールドから墓地へ送られました。`);
-            closeActionModal();
-            broadcastGameState();
+            if (extra.length === 0) {
+                content.innerHTML = `<div class="col-span-full text-center text-slate-500 text-xs py-4">エクストラデッキにカードはありません。</div>`;
+            } else {
+                extra.forEach((card, index) => {
+                    const cardEl = document.createElement('div');
+                    cardEl.className = `p-1.5 rounded border text-[10px] flex flex-col justify-between cursor-pointer transition transform hover:scale-105 ${getCardStyleClass(card)}`;
+                    cardEl.onclick = () => openCardActionModal('extra', index, side);
+                    cardEl.onmouseenter = () => updatePreview(card);
+                    cardEl.innerHTML = `
+                        <div class="font-bold truncate">${card.name}</div>
+                        <div class="text-[8px] font-mono">${card.type === 'monster' ? `ATK:${card.atk}` : card.type}</div>
+                    `;
+                    content.appendChild(cardEl);
+                });
+            }
+
+            document.getElementById('grave-modal').classList.remove('hidden');
         }
 
-        function returnZoneCardToHand() {
-            const { playerKey, zoneType, index } = selectedZone;
-            const list = zoneType === 'monster' ? gameState[playerKey].monsters : gameState[playerKey].spells;
-            const slot = list[index];
+        function openBanishViewer(side) {
+            const isP1 = myPlayerId === 'P1';
+            let playerKey = side === 'me' ? (isP1 ? 'p1' : 'p2') : (isP1 ? 'p2' : 'p1');
 
-            gameState[playerKey].hand.push(slot.card);
-            list[index] = null;
+            const banished = gameState[playerKey].banished || [];
+            const content = document.getElementById('grave-modal-content');
+            document.getElementById('grave-modal-title').innerText = `${side === 'me' ? '自分' : '相手'}の除外ゾーン (${banished.length}枚)`;
+            content.innerHTML = '';
 
-            addLog(`[${slot.card.name}] が手札に戻されました。`);
-            closeActionModal();
-            broadcastGameState();
+            if (banished.length === 0) {
+                content.innerHTML = `<div class="col-span-full text-center text-slate-500 text-xs py-4">除外されているカードはありません。</div>`;
+            } else {
+                banished.forEach((card, index) => {
+                    const cardEl = document.createElement('div');
+                    cardEl.className = `p-1.5 rounded border text-[10px] flex flex-col justify-between cursor-pointer transition transform hover:scale-105 ${getCardStyleClass(card)}`;
+                    cardEl.onclick = () => openCardActionModal('banished', index, side);
+                    cardEl.onmouseenter = () => updatePreview(card);
+                    cardEl.innerHTML = `
+                        <div class="font-bold truncate">${card.name}</div>
+                        <div class="text-[8px] font-mono">${card.type === 'monster' ? `ATK:${card.atk}` : card.type}</div>
+                    `;
+                    content.appendChild(cardEl);
+                });
+            }
+
+            document.getElementById('grave-modal').classList.remove('hidden');
         }
 
-        function drawCardAction() {
-            const meKey = myPlayerId === 'P1' ? 'p1' : 'p2';
-            const me = gameState[meKey];
+        function openGraveViewer(side) {
+            const isP1 = myPlayerId === 'P1';
+            let playerKey = side === 'me' ? (isP1 ? 'p1' : 'p2') : (isP1 ? 'p2' : 'p1');
 
-            if (me.deck.length === 0) return alert('デッキにカードがありません！');
+            const grave = gameState[playerKey].graveyard;
+            const content = document.getElementById('grave-modal-content');
+            document.getElementById('grave-modal-title').innerText = `${side === 'me' ? '自分' : '相手'}の墓地 (${grave.length}枚)`;
+            content.innerHTML = '';
 
-            const card = me.deck.pop();
-            me.hand.push(card);
+            if (grave.length === 0) {
+                content.innerHTML = `<div class="col-span-full text-center text-slate-500 text-xs py-4">墓地にカードはありません。</div>`;
+            } else {
+                grave.forEach((card, index) => {
+                    const cardEl = document.createElement('div');
+                    cardEl.className = `p-1.5 rounded border text-[10px] flex flex-col justify-between cursor-pointer transition transform hover:scale-105 ${getCardStyleClass(card)}`;
+                    cardEl.onclick = () => openCardActionModal('graveyard', index, side);
+                    cardEl.onmouseenter = () => updatePreview(card);
+                    cardEl.innerHTML = `
+                        <div class="font-bold truncate">${card.name}</div>
+                        <div class="text-[8px] font-mono">${card.type === 'monster' ? `ATK:${card.atk}` : card.type}</div>
+                    `;
+                    content.appendChild(cardEl);
+                });
+            }
 
-            addLog(`${myPlayerId} はカードを1枚ドローしました。(手札: ${me.hand.length}枚)`);
-            broadcastGameState();
+            document.getElementById('grave-modal').classList.remove('hidden');
+        }
+
+        function closeGraveViewer() {
+            document.getElementById('grave-modal').classList.add('hidden');
         }
 
         function setPhase(phase) {
@@ -1073,40 +1483,11 @@
 
         function closeActionModal(e) {
             document.getElementById('action-modal').classList.add('hidden');
-        }
-
-        function openGraveViewer(side) {
-            const isP1 = myPlayerId === 'P1';
-            let playerKey = side === 'me' ? (isP1 ? 'p1' : 'p2') : (isP1 ? 'p2' : 'p1');
-
-            const grave = gameState[playerKey].graveyard;
-            const content = document.getElementById('grave-modal-content');
-            document.getElementById('grave-modal-title').innerText = `${side === 'me' ? '自分' : '相手'}の墓地 (${grave.length}枚)`;
-            content.innerHTML = '';
-
-            if (grave.length === 0) {
-                content.innerHTML = `<div class="col-span-full text-center text-slate-500 text-xs py-4">墓地にカードはありません。</div>`;
-            } else {
-                grave.forEach((card) => {
-                    const cardEl = document.createElement('div');
-                    cardEl.className = `p-2 rounded border text-xs flex flex-col justify-between ${getCardStyleClass(card)}`;
-                    cardEl.innerHTML = `
-                        <div class="font-bold truncate">${card.name}</div>
-                        <div class="text-[9px] font-mono">${card.type === 'monster' ? `ATK:${card.atk}` : card.type}</div>
-                    `;
-                    content.appendChild(cardEl);
-                });
-            }
-
-            document.getElementById('grave-modal').classList.remove('hidden');
-        }
-
-        function closeGraveViewer() {
-            document.getElementById('grave-modal').classList.add('hidden');
+            currentActionContext = null;
         }
 
         /* ==========================================================================
-           7. UTILITIES & CARD PREVIEW
+           8. UTILITIES & PREVIEW
            ========================================================================== */
 
         function updatePreview(card) {
@@ -1117,19 +1498,19 @@
                 statsHtml = `
                     <div class="flex items-center space-x-2 my-1 text-xs">
                         <span class="font-bold text-amber-900">★${card.level}</span>
-                        <span class="text-slate-800">${card.attr} / ${card.race}</span>
+                        <span class="text-slate-800">${card.attr || '地'} / ${card.race || '戦士族'}</span>
                     </div>
-                    <div class="font-mono text-sm font-black text-slate-900">ATK/ ${card.atk}  DEF/ ${card.def}</div>
+                    <div class="font-mono text-xs font-black text-slate-900">ATK/ ${card.atk}  DEF/ ${card.def}</div>
                 `;
             } else {
                 statsHtml = `<div class="text-xs font-bold text-teal-300 my-1">${card.type === 'spell' ? '魔法' : '罠'}カード [${card.sub}]</div>`;
             }
 
             container.innerHTML = `
-                <div class="w-full p-3 rounded-lg border flex flex-col items-center ${getCardStyleClass(card)}">
-                    <h4 class="font-bold text-sm text-center mb-1">${card.name}</h4>
+                <div class="w-full p-2 rounded border flex flex-col items-center ${getCardStyleClass(card)}">
+                    <h4 class="font-bold text-xs text-center mb-0.5">${card.name}</h4>
                     ${statsHtml}
-                    <p class="text-xs opacity-90 mt-2 text-left bg-slate-950/50 p-2 rounded border border-slate-700/50 w-full leading-relaxed text-slate-100">${card.desc}</p>
+                    <p class="text-[10px] opacity-90 mt-1 text-left bg-slate-950/50 p-1.5 rounded border border-slate-700/50 w-full leading-snug text-slate-100">${card.desc}</p>
                 </div>
             `;
         }
@@ -1138,6 +1519,7 @@
             if (card.type === 'spell') return 'card-spell';
             if (card.type === 'trap') return 'card-trap';
             if (card.sub === 'fusion') return 'card-fusion';
+            if (card.sub === 'ritual') return 'card-ritual';
             if (card.sub === 'effect') return 'card-effect';
             return 'card-normal';
         }
@@ -1145,6 +1527,8 @@
         function getCardTextColor(card) {
             if (card.type === 'spell') return 'text-teal-400';
             if (card.type === 'trap') return 'text-pink-400';
+            if (card.sub === 'fusion') return 'text-purple-400';
+            if (card.sub === 'ritual') return 'text-blue-400';
             if (card.sub === 'effect') return 'text-orange-400';
             return 'text-amber-400';
         }
@@ -1168,7 +1552,6 @@
             }
         }
 
-        /* 相手のログでカード名を秘匿するためのログ出力関数 */
         function addLogWithOpponentMask(myMsg, oppMsg) {
             gameState.logs.push(myMsg);
             const logBox = document.getElementById('log-box');
