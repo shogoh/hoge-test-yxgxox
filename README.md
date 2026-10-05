@@ -12,4 +12,5 @@
 
 特別なインストールやサーバーの構築は不要です。
 以下へアクセスして遊んでください。
+
 *[https://shogoh.github.io/yugioh-gateball-simulator/](https://shogoh.github.io/yugioh-gateball-simulator/)*
