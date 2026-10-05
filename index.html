@@ -200,9 +200,6 @@
                         <div class="flex items-center justify-between text-[10px] text-slate-400 mb-0.5">
                             <div class="flex items-center space-x-2">
                                 <span class="font-bold text-amber-400"><i class="fa-solid fa-hand mr-1"></i> 手札</span>
-                                <!-- <button onclick="drawCard()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-2 py-0.5 rounded text-[10px] transition flex items-center gap-1">
-                                    🎴 ドロー
-                                </button> -->
                             </div>
                             <span id="my-hand-count-text">0枚</span>
                         </div>
@@ -265,17 +262,22 @@
     </main>
 
     <!-- DECK SEARCH MODAL -->
+    <!-- 変更点：h-[85vh] に固定し、検索バーを追加 -->
     <div id="deck-search-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-start pt-8 justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-5xl p-3 flex flex-col space-y-3 shadow-2xl max-h-[85vh]">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-5xl p-3 flex flex-col space-y-3 shadow-2xl h-[85vh]">
             <div class="flex justify-between items-center border-b border-slate-800 pb-2">
                 <div class="flex items-center space-x-2">
                     <i class="fa-solid fa-layer-group text-amber-400 text-base"></i>
                     <h3 id="deck-search-modal-title" class="font-bold text-slate-100 text-sm">デッキ内容確認 (クリックで操作モーダル表示)</h3>
                 </div>
-                <button onclick="closeDeckSearchModal()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+                <!-- 検索ボックスの追加 -->
+                <div class="flex items-center space-x-3">
+                    <input id="in-game-deck-search-input" oninput="renderInGameDeckSearch()" type="text" placeholder="カード名・テキストで検索..." class="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200 w-48 focus:outline-none focus:border-amber-500">
+                    <button onclick="closeDeckSearchModal()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+                </div>
             </div>
             
-            <div id="deck-search-container" class="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-2 p-2 bg-slate-950/80 rounded border border-slate-800 overflow-y-auto max-h-[60vh] items-start">
+            <div id="deck-search-container" class="flex-1 grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-2 p-2 bg-slate-950/80 rounded border border-slate-800 overflow-y-auto items-start content-start">
             </div>
 
             <div class="flex justify-between items-center text-xs text-slate-400 pt-1">
@@ -287,7 +289,8 @@
 
     <!-- DECK EDITOR MODAL -->
     <div id="deck-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-6xl max-h-[95vh] flex flex-col shadow-2xl overflow-hidden">
+        <!-- 変更点：max-h-[95vh] を h-[95vh] にして高さを固定 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col shadow-2xl overflow-hidden">
             
             <div class="bg-slate-800 p-3 border-b border-slate-700 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
@@ -298,9 +301,8 @@
             </div>
 
             <div class="flex-1 grid grid-cols-12 gap-3 p-3 overflow-hidden">
-                <!-- 1. デッキリスト (col-span-5 から col-span-4 に変更) -->
+                <!-- 1. デッキリスト -->
                 <div class="col-span-4 bg-slate-950 border border-slate-800 rounded-lg p-2.5 flex flex-col overflow-hidden">
-                    <!-- 中身は既存のまま変更なし -->
                     <div class="flex items-center justify-between pb-1.5 border-b border-slate-800 flex-wrap gap-1">
                         <div class="text-xs">
                             <span class="text-slate-400 font-bold">メイン: </span>
@@ -343,26 +345,118 @@
                     </button>
                 </div>
 
-                <!-- 2. カードプール (col-span-7 から col-span-5 に変更) -->
+                <!-- 2. カードプール -->
                 <div class="col-span-5 bg-slate-950 border border-slate-800 rounded-lg p-2.5 flex flex-col overflow-hidden">
                     <div class="flex items-center justify-between pb-1.5 border-b border-slate-800 gap-2 flex-wrap">
                         <div class="flex space-x-1">
                             <button id="tab-gen1" onclick="switchCardTab('gen1')" class="px-2.5 py-1 text-[10px] font-bold rounded bg-amber-600 text-slate-950">第1期</button>
                             <button id="tab-gen2" onclick="switchCardTab('gen2')" class="px-2.5 py-1 text-[10px] font-bold rounded bg-slate-800 text-slate-300 hover:bg-slate-700">第2期</button>
                         </div>
-                        <input id="card-search-input" oninput="filterCardPool()" type="text" placeholder="カード名で検索..." class="bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-xs text-slate-200 w-32 focus:outline-none focus:border-amber-500">
+                        <!-- 変更点：プレースホルダーを更新し、検索の横幅を調整 -->
+                        <input id="card-search-input" oninput="filterCardPool()" type="text" placeholder="カード名・テキストで検索..." class="bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-xs text-slate-200 w-44 focus:outline-none focus:border-amber-500">
                     </div>
-                    <!-- 少し幅が狭くなるため、小さい画面では2列(sm:grid-cols-2)になるように調整 -->
-                    <div id="card-pool-grid" class="flex-1 overflow-y-auto grid grid-cols-2 lg:grid-cols-3 gap-2 p-1 my-1"></div>
+                    <!-- 変更点：content-start を追加し、アイテムが少ない時に間延びするのを防止 -->
+                    <div id="card-pool-grid" class="flex-1 overflow-y-auto grid grid-cols-2 lg:grid-cols-3 gap-2 p-1 my-1 content-start"></div>
                 </div>
 
-                <!-- 3. 詳細プレビュー (新規追加: col-span-3) -->
+                <!-- 3. 詳細プレビュー & AND検索フィルタ追加 -->
                 <div class="col-span-3 bg-slate-900 border border-slate-800 rounded-lg p-2.5 flex flex-col shadow overflow-hidden">
                     <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between flex-none border-b border-slate-800 pb-1.5">
                         <span><i class="fa-solid fa-magnifying-glass mr-1"></i> カード詳細情報</span>
                     </h3>
-                    <div id="deck-preview-container" class="flex-1 flex flex-col items-center justify-center text-center overflow-y-auto p-1 mt-1">
+                    
+                    <div id="deck-preview-container" class="flex-1 flex flex-col items-center justify-center text-center overflow-y-auto p-1 mt-1 border-b border-slate-800 pb-2 mb-2">
                         <p class="text-xs text-slate-500">カードをクリックすると<br>詳細が表示されます</p>
+                    </div>
+
+                    <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between flex-none border-b border-slate-800 pb-1.5">
+                        <span><i class="fa-solid fa-filter mr-1"></i> 詳細検索 (AND条件)</span>
+                        <button onclick="clearFilters()" class="text-[9px] text-amber-400 hover:text-amber-300 border border-amber-400/30 px-1.5 py-0.5 rounded transition">クリア</button>
+                    </h3>
+                    <div class="flex-none grid grid-cols-2 gap-1.5 pr-1 text-[10px] overflow-y-auto max-h-36">
+                        <div class="col-span-2">
+                            <label class="block text-slate-500 mb-0.5 font-bold text-[9px]">カード枠</label>
+                            <select id="filter-frame" onchange="filterCardPool()" class="w-full bg-slate-800 border border-slate-700 text-slate-200 rounded px-1.5 py-0.5 focus:outline-none focus:border-amber-500">
+                                <option value="">すべて</option>
+                                <option value="normal_monster">通常モンスター</option>
+                                <option value="effect_monster">効果モンスター</option>
+                                <option value="ritual_monster">儀式モンスター</option>
+                                <option value="fusion_monster">融合モンスター</option>
+                                <option value="spell">魔法カード</option>
+                                <option value="trap">罠カード</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-500 mb-0.5 font-bold text-[9px]">属性</label>
+                            <select id="filter-attr" onchange="filterCardPool()" class="w-full bg-slate-800 border border-slate-700 text-slate-200 rounded px-1.5 py-0.5 focus:outline-none focus:border-amber-500">
+                                <option value="">すべて</option>
+                                <option value="闇">闇</option>
+                                <option value="光">光</option>
+                                <option value="地">地</option>
+                                <option value="水">水</option>
+                                <option value="炎">炎</option>
+                                <option value="風">風</option>
+                                <option value="神">神</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-500 mb-0.5 font-bold text-[9px]">種族</label>
+                            <select id="filter-race" onchange="filterCardPool()" class="w-full bg-slate-800 border border-slate-700 text-slate-200 rounded px-1.5 py-0.5 focus:outline-none focus:border-amber-500">
+                                <option value="">すべて</option>
+                                <option value="ドラゴン">ドラゴン族</option>
+                                <option value="魔法使い">魔法使い族</option>
+                                <option value="アンデット">アンデット族</option>
+                                <option value="戦士">戦士族</option>
+                                <option value="獣戦士">獣戦士族</option>
+                                <option value="獣">獣族</option>
+                                <option value="鳥獣">鳥獣族</option>
+                                <option value="悪魔">悪魔族</option>
+                                <option value="天使">天使族</option>
+                                <option value="昆虫">昆虫族</option>
+                                <option value="恐竜">恐竜族</option>
+                                <option value="爬虫類">爬虫類族</option>
+                                <option value="魚">魚族</option>
+                                <option value="海竜">海竜族</option>
+                                <option value="水">水族</option>
+                                <option value="炎">炎族</option>
+                                <option value="雷">雷族</option>
+                                <option value="岩石">岩石族</option>
+                                <option value="植物">植物族</option>
+                                <option value="機械">機械族</option>
+                                <option value="幻神獣">幻神獣族</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-500 mb-0.5 font-bold text-[9px]">レベル</label>
+                            <select id="filter-level" onchange="filterCardPool()" class="w-full bg-slate-800 border border-slate-700 text-slate-200 rounded px-1.5 py-0.5 focus:outline-none focus:border-amber-500">
+                                <option value="">すべて</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                            </select>
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-slate-500 mb-0.5 font-bold text-[9px]">魔法・罠</label>
+                            <select id="filter-st-type" onchange="filterCardPool()" class="w-full bg-slate-800 border border-slate-700 text-slate-200 rounded px-1.5 py-0.5 focus:outline-none focus:border-amber-500">
+                                <option value="">すべて</option>
+                                <option value="normal">通常</option>
+                                <option value="continuous">永続</option>
+                                <option value="field">フィールド</option>
+                                <option value="equip">装備</option>
+                                <option value="quick-play">速攻</option>
+                                <option value="ritual">儀式</option>
+                                <option value="counter">カウンター</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -400,7 +494,7 @@
         let GEN2_CARDS = [];
         let ALL_CARDS = [];
         let BANLISTS = [];
-        let currentBanlist = null; // nullなら無制限ルール
+        let currentBanlist = null;
 
         async function loadCardPool() {
             try {
@@ -645,13 +739,76 @@
             renderCardPool();
         }
 
+        function clearFilters() {
+            document.getElementById('card-search-input').value = '';
+            if (document.getElementById('filter-frame')) document.getElementById('filter-frame').value = '';
+            if (document.getElementById('filter-attr')) document.getElementById('filter-attr').value = '';
+            if (document.getElementById('filter-st-type')) document.getElementById('filter-st-type').value = '';
+            if (document.getElementById('filter-race')) document.getElementById('filter-race').value = '';
+            if (document.getElementById('filter-level')) document.getElementById('filter-level').value = '';
+            filterCardPool();
+        }
+
         function renderCardPool() {
             const pool = activeTab === 'gen1' ? GEN1_CARDS : GEN2_CARDS;
             const search = document.getElementById('card-search-input').value.toLowerCase();
+            
+            const frameFilter = document.getElementById('filter-frame') ? document.getElementById('filter-frame').value : '';
+            const attrFilter = document.getElementById('filter-attr') ? document.getElementById('filter-attr').value : '';
+            const raceFilter = document.getElementById('filter-race') ? document.getElementById('filter-race').value : '';
+            const levelFilter = document.getElementById('filter-level') ? document.getElementById('filter-level').value : '';
+            const stTypeFilter = document.getElementById('filter-st-type') ? document.getElementById('filter-st-type').value : '';
+
             const grid = document.getElementById('card-pool-grid');
             grid.innerHTML = '';
 
-            pool.filter(c => c.name.toLowerCase().includes(search)).forEach(card => {
+            pool.filter(c => {
+                if (search && !(c.name.toLowerCase().includes(search) || (c.desc && c.desc.toLowerCase().includes(search)))) return false;
+
+                if (frameFilter) {
+                    if (frameFilter === 'normal_monster' && !(c.type === 'monster' && (!c.sub || c.sub === 'normal'))) return false;
+                    if (frameFilter === 'effect_monster' && !(c.type === 'monster' && c.sub === 'effect')) return false;
+                    if (frameFilter === 'ritual_monster' && !(c.type === 'monster' && c.sub === 'ritual')) return false;
+                    if (frameFilter === 'fusion_monster' && !(c.type === 'monster' && c.sub === 'fusion')) return false;
+                    if (frameFilter === 'spell' && c.type !== 'spell') return false;
+                    if (frameFilter === 'trap' && c.type !== 'trap') return false;
+                }
+
+                if (attrFilter) {
+                    if (c.type !== 'monster' || c.attr !== attrFilter) return false;
+                }
+
+                if (raceFilter) {
+                    if (c.type !== 'monster' || !c.race) return false;
+                    const cardRace = c.race.replace('族', '');
+                    if (cardRace !== raceFilter) return false;
+                }
+
+                if (levelFilter) {
+                    if (c.type !== 'monster' || String(c.level) !== String(levelFilter)) return false;
+                }
+
+                if (stTypeFilter) {
+                    if (c.type !== 'spell' && c.type !== 'trap') return false;
+                    const stTypeMap = {
+                        'normal': ['normal', '通常'],
+                        'continuous': ['continuous', '永続'],
+                        'field': ['field', 'フィールド'],
+                        'equip': ['equip', '装備'],
+                        'quick-play': ['quick-play', '速攻'],
+                        'ritual': ['ritual', '儀式'],
+                        'counter': ['counter', 'カウンター']
+                    };
+                    const validValues = stTypeMap[stTypeFilter] || [stTypeFilter];
+                    if (!c.sub || !validValues.includes(c.sub)) {
+                        if (!(stTypeFilter === 'normal' && !c.sub)) {
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            }).forEach(card => {
                 const isExtra = isExtraCard(card);
                 const count = [...currentDeck, ...currentExtraDeck].filter(c => c.name === card.name).length;
                 const maxCount = getCardLimit(card.name);
@@ -665,7 +822,7 @@
                 if (card.type === 'monster') {
                     statsHtml = `<div class="font-bold text-[10px] text-amber-200">★${card.level} ATK/${card.atk} DEF/${card.def}</div>`;
                 } else {
-                    statsHtml = `<div class="font-bold text-[10px] text-teal-200">${card.type === 'spell' ? '魔法' : '罠'} [${card.sub}]</div>`;
+                    statsHtml = `<div class="font-bold text-[10px] text-teal-200">${card.type === 'spell' ? '魔法' : '罠'} [${card.sub || '通常'}]</div>`;
                 }
 
                 cardEl.innerHTML = `
@@ -951,9 +1108,21 @@
             broadcastGameState();
         }
 
+        // 変更点：対戦中のデッキ確認を開く際に検索バーをリセットし、描画関数を呼び出す
         function openDeckSearchModal() {
+            const searchInput = document.getElementById('in-game-deck-search-input');
+            if (searchInput) searchInput.value = '';
+            
+            renderInGameDeckSearch();
+            document.getElementById('deck-search-modal').classList.remove('hidden');
+        }
+
+        // 新規追加：対戦中のデッキ内検索を描画する処理
+        function renderInGameDeckSearch() {
             const meKey = myPlayerId === 'P1' ? 'p1' : 'p2';
             const deck = gameState[meKey].deck;
+            const searchInput = document.getElementById('in-game-deck-search-input');
+            const search = (searchInput ? searchInput.value : '').toLowerCase();
 
             const container = document.getElementById('deck-search-container');
             container.innerHTML = '';
@@ -962,6 +1131,9 @@
                 container.innerHTML = `<div class="col-span-full text-xs text-slate-500 py-4 w-full text-center">デッキにカードがありません。</div>`;
             } else {
                 deck.forEach((card, index) => {
+                    // カード名やテキストでフィルタリング
+                    if (search && !card.name.toLowerCase().includes(search) && !(card.desc && card.desc.toLowerCase().includes(search))) return;
+
                     const cardEl = document.createElement('div');
                     cardEl.className = `w-full h-20 rounded p-1 cursor-pointer border flex flex-col justify-between text-[9px] transition transform hover:-translate-y-1 hover:scale-105 select-none ${getCardStyleClass(card)}`;
                     cardEl.onclick = () => openCardActionModal('deck', index, 'me');
@@ -974,8 +1146,6 @@
                     container.appendChild(cardEl);
                 });
             }
-
-            document.getElementById('deck-search-modal').classList.remove('hidden');
         }
 
         function closeDeckSearchModal() {
@@ -1594,7 +1764,6 @@
            ========================================================================== */
 
         function updatePreview(card) {
-            // メイン画面用とデッキ編集画面用の両方の要素を取得
             const containers = [
                 document.getElementById('card-preview-container'),
                 document.getElementById('deck-preview-container')
@@ -1622,7 +1791,6 @@
                 </div>
             `;
 
-            // 存在するコンテナ全てにHTMLを反映
             containers.forEach(container => {
                 if (container) {
                     container.innerHTML = html;
