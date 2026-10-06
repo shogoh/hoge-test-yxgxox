@@ -482,7 +482,7 @@
                 ALL_CARDS = [...GEN1_CARDS, ...GEN2_CARDS];
             } catch (err) {
                 console.error('カードデータの取得エラー:', err);
-                addLog('⚠️ cards.json の読み込みに失敗しました。');
+                addLog('⚠️ cards.json の読み込みに失敗しました。', false);
             }
         }
 
@@ -495,7 +495,7 @@
                 renderBanlistOptions();
             } catch (err) {
                 console.error('禁止制限リストデータの取得エラー:', err);
-                addLog('⚠️ banlists.json の読み込みに失敗しました。(無制限ルールとなります)');
+                addLog('⚠️ banlists.json の読み込みに失敗しました。(無制限ルールとなります)', false);
             }
         }
 
@@ -604,8 +604,21 @@
             openDeckEditor();
         };
 
+        // 独自の固定IDを生成・取得する関数
+        function generateOrGetMyId() {
+            let id = sessionStorage.getItem('my_yugioh_id');
+            if (!id) {
+                // 6桁のランダムな大文字英数字を生成して保存
+                id = Math.random().toString(36).substring(2, 8).toUpperCase();
+                sessionStorage.setItem('my_yugioh_id', id);
+            }
+            return id;
+        }
+
         function initPeer() {
-            peer = new Peer({
+            const myFixedId = generateOrGetMyId();
+
+            peer = new Peer(myFixedId, {
                 config: {
                     'iceServers': [
                         { urls: 'stun:stun.l.google.com:19302' },
@@ -613,18 +626,36 @@
                     ]
                 }
             });
+
             peer.on('open', (id) => {
                 document.getElementById('my-peer-id').innerText = id;
-                addLog(`WebRTC ID生成完了: ${id}`);
+                addLog(`WebRTC ID生成完了: ${id}`, false);
             });
+
+            // ★スマホで裏画面に回って切断された時の再接続処理
+            peer.on('disconnected', () => {
+                addLog("サーバーから切断されました。再接続を試みます...", false);
+                peer.reconnect();
+            });
+
             peer.on('connection', (c) => {
                 conn = c; myPlayerId = 'P1';
                 setupConnectionHandlers();
                 document.getElementById('role-badge').innerText = "ホスト";
                 document.getElementById('role-badge').className = "hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-900 text-emerald-300 border border-emerald-700";
-                addLog("相手が接続しました(P1)");
+                addLog("相手が接続しました(P1)", false);
             });
-            peer.on('error', (err) => { addLog(`通信エラー: ${err.type}`); });
+
+            peer.on('error', (err) => { 
+                addLog(`通信エラー: ${err.type}`, false); 
+                
+                // 万が一IDが重複して使えなくなった場合の復帰処理
+                if (err.type === 'unavailable-id') {
+                    sessionStorage.removeItem('my_yugioh_id');
+                    alert("IDが無効になりました。ページを再読み込みして再発行します。");
+                    location.reload();
+                }
+            });
         }
 
         function connectToPeer() {
@@ -635,12 +666,12 @@
             setupConnectionHandlers();
             document.getElementById('role-badge').innerText = "ゲスト";
             document.getElementById('role-badge').className = "hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-900 text-blue-300 border border-blue-700";
-            addLog(`接続要求中...`);
+            addLog(`接続要求中...`, false);
         }
 
         function setupConnectionHandlers() {
             conn.on('open', () => {
-                addLog("通信確立！対戦可能");
+                addLog("通信確立！対戦可能", false);
                 alert("通信が確立しました！対戦可能です。");
                 if (myPlayerId === 'P1') broadcastGameState();
             });
@@ -649,7 +680,7 @@
                 else if (data.type === 'ACTION_LOG') { addLog(data.msg, false); }
             });
             conn.on('close', () => {
-                addLog("切断されました。");
+                addLog("切断されました。", false);
                 document.getElementById('role-badge').innerText = "切断";
             });
         }
@@ -792,7 +823,7 @@
             const blob = new Blob([JSON.stringify({ main: currentDeck, extra: currentExtraDeck }, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a'); a.href = url; a.download = 'yugioh_deck.json'; a.click(); URL.revokeObjectURL(url);
-            addLog('デッキを保存しました。');
+            addLog('デッキを保存しました。', false);
         }
 
         function importDeckJSON(event) {
@@ -808,7 +839,7 @@
                     currentDeck = mainList.map(c => { const matched = ALL_CARDS.find(p => p.id === c.id || p.name === c.name); return { ...(matched || c), uniqueId: 'c_' + Math.random().toString(36).substr(2, 9) }; });
                     currentExtraDeck = extraList.map(c => { const matched = ALL_CARDS.find(p => p.id === c.id || p.name === c.name); return { ...(matched || c), uniqueId: 'c_' + Math.random().toString(36).substr(2, 9) }; });
                     validateDeckWithBanlist(); renderDeckList(); renderCardPool();
-                    addLog(`読込完了: メイン${currentDeck.length}/EX${currentExtraDeck.length}`);
+                    addLog(`読込完了: メイン${currentDeck.length}/EX${currentExtraDeck.length}`, false);
                 } catch (err) { alert('読込失敗: ' + err.message); }
             };
             reader.readAsText(file); event.target.value = '';
