@@ -105,16 +105,14 @@
     </header>
 
     <!-- Main Battle Area (Responsive) -->
-    <!-- min-h-0 を追加し、計算式(h-[calc...])を削除して自動伸縮に変更 -->
     <main class="flex-1 min-h-0 max-w-full w-full p-1 sm:p-2 grid grid-cols-12 gap-1 sm:gap-2 overflow-hidden">
 
         <!-- Field Board (Mobile: 12 cols, PC: 9 cols) -->
         <div class="col-span-12 lg:col-span-9 flex flex-col justify-between h-full space-y-0.5 sm:space-y-1 overflow-hidden min-h-0">
 
-            <!-- OPPONENT ZONE (Top) -->
-            <div id="opponent-area" class="bg-slate-900/80 rounded-lg p-1 sm:p-2 border border-slate-800 shadow flex flex-col justify-between flex-1 overflow-hidden min-h-0">
+            <!-- OPPONENT ZONE (Top) ★ flex-[3]に変更して少し狭める -->
+            <div id="opponent-area" class="bg-slate-900/80 rounded-lg p-1 sm:p-2 border border-slate-800 shadow flex flex-col justify-between flex-[3] overflow-hidden min-h-0">
                 <!-- Opponent Header & LP -->
-                <!-- flex-none を追加して潰れ防止 -->
                 <div class="flex items-center justify-between pb-0.5 sm:pb-1 border-b border-slate-800 text-[10px] sm:text-xs flex-none">
                     <div class="flex items-center space-x-1 sm:space-x-2">
                         <span id="opp-name" class="font-bold text-red-400"><i class="fa-solid fa-user-ninja mr-1"></i> <span class="hidden sm:inline">相手</span></span>
@@ -194,8 +192,8 @@
                 </div>
             </div>
 
-            <!-- MY ZONE (Bottom) -->
-            <div id="my-area" class="bg-slate-900/80 rounded-lg p-1 sm:p-2 border border-slate-800 shadow flex flex-col justify-between flex-1 overflow-hidden min-h-0">
+            <!-- MY ZONE (Bottom) ★ flex-[4]に変更してエリアを少し広く取る -->
+            <div id="my-area" class="bg-slate-900/80 rounded-lg p-1 sm:p-2 border border-slate-800 shadow flex flex-col justify-between flex-[4] overflow-hidden min-h-0">
                 <div class="grid grid-cols-7 gap-0.5 sm:gap-1 h-20 sm:h-36 my-0.5 flex-none">
                     <div id="my-field-zone" onclick="handleZoneClick('me', 'field', 0)" class="zone text-center font-bold text-slate-400 cursor-pointer text-[8px] sm:text-[10px]">フィールド</div>
                     <div id="my-m-0" onclick="handleZoneClick('me', 'monster', 0)" class="zone cursor-pointer"></div>
@@ -219,11 +217,13 @@
                             <span class="font-bold text-amber-400"><i class="fa-solid fa-hand mr-1"></i> 手札</span>
                             <span id="my-hand-count-text">0枚</span>
                         </div>
-                        <div id="my-hand-container" class="flex justify-start space-x-1 h-12 sm:h-16 overflow-x-auto p-0.5 sm:p-1 bg-slate-950/60 rounded border border-slate-800 items-center"></div>
+                        <!-- ★ 自分の手札の高さを h-16 sm:h-20 に拡大 -->
+                        <div id="my-hand-container" class="flex justify-start space-x-1 h-16 sm:h-20 overflow-x-auto p-0.5 sm:p-1 bg-slate-950/60 rounded border border-slate-800 items-center"></div>
                     </div>
 
                     <div class="w-10 sm:w-12 flex-none flex flex-col items-center">
-                        <div id="my-banish-zone" onclick="openBanishViewer('me')" class="w-10 sm:w-12 h-12 sm:h-16 zone text-center font-bold text-purple-300 bg-purple-950/40 border-purple-600 cursor-pointer hover:bg-purple-900/40 text-[8px] sm:text-[9px] flex flex-col justify-center items-center rounded">
+                        <!-- ★ 自分の除外エリアの高さも h-16 sm:h-20 に拡大 -->
+                        <div id="my-banish-zone" onclick="openBanishViewer('me')" class="w-10 sm:w-12 h-16 sm:h-20 zone text-center font-bold text-purple-300 bg-purple-950/40 border-purple-600 cursor-pointer hover:bg-purple-900/40 text-[8px] sm:text-[9px] flex flex-col justify-center items-center rounded">
                             除外<br><span id="my-banish-count">0</span>
                         </div>
                     </div>
@@ -278,8 +278,6 @@
         </div>
 
     </main>
-
-    <!-- 以下、モーダルとスクリプト部分は前回と全く同じため省略せずに全て記載します -->
 
     <!-- DECK SEARCH MODAL -->
     <div id="deck-search-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-start pt-4 sm:pt-8 justify-center p-2 sm:p-4 hidden">
@@ -1004,10 +1002,11 @@
             document.getElementById('my-hand-count-text').innerText = `${me.hand.length}枚`;
             me.hand.forEach((card, index) => {
                 const cardEl = document.createElement('div');
-                cardEl.className = `w-10 h-14 sm:w-12 sm:h-16 min-w-[40px] sm:min-w-[48px] rounded p-1 cursor-pointer border flex flex-col justify-between text-[7px] sm:text-[8px] transition transform hover:-translate-y-1 select-none flex-none ${getCardStyleClass(card)}`;
+                // ★ 自分の手札のカードサイズを少し大きく（w-12 h-16 / sm:w-14 sm:h-20）
+                cardEl.className = `w-12 h-16 sm:w-14 sm:h-20 min-w-[48px] sm:min-w-[56px] rounded p-1 cursor-pointer border flex flex-col justify-between text-[7px] sm:text-[9px] transition transform hover:-translate-y-1 select-none flex-none ${getCardStyleClass(card)}`;
                 cardEl.onclick = () => openHandActionModal(index);
                 cardEl.onmouseenter = () => updatePreview(card);
-                cardEl.innerHTML = `<div class="font-bold leading-tight truncate">${card.name}</div><div class="text-[6px] sm:text-[7px] font-mono mt-auto font-bold opacity-90">${card.type === 'monster' ? `攻${card.atk}` : (card.type === 'spell' ? '魔法' : '罠')}</div>`;
+                cardEl.innerHTML = `<div class="font-bold leading-tight truncate">${card.name}</div><div class="text-[7px] sm:text-[8px] font-mono mt-auto font-bold opacity-90">${card.type === 'monster' ? `攻${card.atk}` : (card.type === 'spell' ? '魔法' : '罠')}</div>`;
                 myHandContainer.appendChild(cardEl);
             });
 
