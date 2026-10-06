@@ -17,6 +17,9 @@
             color: #f8fafc;
             user-select: none;
             -webkit-user-select: none;
+            /* スマホのアドレスバーによる見切れを防止 */
+            height: 100vh;
+            height: 100dvh; 
         }
 
         /* Card Styling Themes */
@@ -68,11 +71,11 @@
         @media (max-height: 500px) {
             header { padding-top: 2px; padding-bottom: 2px; }
             .zone { min-height: 38px; }
-            #my-area .grid, #opponent-area .grid { height: 5rem; } /* h-20相当 */
+            #my-area .grid, #opponent-area .grid { height: 5rem; }
         }
     </style>
 </head>
-<body class="h-screen w-screen flex flex-col bg-slate-950 text-slate-100 overflow-hidden">
+<body class="w-screen flex flex-col bg-slate-950 text-slate-100 overflow-hidden">
 
     <!-- Navigation Bar -->
     <header class="bg-slate-900 border-b border-slate-800 px-2 sm:px-3 py-1 shadow-md flex-none z-30">
@@ -102,15 +105,17 @@
     </header>
 
     <!-- Main Battle Area (Responsive) -->
-    <main class="flex-1 max-w-full w-full p-1 sm:p-2 grid grid-cols-12 gap-1 sm:gap-2 overflow-hidden h-[calc(100vh-32px)] sm:h-[calc(100vh-42px)]">
+    <!-- min-h-0 を追加し、計算式(h-[calc...])を削除して自動伸縮に変更 -->
+    <main class="flex-1 min-h-0 max-w-full w-full p-1 sm:p-2 grid grid-cols-12 gap-1 sm:gap-2 overflow-hidden">
 
         <!-- Field Board (Mobile: 12 cols, PC: 9 cols) -->
-        <div class="col-span-12 lg:col-span-9 flex flex-col justify-between h-full space-y-0.5 sm:space-y-1 overflow-hidden">
+        <div class="col-span-12 lg:col-span-9 flex flex-col justify-between h-full space-y-0.5 sm:space-y-1 overflow-hidden min-h-0">
 
             <!-- OPPONENT ZONE (Top) -->
-            <div id="opponent-area" class="bg-slate-900/80 rounded-lg p-1 sm:p-2 border border-slate-800 shadow flex flex-col justify-between flex-1 overflow-hidden">
+            <div id="opponent-area" class="bg-slate-900/80 rounded-lg p-1 sm:p-2 border border-slate-800 shadow flex flex-col justify-between flex-1 overflow-hidden min-h-0">
                 <!-- Opponent Header & LP -->
-                <div class="flex items-center justify-between pb-0.5 sm:pb-1 border-b border-slate-800 text-[10px] sm:text-xs">
+                <!-- flex-none を追加して潰れ防止 -->
+                <div class="flex items-center justify-between pb-0.5 sm:pb-1 border-b border-slate-800 text-[10px] sm:text-xs flex-none">
                     <div class="flex items-center space-x-1 sm:space-x-2">
                         <span id="opp-name" class="font-bold text-red-400"><i class="fa-solid fa-user-ninja mr-1"></i> <span class="hidden sm:inline">相手</span></span>
                         <span id="opp-deck-count" class="bg-slate-800 px-1 py-0.5 rounded border border-slate-700 text-slate-300">山札: --</span>
@@ -134,8 +139,8 @@
                 </div>
 
                 <!-- Opponent Hand & Banish Area -->
-                <div class="flex gap-1 sm:gap-2 items-center my-0.5">
-                    <div class="flex-1 overflow-hidden">
+                <div class="flex gap-1 sm:gap-2 items-center my-0.5 min-h-0 flex-1">
+                    <div class="flex-1 overflow-hidden h-full flex items-center">
                         <div id="opp-hand-container" class="flex justify-start -space-x-4 sm:-space-x-3 h-10 sm:h-12 overflow-x-auto items-center"></div>
                     </div>
                     <div class="w-8 sm:w-12 flex-none flex flex-col items-center">
@@ -146,7 +151,7 @@
                 </div>
 
                 <!-- Opponent Field Grid (7 Columns) -->
-                <div class="grid grid-cols-7 gap-0.5 sm:gap-1 h-20 sm:h-36 my-0.5">
+                <div class="grid grid-cols-7 gap-0.5 sm:gap-1 h-20 sm:h-36 my-0.5 flex-none">
                     <div id="opp-deck-zone" class="zone text-center font-bold text-slate-500 bg-slate-800 text-[8px] sm:text-[10px]">デッキ</div>
                     <div id="opp-st-4" onclick="handleZoneClick('opp', 'spell', 4)" class="zone cursor-pointer"></div>
                     <div id="opp-st-3" onclick="handleZoneClick('opp', 'spell', 3)" class="zone cursor-pointer"></div>
@@ -173,7 +178,7 @@
                     <span id="phase-display" class="px-1.5 py-0.5 rounded bg-blue-900 text-blue-200 text-[9px] sm:text-[10px] font-bold border border-blue-700">DP</span>
                 </div>
 
-                <div class="flex gap-1 text-[10px]">
+                <div class="flex gap-1 text-[10px] flex-none">
                     <button onclick="rollDice()" class="bg-indigo-900/80 hover:bg-indigo-800 text-indigo-300 border border-indigo-700 px-1.5 py-0.5 rounded font-bold">🎲</button>
                     <button onclick="tossCoin()" class="bg-yellow-900/80 hover:bg-yellow-800 text-yellow-300 border border-yellow-700 px-1.5 py-0.5 rounded font-bold">🪙</button>
                 </div>
@@ -190,8 +195,8 @@
             </div>
 
             <!-- MY ZONE (Bottom) -->
-            <div id="my-area" class="bg-slate-900/80 rounded-lg p-1 sm:p-2 border border-slate-800 shadow flex flex-col justify-between flex-1 overflow-hidden">
-                <div class="grid grid-cols-7 gap-0.5 sm:gap-1 h-20 sm:h-36 my-0.5">
+            <div id="my-area" class="bg-slate-900/80 rounded-lg p-1 sm:p-2 border border-slate-800 shadow flex flex-col justify-between flex-1 overflow-hidden min-h-0">
+                <div class="grid grid-cols-7 gap-0.5 sm:gap-1 h-20 sm:h-36 my-0.5 flex-none">
                     <div id="my-field-zone" onclick="handleZoneClick('me', 'field', 0)" class="zone text-center font-bold text-slate-400 cursor-pointer text-[8px] sm:text-[10px]">フィールド</div>
                     <div id="my-m-0" onclick="handleZoneClick('me', 'monster', 0)" class="zone cursor-pointer"></div>
                     <div id="my-m-1" onclick="handleZoneClick('me', 'monster', 1)" class="zone cursor-pointer"></div>
@@ -208,9 +213,9 @@
                     <div id="my-st-4" onclick="handleZoneClick('me', 'spell', 4)" class="zone cursor-pointer"></div>
                     <div id="my-deck-zone" onclick="drawCard()" class="zone text-center font-bold text-amber-400 bg-amber-950/40 border-amber-600 cursor-pointer hover:bg-amber-900/40 text-[8px] sm:text-[10px]">デッキ<br><span id="my-deck-count">0</span></div>                </div>
 
-                <div class="mt-1 flex gap-1 sm:gap-2 items-end">
-                    <div class="flex-1 overflow-hidden">
-                        <div class="flex items-center justify-between text-[9px] sm:text-[10px] text-slate-400 mb-0.5">
+                <div class="mt-1 flex gap-1 sm:gap-2 items-end min-h-0 flex-1">
+                    <div class="flex-1 overflow-hidden h-full flex flex-col justify-end">
+                        <div class="flex items-center justify-between text-[9px] sm:text-[10px] text-slate-400 mb-0.5 flex-none">
                             <span class="font-bold text-amber-400"><i class="fa-solid fa-hand mr-1"></i> 手札</span>
                             <span id="my-hand-count-text">0枚</span>
                         </div>
@@ -224,7 +229,8 @@
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between border-t border-slate-800 pt-0.5 sm:pt-1 text-[10px] sm:text-xs">
+                <!-- 自分のLP・名前バー (flex-none と mt-auto で最下部に固定・潰れ防止) -->
+                <div class="flex items-center justify-between border-t border-slate-800 pt-0.5 sm:pt-1 text-[10px] sm:text-xs flex-none mt-auto">
                     <div class="flex items-center space-x-1 sm:space-x-2">
                         <span id="my-name" class="font-bold text-blue-400"><i class="fa-solid fa-user-shield mr-1"></i> <span class="hidden sm:inline">自分</span></span>
                         <button onclick="openDeckSearchModal()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px]">デッキ確認</button>
@@ -272,6 +278,8 @@
         </div>
 
     </main>
+
+    <!-- 以下、モーダルとスクリプト部分は前回と全く同じため省略せずに全て記載します -->
 
     <!-- DECK SEARCH MODAL -->
     <div id="deck-search-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-start pt-4 sm:pt-8 justify-center p-2 sm:p-4 hidden">
