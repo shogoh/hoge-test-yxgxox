@@ -303,7 +303,7 @@
                         </div>
                         <input id="card-search-input" oninput="filterCardPool()" type="text" placeholder="名前・テキスト検索..." class="bg-slate-900 border border-slate-700 rounded px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-xs text-slate-200 w-full sm:w-44 focus:outline-none focus:border-amber-500">
                     </div>
-                    <div id="card-pool-grid" class="flex-1 overflow-y-auto grid grid-cols-2 lg:grid-cols-3 gap-1 sm:gap-2 p-0.5 sm:p-1 my-1 content-start"></div>
+                    <div id="card-pool-grid" class="flex-1 overflow-y-auto grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-1.5 sm:gap-2 p-0.5 sm:p-1 my-1 content-start"></div>
                 </div>
 
                 <div class="col-span-3 bg-slate-900 border border-slate-800 rounded-lg p-1 sm:p-2.5 flex flex-col shadow overflow-hidden">
@@ -604,33 +604,33 @@
                 }
                 return true;
             }).forEach(card => {
-                const isExtra = isExtraCard(card);
                 const count = [...currentDeck, ...currentExtraDeck].filter(c => c.name === card.name).length;
                 const maxCount = getCardLimit(card.name);
-                const cardEl = document.createElement('div');
-                cardEl.className = `p-1 sm:p-1.5 h-16 sm:h-20 rounded cursor-pointer border transition transform hover:scale-102 ${getCardStyleClass(card)}`;
-                cardEl.onclick = () => updatePreview(card);
-                let statsHtml = card.type === 'monster' ? `<div class="font-bold text-[7px] sm:text-[9px] text-amber-200">★${card.level} ${card.atk}/${card.def}</div>` : `<div class="font-bold text-[7px] sm:text-[9px] text-teal-200">${card.type === 'spell' ? '魔法' : '罠'} [${card.sub || '通常'}]</div>`;
+                const isExtra = isExtraCard(card);
+                const isMax = count >= maxCount || (isExtra ? currentExtraDeck.length >= 15 : currentDeck.length >= 60);
 
-                cardEl.innerHTML = `
-                    <div class="flex space-x-1.5 h-full items-center">
-                        <div class="w-10 h-14 sm:w-12 sm:h-16 flex-none rounded border border-slate-700/50 overflow-hidden shadow-sm">
-                            ${getCardAbstractArt(card, 'small')}
-                        </div>
-                        <div class="flex-1 flex flex-col justify-between h-full overflow-hidden">
-                            <div>
-                                <div class="flex items-center justify-between font-bold text-[9px] sm:text-[11px] leading-tight">
-                                    <span class="truncate pr-1">${card.name}</span>
-                                    <span class="bg-slate-950/80 px-1 rounded border border-slate-700 text-white flex-none">${count}/${maxCount}</span>
-                                </div>
-                                ${statsHtml}
-                            </div>
-                            <button onclick="event.stopPropagation(); addCardToDeck('${card.id}')" ${count >= maxCount || (isExtra ? currentExtraDeck.length >= 15 : currentDeck.length >= 60) ? 'disabled' : ''} class="w-full mt-auto bg-slate-950/60 hover:bg-slate-950 disabled:opacity-40 text-amber-400 border border-slate-700 rounded py-0.5 text-[8px] sm:text-[9px] font-bold transition">
-                                + ${isExtra ? 'EX追加' : '追加'}
-                            </button>
-                        </div>
+                const cardEl = document.createElement('div');
+                cardEl.className = `w-full flex flex-col p-0.5 sm:p-1 bg-slate-900 border border-slate-800 rounded transition transform hover:scale-102`;
+                
+                const imgContainer = document.createElement('div');
+                imgContainer.className = `w-full aspect-[3/4] rounded shadow-sm overflow-hidden relative cursor-pointer border ${getCardStyleClass(card)}`;
+                if (count >= maxCount) imgContainer.classList.add('opacity-50');
+                imgContainer.onclick = () => updatePreview(card);
+                imgContainer.innerHTML = `
+                    ${getCardAbstractArt(card, 'normal')}
+                    <div class="absolute bottom-0 right-0 bg-slate-950/80 text-white text-[8px] sm:text-[10px] px-1 rounded-tl-sm font-bold border-t border-l border-slate-700">
+                        ${count}/${maxCount}
                     </div>
                 `;
+
+                const btn = document.createElement('button');
+                btn.onclick = (e) => { e.stopPropagation(); addCardToDeck(card.id); };
+                btn.disabled = isMax;
+                btn.className = `w-full mt-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-amber-400 border border-slate-600 rounded py-1 text-[9px] sm:text-[10px] font-bold transition shadow-sm`;
+                btn.innerHTML = `<i class="fa-solid fa-plus"></i> ${isExtra ? 'EX' : '追加'}`;
+
+                cardEl.appendChild(imgContainer);
+                cardEl.appendChild(btn);
                 grid.appendChild(cardEl);
             });
         }
@@ -743,13 +743,9 @@
             else deck.forEach((card, index) => {
                 if (search && !card.name.toLowerCase().includes(search) && !(card.desc && card.desc.toLowerCase().includes(search))) return;
                 const cardEl = document.createElement('div');
-                cardEl.className = `w-full h-20 sm:h-24 rounded p-1 cursor-pointer border flex flex-col justify-between text-[8px] sm:text-[9px] transition transform hover:-translate-y-1 hover:scale-105 select-none ${getCardStyleClass(card)}`;
+                cardEl.className = `w-full aspect-[3/4] rounded cursor-pointer border transition transform hover:scale-105 select-none overflow-hidden shadow-sm ${getCardStyleClass(card)}`;
                 cardEl.onclick = () => openCardActionModal('deck', index, 'me'); cardEl.onmouseenter = () => updatePreview(card);
-                cardEl.innerHTML = `
-                    <div class="font-bold leading-tight truncate flex-none">${card.name}</div>
-                    <div class="flex-1 w-full my-0.5 rounded-[1px] sm:rounded-sm overflow-hidden border border-slate-700/50">${getCardAbstractArt(card, 'small')}</div>
-                    <div class="text-[7px] sm:text-[8px] font-mono flex-none font-bold opacity-90">${card.type === 'monster' ? `攻${card.atk}` : card.type}</div>
-                `;
+                cardEl.innerHTML = getCardAbstractArt(card, 'normal');
                 container.appendChild(cardEl);
             });
         }
@@ -776,7 +772,7 @@
             document.getElementById('opp-hand-count').innerText = `手札:${opp.hand.length}`;
             for (let i = 0; i < opp.hand.length; i++) {
                 const cardBack = document.createElement('div');
-                cardBack.className = 'w-7 h-10 sm:w-9 sm:h-12 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[7px] sm:text-[9px] text-slate-600 font-black shadow card-back flex-none';
+                cardBack.className = 'w-10 h-14 sm:w-12 sm:h-16 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[7px] sm:text-[9px] text-slate-600 font-black shadow card-back flex-none';
                 cardBack.innerText = '???'; oppHandContainer.appendChild(cardBack);
             }
 
@@ -784,13 +780,9 @@
             document.getElementById('my-hand-count-text').innerText = `${me.hand.length}枚`;
             me.hand.forEach((card, index) => {
                 const cardEl = document.createElement('div');
-                cardEl.className = `w-12 h-16 sm:w-14 sm:h-20 min-w-[48px] sm:min-w-[56px] rounded p-1 cursor-pointer border flex flex-col justify-between text-[7px] sm:text-[9px] transition transform hover:-translate-y-1 select-none flex-none ${getCardStyleClass(card)}`;
+                cardEl.className = `w-10 h-14 sm:w-12 sm:h-16 rounded cursor-pointer border transition transform hover:-translate-y-1 select-none flex-none overflow-hidden shadow-sm ${getCardStyleClass(card)}`;
                 cardEl.onclick = () => openHandActionModal(index); cardEl.onmouseenter = () => updatePreview(card);
-                cardEl.innerHTML = `
-                    <div class="font-bold leading-tight truncate flex-none">${card.name}</div>
-                    <div class="flex-1 w-full my-0.5 rounded-[1px] sm:rounded-sm overflow-hidden border border-slate-700/50 shadow-sm">${getCardAbstractArt(card, 'normal')}</div>
-                    <div class="text-[7px] sm:text-[8px] font-mono mt-auto font-bold opacity-90 flex-none">${card.type === 'monster' ? `攻${card.atk}` : (card.type === 'spell' ? '魔法' : '罠')}</div>
-                `;
+                cardEl.innerHTML = getCardAbstractArt(card, 'normal');
                 myHandContainer.appendChild(cardEl);
             });
             renderFieldZones('my', me); renderFieldZones('opp', opp);
@@ -802,13 +794,13 @@
                 if (cardData) {
                     const card = cardData.card; const isFaceDown = cardData.position === 'DEF_FACE_DOWN' || cardData.position === 'ATK_FACE_DOWN'; const isAtk = cardData.position === 'ATK' || cardData.position === 'ATK_FACE_DOWN';
                     const cardEl = document.createElement('div');
+                    cardEl.className = `w-8 h-11 sm:w-10 sm:h-14 rounded border overflow-hidden shadow-sm ${getCardStyleClass(card)} ${isAtk ? 'atk-position' : 'def-position'}`;
                     if (isFaceDown && prefix === 'opp') {
                         cardEl.className = `w-8 h-11 sm:w-10 sm:h-14 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[7px] sm:text-[9px] font-bold text-slate-600 card-back ${isAtk ? 'atk-position' : 'def-position'}`;
                         cardEl.innerText = '???';
                     } else {
-                        cardEl.className = `w-8 h-11 sm:w-10 sm:h-14 rounded p-[2px] border text-[6px] sm:text-[8px] flex flex-col justify-between ${getCardStyleClass(card)} ${isAtk ? 'atk-position' : 'def-position'}`;
                         if (isFaceDown) cardEl.classList.add('opacity-75');
-                        cardEl.innerHTML = `<div class="font-bold leading-tight truncate text-[5px] sm:text-[6px] flex-none pb-[1px]">${card.name}</div><div class="flex-1 w-full rounded-[1px] overflow-hidden border border-slate-700/50">${getCardAbstractArt(card, 'small')}</div><div class="text-[5px] sm:text-[6px] font-mono font-bold flex-none pt-[1px]">${card.atk}/${card.def}</div>`;
+                        cardEl.innerHTML = getCardAbstractArt(card, 'normal');
                     }
                     cardEl.onmouseenter = () => { if (!isFaceDown || prefix === 'my') updatePreview(card); }; slot.appendChild(cardEl);
                 }
@@ -819,13 +811,13 @@
                 if (cardData) {
                     const card = cardData.card; const isFaceDown = cardData.position === 'FACE_DOWN';
                     const cardEl = document.createElement('div');
+                    cardEl.className = `w-8 h-11 sm:w-10 sm:h-14 rounded border overflow-hidden shadow-sm ${getCardStyleClass(card)}`;
                     if (isFaceDown && prefix === 'opp') {
-                        cardEl.className = 'w-8 h-11 sm:w-10 sm:h-14 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[7px] sm:text-[9px] font-bold text-slate-600 card-back';
+                        cardEl.className = `w-8 h-11 sm:w-10 sm:h-14 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[7px] sm:text-[9px] font-bold text-slate-600 card-back`;
                         cardEl.innerText = '???';
                     } else {
-                        cardEl.className = `w-8 h-11 sm:w-10 sm:h-14 rounded p-[2px] border text-[6px] sm:text-[8px] flex flex-col justify-between ${getCardStyleClass(card)}`;
                         if (isFaceDown) cardEl.classList.add('opacity-75');
-                        cardEl.innerHTML = `<div class="font-bold leading-tight truncate text-[5px] sm:text-[6px] flex-none pb-[1px]">${card.name}</div><div class="flex-1 w-full rounded-[1px] overflow-hidden border border-slate-700/50">${getCardAbstractArt(card, 'small')}</div><div class="text-[5px] sm:text-[6px] font-mono font-bold flex-none pt-[1px]">${card.type === 'spell' ? '魔法' : '罠'}</div>`;
+                        cardEl.innerHTML = getCardAbstractArt(card, 'normal');
                     }
                     cardEl.onmouseenter = () => { if (!isFaceDown || prefix === 'my') updatePreview(card); }; slot.appendChild(cardEl);
                 }
@@ -835,13 +827,13 @@
             if (fieldData) {
                 const card = fieldData.card; const isFaceDown = fieldData.position === 'FACE_DOWN';
                 const cardEl = document.createElement('div');
+                cardEl.className = `w-8 h-11 sm:w-10 sm:h-14 rounded border overflow-hidden shadow-sm ${getCardStyleClass(card)}`;
                 if (isFaceDown && prefix === 'opp') {
-                    cardEl.className = 'w-8 h-11 sm:w-10 sm:h-14 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[7px] sm:text-[9px] font-bold text-slate-600 card-back';
+                    cardEl.className = `w-8 h-11 sm:w-10 sm:h-14 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[7px] sm:text-[9px] font-bold text-slate-600 card-back`;
                     cardEl.innerText = '???';
                 } else {
-                    cardEl.className = `w-8 h-11 sm:w-10 sm:h-14 rounded p-[2px] border text-[6px] sm:text-[8px] flex flex-col justify-between ${getCardStyleClass(card)}`;
                     if (isFaceDown) cardEl.classList.add('opacity-75');
-                    cardEl.innerHTML = `<div class="font-bold leading-tight truncate text-[5px] sm:text-[6px] flex-none pb-[1px]">${card.name}</div><div class="flex-1 w-full rounded-[1px] overflow-hidden border border-slate-700/50">${getCardAbstractArt(card, 'small')}</div><div class="text-[5px] sm:text-[6px] font-mono font-bold flex-none pt-[1px]">F</div>`;
+                    cardEl.innerHTML = getCardAbstractArt(card, 'normal');
                 }
                 cardEl.onmouseenter = () => { if (!isFaceDown || prefix === 'my') updatePreview(card); }; fieldSlot.appendChild(cardEl);
             } else fieldSlot.innerText = 'F';
@@ -888,7 +880,7 @@
                 if (pos !== 'DEF_FACE_DOWN') btnBox.innerHTML += `<button onclick="changePosition('DEF_FACE_DOWN')" class="${BTN_STYLE_FIELD}">裏側守備に変更</button>`;
                 if (pos === 'ATK') btnBox.innerHTML += `<button onclick="declareAttack()" class="w-full py-1.5 sm:py-2 bg-red-950/80 hover:bg-red-900 text-red-200 font-bold rounded-lg text-[10px] sm:text-xs border border-red-600 shadow transition">攻撃宣言 ⚔</button>`;
             } else if ((sourceType === 'spell' || sourceType === 'field') && side === 'me' && slotData && slotData.position === 'FACE_DOWN') {
-                btnBox.innerHTML += `<button onclick="activateSetSpellTrap()" class="${BTN_STYLE_FIELD}">表側にして発動</button>`;
+                btnBox.innerHTML += `<button onclick="activateSetSpellTrap()" class="${BTN_STYLE_FIELD}">表側にして発発動</button>`;
             }
 
             if (!['monster', 'spell', 'field'].includes(sourceType)) {
@@ -982,18 +974,22 @@
         function openBanishViewer(side) { createListModal(side, 'banished', '除外'); }
         function openGraveViewer(side) { createListModal(side, 'graveyard', '墓地'); }
         function closeGraveViewer() { document.getElementById('grave-modal').classList.add('hidden'); }
+        
         function createListModal(side, arrayName, titleStr) {
             const isP1 = myPlayerId === 'P1'; let pk = side === 'me' ? (isP1 ? 'p1' : 'p2') : (isP1 ? 'p2' : 'p1');
             const arr = gameState[pk][arrayName] || []; const c = document.getElementById('grave-modal-content');
             document.getElementById('grave-modal-title').innerText = `${side === 'me' ? '自分' : '相手'}の${titleStr} (${arr.length})`; c.innerHTML = '';
             if (arr.length === 0) c.innerHTML = `<div class="col-span-full text-center text-slate-500 text-xs py-4">カードなし</div>`;
             else arr.forEach((card, idx) => {
-                const el = document.createElement('div'); el.className = `p-1 sm:p-1.5 h-20 sm:h-24 rounded border flex flex-col justify-between cursor-pointer transition transform hover:-translate-y-1 ${getCardStyleClass(card)}`;
+                const el = document.createElement('div'); 
+                el.className = `w-full aspect-[3/4] rounded border cursor-pointer transition transform hover:scale-105 overflow-hidden shadow-sm ${getCardStyleClass(card)}`;
                 el.onclick = () => openCardActionModal(arrayName, idx, side); el.onmouseenter = () => updatePreview(card);
-                el.innerHTML = `<div class="font-bold truncate text-[8px] sm:text-[9px] flex-none pb-px">${card.name}</div><div class="flex-1 w-full rounded-[1px] sm:rounded-sm overflow-hidden border border-slate-700/50 my-[1px]">${getCardAbstractArt(card, 'small')}</div><div class="text-[7px] sm:text-[8px] font-mono flex-none pt-px font-bold opacity-90">${card.type === 'monster' ? `ATK:${card.atk}` : card.type}</div>`; c.appendChild(el);
+                el.innerHTML = getCardAbstractArt(card, 'normal'); 
+                c.appendChild(el);
             });
             document.getElementById('grave-modal').classList.remove('hidden');
         }
+
         function setPhase(phase) { gameState.phase = phase; addLog(`フェイズ: ${phase}`); broadcastGameState(); }
         function nextTurn() { gameState.turnPlayer = gameState.turnPlayer === 'P1' ? 'P2' : 'P1'; gameState.turnCount++; gameState.phase = 'DP'; addLog(`ターン終了 ➔ T${gameState.turnCount}(${gameState.turnPlayer})`); broadcastGameState(); }
         function closeActionModal() { document.getElementById('action-modal').classList.add('hidden'); currentActionContext = null; }
@@ -1006,14 +1002,17 @@
             let statsHtml = card.type === 'monster' ? `<div class="flex items-center justify-center space-x-2 my-0.5 sm:my-1 text-[10px] sm:text-xs"><span class="font-bold text-amber-900">★${card.level}</span><span class="text-slate-800">${card.attr || '地'}/${card.race || '戦士族'}</span></div><div class="font-mono text-[10px] sm:text-xs font-black text-slate-900">ATK/${card.atk} DEF/${card.def}</div>` : `<div class="text-[10px] sm:text-xs font-bold text-teal-300 my-0.5 sm:my-1">${card.type === 'spell' ? '魔法' : '罠'} [${card.sub || '通常'}]</div>`;
             const html = `
                 <div class="w-full p-1.5 sm:p-2 rounded border flex flex-col items-center h-full ${getCardStyleClass(card)}">
-                    <h4 class="font-bold text-[10px] sm:text-xs text-center mb-0.5">${card.name}</h4>
+                    <h4 class="font-bold text-[10px] sm:text-xs text-center mb-0.5 flex-none">${card.name}</h4>
                     <div class="w-20 h-20 sm:w-28 sm:h-28 my-1 rounded border-2 border-slate-700 shadow-md overflow-hidden flex-none">${getCardAbstractArt(card, 'large')}</div>
                     ${statsHtml}
-                    <p class="text-[8px] sm:text-[10px] opacity-90 mt-1 text-left bg-slate-950/50 p-1 sm:p-1.5 rounded border border-slate-700/50 w-full leading-snug text-slate-100 flex-1 overflow-y-auto">${card.desc}</p>
+                    <div class="opacity-90 mt-1 text-left bg-slate-950/50 p-1 sm:p-1.5 rounded border border-slate-700/50 w-full text-slate-100 flex-1 overflow-y-auto">
+                        <p class="text-[8px] sm:text-[10px] leading-snug whitespace-pre-wrap">${card.desc}</p>
+                    </div>
                 </div>
             `;
             containers.forEach(c => { if (c) c.innerHTML = html; });
         }
+        
         function getCardStyleClass(c) { if(c.type==='spell')return'card-spell'; if(c.type==='trap')return'card-trap'; if(c.sub==='fusion')return'card-fusion'; if(c.sub==='ritual')return'card-ritual'; if(c.sub==='effect')return'card-effect'; return'card-normal'; }
         function getCardTextColor(c) { if(c.type==='spell')return'text-teal-400'; if(c.type==='trap')return'text-pink-400'; if(c.sub==='fusion')return'text-purple-400'; if(c.sub==='ritual')return'text-blue-400'; if(c.sub==='effect')return'text-orange-400'; return'text-amber-400'; }
         
