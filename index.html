@@ -17,22 +17,10 @@
             color: #f8fafc;
             user-select: none;
             -webkit-user-select: none;
-            /* スマホのアドレスバーによる見切れを防止 */
-            height: 100vh;
-            height: 100dvh; 
+            height: 100vh; height: 100dvh; 
         }
-
-        /* Card Styling Themes */
-        .card-frame {
-            border-radius: 4px;
-            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.5);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-        }
-        .card-frame:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.7);
-        }
-        
+        .card-frame { border-radius: 4px; box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.5); transition: transform 0.15s ease, box-shadow 0.15s ease; }
+        .card-frame:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.7); }
         .card-normal { background: linear-gradient(135deg, #e0a93b, #ab791d); color: #1e1b4b; border: 1px solid #fef08a; font-weight: bold; }
         .card-effect { background: linear-gradient(135deg, #ea580c, #c2410c); color: #fff; border: 1px solid #fed7aa; }
         .card-ritual { background: linear-gradient(135deg, #3a68c0, #1d4ed8); color: #fff; border: 1px solid #93c5fd; }
@@ -40,44 +28,18 @@
         .card-trap { background: linear-gradient(135deg, #be185d, #9d174d); color: #fff; border: 1px solid #fbcfe8; }
         .card-fusion { background: linear-gradient(135deg, #6b21a8, #581c87); color: #fff; border: 1px solid #e9d5ff; }
         .card-back { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #334155; }
-
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
-
-        /* Board Zones */
-        .zone {
-            background-color: rgba(30, 41, 59, 0.7);
-            border: 1px dashed #475569;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            height: 100%;
-            min-height: 40px;
-        }
-        .zone.active {
-            border-color: #3b82f6;
-            background-color: rgba(30, 58, 138, 0.3);
-        }
-
-        .atk-position { transform: rotate(0deg); }
-        .def-position { transform: rotate(90deg) scale(0.8); }
-
-        /* スマホ横持ち時の高さの圧迫を防ぐための調整 */
-        @media (max-height: 500px) {
-            header { padding-top: 2px; padding-bottom: 2px; }
-            .zone { min-height: 38px; }
-            #my-area .grid, #opponent-area .grid { height: 5rem; }
-        }
+        .zone { background-color: rgba(30, 41, 59, 0.7); border: 1px dashed #475569; border-radius: 4px; display: flex; align-items: center; justify-content: center; position: relative; height: 100%; min-height: 40px; }
+        .zone.active { border-color: #3b82f6; background-color: rgba(30, 58, 138, 0.3); }
+        .atk-position { transform: rotate(0deg); } .def-position { transform: rotate(90deg) scale(0.8); }
+        @media (max-height: 500px) { header { padding-top: 2px; padding-bottom: 2px; } .zone { min-height: 38px; } #my-area .grid, #opponent-area .grid { height: 5rem; } }
     </style>
 </head>
 <body class="w-screen flex flex-col bg-slate-950 text-slate-100 overflow-hidden">
 
-    <!-- Navigation Bar -->
     <header class="bg-slate-900 border-b border-slate-800 px-2 sm:px-3 py-1 shadow-md flex-none z-30">
         <div class="max-w-full mx-auto flex items-center justify-between gap-1 sm:gap-2">
             <div class="flex items-center space-x-1.5 sm:space-x-2">
@@ -85,18 +47,14 @@
                 <h1 class="font-bold text-xs sm:text-base text-amber-400 truncate">遊☆戯☆王</h1>
                 <span id="role-badge" class="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-800 text-slate-400 border border-slate-700">未接続</span>
             </div>
-
-            <!-- Network Controllers -->
             <div class="flex items-center space-x-1 sm:space-x-2 text-[10px] sm:text-xs">
                 <div class="flex items-center bg-slate-800 rounded px-1.5 sm:px-2 py-0.5 border border-slate-700 max-w-[100px] sm:max-w-none">
                     <span class="hidden md:inline text-[10px] text-slate-400 mr-1.5">My ID:</span>
                     <span id="my-peer-id" class="font-mono text-amber-300 select-all font-bold text-[9px] sm:text-xs truncate">発行中...</span>
                     <button onclick="copyPeerId()" class="ml-1 sm:ml-1.5 text-slate-400 hover:text-white flex-none" title="IDをコピー"><i class="fa-regular fa-copy"></i></button>
                 </div>
-                
                 <input id="target-peer-id" type="text" placeholder="相手のID" class="bg-slate-800 border border-slate-700 rounded px-1.5 sm:px-2 py-0.5 w-20 sm:w-32 text-slate-200 focus:outline-none focus:border-amber-500">
                 <button onclick="connectToPeer()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-1.5 sm:px-2.5 py-0.5 rounded transition">接続</button>
-
                 <button onclick="openDeckEditor()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-1.5 sm:px-2.5 py-0.5 rounded transition flex items-center gap-1">
                     <i class="fa-solid fa-boxes-packing"></i> <span class="hidden sm:inline">デッキ編集</span>
                 </button>
@@ -104,15 +62,9 @@
         </div>
     </header>
 
-    <!-- Main Battle Area (Responsive) -->
     <main class="flex-1 min-h-0 max-w-full w-full p-1 sm:p-2 grid grid-cols-12 gap-1 sm:gap-2 overflow-hidden">
-
-        <!-- Field Board (Mobile: 12 cols, PC: 9 cols) -->
         <div class="col-span-12 lg:col-span-9 flex flex-col justify-between h-full space-y-0.5 sm:space-y-1 overflow-hidden min-h-0">
-
-            <!-- OPPONENT ZONE (Top) ★ flex-[3]に変更して少し狭める -->
             <div id="opponent-area" class="bg-slate-900/80 rounded-lg p-1 sm:p-2 border border-slate-800 shadow flex flex-col justify-between flex-[3] overflow-hidden min-h-0">
-                <!-- Opponent Header & LP -->
                 <div class="flex items-center justify-between pb-0.5 sm:pb-1 border-b border-slate-800 text-[10px] sm:text-xs flex-none">
                     <div class="flex items-center space-x-1 sm:space-x-2">
                         <span id="opp-name" class="font-bold text-red-400"><i class="fa-solid fa-user-ninja mr-1"></i> <span class="hidden sm:inline">相手</span></span>
@@ -120,8 +72,6 @@
                         <span id="opp-extra-count" class="bg-slate-800 px-1 py-0.5 rounded border border-slate-700 text-purple-300 cursor-pointer" onclick="openExtraViewer('opp')">EX: --</span>
                         <span id="opp-hand-count" class="bg-slate-800 px-1 py-0.5 rounded border border-slate-700 text-slate-300">手札: --</span>
                     </div>
-
-                    <!-- Opponent LP -->
                     <div class="flex items-center space-x-1">
                         <span class="text-slate-400 font-semibold hidden sm:inline">LP:</span>
                         <span id="opp-lp" class="text-sm sm:text-base font-black text-red-500 font-mono mr-1">8000</span>
@@ -136,7 +86,6 @@
                     </div>
                 </div>
 
-                <!-- Opponent Hand & Banish Area -->
                 <div class="flex gap-1 sm:gap-2 items-center my-0.5 min-h-0 flex-1">
                     <div class="flex-1 overflow-hidden h-full flex items-center">
                         <div id="opp-hand-container" class="flex justify-start -space-x-4 sm:-space-x-3 h-10 sm:h-12 overflow-x-auto items-center"></div>
@@ -148,7 +97,6 @@
                     </div>
                 </div>
 
-                <!-- Opponent Field Grid (7 Columns) -->
                 <div class="grid grid-cols-7 gap-0.5 sm:gap-1 h-20 sm:h-36 my-0.5 flex-none">
                     <div id="opp-deck-zone" class="zone text-center font-bold text-slate-500 bg-slate-800 text-[8px] sm:text-[10px]">デッキ</div>
                     <div id="opp-st-4" onclick="handleZoneClick('opp', 'spell', 4)" class="zone cursor-pointer"></div>
@@ -168,19 +116,16 @@
                 </div>
             </div>
 
-            <!-- CENTER PHASE CONTROL -->
             <div class="bg-slate-900 border border-slate-800 rounded px-1.5 sm:px-2 py-0.5 sm:py-1 flex items-center justify-between gap-1 sm:gap-2 shadow flex-none overflow-x-auto">
                 <div class="flex items-center space-x-1 sm:space-x-2 flex-none">
                     <span class="text-[9px] sm:text-[10px] text-slate-400 font-bold hidden sm:inline">ターン:</span>
                     <span id="turn-display" class="text-[10px] sm:text-xs font-bold text-amber-400">1(P1)</span>
                     <span id="phase-display" class="px-1.5 py-0.5 rounded bg-blue-900 text-blue-200 text-[9px] sm:text-[10px] font-bold border border-blue-700">DP</span>
                 </div>
-
                 <div class="flex gap-1 text-[10px] flex-none">
                     <button onclick="rollDice()" class="bg-indigo-900/80 hover:bg-indigo-800 text-indigo-300 border border-indigo-700 px-1.5 py-0.5 rounded font-bold">🎲</button>
                     <button onclick="tossCoin()" class="bg-yellow-900/80 hover:bg-yellow-800 text-yellow-300 border border-yellow-700 px-1.5 py-0.5 rounded font-bold">🪙</button>
                 </div>
-
                 <div class="flex gap-0.5 sm:gap-1 text-[9px] sm:text-[10px] flex-none">
                     <button onclick="setPhase('DP')" class="bg-slate-800 hover:bg-slate-700 px-1 sm:px-2 py-0.5 rounded text-slate-300 font-semibold">DP</button>
                     <button onclick="setPhase('SP')" class="bg-slate-800 hover:bg-slate-700 px-1 sm:px-2 py-0.5 rounded text-slate-300 font-semibold">SP</button>
@@ -192,7 +137,6 @@
                 </div>
             </div>
 
-            <!-- MY ZONE (Bottom) ★ flex-[4]に変更してエリアを少し広く取る -->
             <div id="my-area" class="bg-slate-900/80 rounded-lg p-1 sm:p-2 border border-slate-800 shadow flex flex-col justify-between flex-[4] overflow-hidden min-h-0">
                 <div class="grid grid-cols-7 gap-0.5 sm:gap-1 h-20 sm:h-36 my-0.5 flex-none">
                     <div id="my-field-zone" onclick="handleZoneClick('me', 'field', 0)" class="zone text-center font-bold text-slate-400 cursor-pointer text-[8px] sm:text-[10px]">フィールド</div>
@@ -217,19 +161,16 @@
                             <span class="font-bold text-amber-400"><i class="fa-solid fa-hand mr-1"></i> 手札</span>
                             <span id="my-hand-count-text">0枚</span>
                         </div>
-                        <!-- ★ 自分の手札の高さを h-16 sm:h-20 に拡大 -->
                         <div id="my-hand-container" class="flex justify-start space-x-1 h-16 sm:h-20 overflow-x-auto p-0.5 sm:p-1 bg-slate-950/60 rounded border border-slate-800 items-center"></div>
                     </div>
 
                     <div class="w-10 sm:w-12 flex-none flex flex-col items-center">
-                        <!-- ★ 自分の除外エリアの高さも h-16 sm:h-20 に拡大 -->
                         <div id="my-banish-zone" onclick="openBanishViewer('me')" class="w-10 sm:w-12 h-16 sm:h-20 zone text-center font-bold text-purple-300 bg-purple-950/40 border-purple-600 cursor-pointer hover:bg-purple-900/40 text-[8px] sm:text-[9px] flex flex-col justify-center items-center rounded">
                             除外<br><span id="my-banish-count">0</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- 自分のLP・名前バー (flex-none と mt-auto で最下部に固定・潰れ防止) -->
                 <div class="flex items-center justify-between border-t border-slate-800 pt-0.5 sm:pt-1 text-[10px] sm:text-xs flex-none mt-auto">
                     <div class="flex items-center space-x-1 sm:space-x-2">
                         <span id="my-name" class="font-bold text-blue-400"><i class="fa-solid fa-user-shield mr-1"></i> <span class="hidden sm:inline">自分</span></span>
@@ -250,10 +191,8 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
-        <!-- PC ONLY: Right Side Panel (Preview & Log) - Hidden on Mobile -->
         <div class="hidden lg:flex col-span-3 flex-col space-y-2 h-full overflow-hidden">
             <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 shadow flex flex-col h-1/2 overflow-hidden">
                 <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between flex-none">
@@ -276,7 +215,6 @@
                 </div>
             </div>
         </div>
-
     </main>
 
     <!-- DECK SEARCH MODAL -->
@@ -303,7 +241,7 @@
         </div>
     </div>
 
-    <!-- DECK EDITOR MODAL (Responsive) -->
+    <!-- DECK EDITOR MODAL -->
     <div id="deck-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm z-50 flex items-center justify-center p-1 sm:p-3 hidden">
         <div class="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-6xl h-[98vh] sm:h-[95vh] flex flex-col shadow-2xl overflow-hidden">
             
@@ -316,7 +254,6 @@
             </div>
 
             <div class="flex-1 grid grid-cols-12 gap-1 sm:gap-3 p-1 sm:p-3 overflow-hidden">
-                <!-- 1. デッキリスト -->
                 <div class="col-span-4 bg-slate-950 border border-slate-800 rounded-lg p-1 sm:p-2.5 flex flex-col overflow-hidden">
                     <div class="flex items-center justify-between pb-1 sm:pb-1.5 border-b border-slate-800 flex-wrap gap-0.5 sm:gap-1">
                         <div class="text-[9px] sm:text-xs">
@@ -358,7 +295,6 @@
                     </button>
                 </div>
 
-                <!-- 2. カードプール -->
                 <div class="col-span-5 bg-slate-950 border border-slate-800 rounded-lg p-1 sm:p-2.5 flex flex-col overflow-hidden">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-1 sm:pb-1.5 border-b border-slate-800 gap-1 sm:gap-2">
                         <div class="flex space-x-1 w-full sm:w-auto">
@@ -367,10 +303,9 @@
                         </div>
                         <input id="card-search-input" oninput="filterCardPool()" type="text" placeholder="名前・テキスト検索..." class="bg-slate-900 border border-slate-700 rounded px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-xs text-slate-200 w-full sm:w-44 focus:outline-none focus:border-amber-500">
                     </div>
-                    <div id="card-pool-grid" class="flex-1 overflow-y-auto grid grid-cols-2 lg:grid-cols-3 gap-1 sm:gap-2 p-0.5 sm:p-1 my-1 content-start"></div>
+                    <div id="card-pool-grid" class="flex-1 overflow-y-auto grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-1.5 sm:gap-2 p-0.5 sm:p-1 my-1 content-start"></div>
                 </div>
 
-                <!-- 3. 詳細プレビュー & AND検索フィルタ -->
                 <div class="col-span-3 bg-slate-900 border border-slate-800 rounded-lg p-1 sm:p-2.5 flex flex-col shadow overflow-hidden">
                     <h3 class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 sm:mb-2 flex items-center justify-between flex-none border-b border-slate-800 pb-1 sm:pb-1.5">
                         <span><i class="fa-solid fa-magnifying-glass mr-1"></i> 詳細</span>
@@ -441,16 +376,14 @@
         </div>
     </div>
 
-    <!-- CARD ACTION MODAL (Includes Card Preview for Mobile) -->
+    <!-- CARD ACTION MODAL -->
     <div id="action-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[70] flex items-center justify-center hidden" onclick="closeActionModal(event)">
-        <!-- max-h でスマホ時の高さを制限し、スクロール可能に -->
         <div class="bg-slate-900 border border-slate-700 rounded-xl p-3 max-w-sm w-11/12 max-h-[95vh] flex flex-col shadow-2xl" onclick="event.stopPropagation()">
             <div id="action-modal-header" class="font-bold text-amber-400 text-xs sm:text-sm border-b border-slate-800 pb-1.5 flex items-center justify-between flex-none">
                 <span id="action-modal-title" class="font-bold text-amber-400 truncate pr-2">カード操作</span>
                 <button onclick="closeActionModal()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="action-modal-content" class="flex-1 overflow-y-auto mt-2 space-y-2 pr-1">
-                <!-- ここに詳細情報プレビューとボタンが挿入されます -->
                 <div id="action-modal-buttons" class="grid grid-cols-1 gap-1.5 sm:gap-2"></div>
             </div>
         </div>
@@ -469,27 +402,56 @@
 
     <script>
         /* ==========================================================================
+           0. ABSTRACT ART GENERATOR
+           ========================================================================== */
+        function getCardAbstractArt(card, size = 'normal') {
+            if (card.image_url) return `<img src="${card.image_url}" class="w-full h-full object-cover">`;
+            
+            let hash = 0;
+            for (let i = 0; i < card.name.length; i++) { hash = card.name.charCodeAt(i) + ((hash << 5) - hash); }
+            const hue = Math.abs(hash) % 360;
+            const bgGradient = `background: linear-gradient(135deg, hsl(${hue}, 60%, 30%), hsl(${(hue + 40) % 360}, 60%, 15%))`;
+
+            let icon = '❓';
+            if (card.type === 'spell') {
+                const sub = card.sub || '';
+                if (sub === 'equip') icon = '🗡️'; else if (sub === 'field') icon = '🏞️'; else if (sub === 'continuous') icon = '♾️'; else if (sub === 'quick-play') icon = '⚡'; else icon = '🌀';
+            } else if (card.type === 'trap') {
+                const sub = card.sub || '';
+                if (sub === 'counter') icon = '↩️'; else if (sub === 'continuous') icon = '♾️'; else icon = '⚠️';
+            } else if (card.type === 'monster') {
+                const race = card.race || '';
+                if (race.includes('ドラゴン')) icon = '🐉';
+                else if (race.includes('魔法使い')) icon = '🧙‍♂️'; else if (race.includes('戦士')) icon = '⚔️';
+                else if (race.includes('獣')) icon = '🐺'; else if (race.includes('悪魔')) icon = '👿';
+                else if (race.includes('天使')) icon = '👼'; else if (race.includes('機械')) icon = '🤖';
+                else if (race.includes('アンデット')) icon = '💀'; else if (race.includes('水') || race.includes('魚') || race.includes('海竜')) icon = '🌊';
+                else if (race.includes('炎')) icon = '🔥'; else if (race.includes('雷')) icon = '⚡';
+                else if (race.includes('岩石')) icon = '🪨'; else if (race.includes('植物')) icon = '🌿';
+                else if (race.includes('昆虫')) icon = '🐛'; else if (race.includes('恐竜')) icon = '🦖';
+                else if (race.includes('鳥獣')) icon = '🦅'; else if (race.includes('爬虫類')) icon = '🐍';
+                else icon = '👾';
+            }
+
+            let textSizeClass = 'text-lg sm:text-xl';
+            if (size === 'small') textSizeClass = 'text-xs sm:text-sm';
+            if (size === 'large') textSizeClass = 'text-4xl sm:text-5xl';
+
+            return `<div class="w-full h-full flex items-center justify-center shadow-inner ${textSizeClass} select-none" style="${bgGradient}">${icon}</div>`;
+        }
+
+        /* ==========================================================================
            1. CARD DATABASE & BANLISTS
            ========================================================================== */
-        
-        let GEN1_CARDS = [];
-        let GEN2_CARDS = [];
-        let ALL_CARDS = [];
-        let BANLISTS = [];
-        let currentBanlist = null;
+        let GEN1_CARDS = []; let GEN2_CARDS = []; let ALL_CARDS = []; let BANLISTS = []; let currentBanlist = null;
 
         async function loadCardPool() {
             try {
                 const response = await fetch('cards.json');
                 if (!response.ok) throw new Error('cards.json の読み込みに失敗しました。');
                 const data = await response.json();
-                GEN1_CARDS = data.gen1 || [];
-                GEN2_CARDS = data.gen2 || [];
-                ALL_CARDS = [...GEN1_CARDS, ...GEN2_CARDS];
-            } catch (err) {
-                console.error('カードデータの取得エラー:', err);
-                addLog('⚠️ cards.json の読み込みに失敗しました。', false);
-            }
+                GEN1_CARDS = data.gen1 || []; GEN2_CARDS = data.gen2 || []; ALL_CARDS = [...GEN1_CARDS, ...GEN2_CARDS];
+            } catch (err) { addLog('⚠️ cards.json の読み込みに失敗しました。', false); }
         }
 
         async function loadBanlists() {
@@ -497,22 +459,15 @@
                 const response = await fetch('banlists.json');
                 if (!response.ok) throw new Error('banlists.json の読み込みに失敗しました。');
                 const data = await response.json();
-                BANLISTS = data.banlists || [];
-                renderBanlistOptions();
-            } catch (err) {
-                console.error('禁止制限リストデータの取得エラー:', err);
-                addLog('⚠️ banlists.json の読み込みに失敗しました。(無制限ルールとなります)', false);
-            }
+                BANLISTS = data.banlists || []; renderBanlistOptions();
+            } catch (err) { addLog('⚠️ banlists.json の読み込みに失敗しました。', false); }
         }
 
         function renderBanlistOptions() {
             const select = document.getElementById('banlist-select');
             select.innerHTML = '<option value="none">無制限</option>';
             BANLISTS.forEach(list => {
-                const option = document.createElement('option');
-                option.value = list.id;
-                option.textContent = list.name;
-                select.appendChild(option);
+                const option = document.createElement('option'); option.value = list.id; option.textContent = list.name; select.appendChild(option);
             });
         }
 
@@ -526,46 +481,22 @@
 
         function changeBanlist() {
             const select = document.getElementById('banlist-select');
-            const selectedId = select.value;
-            
-            if (selectedId === 'none') {
-                currentBanlist = null;
-            } else {
-                currentBanlist = BANLISTS.find(b => b.id === selectedId);
-            }
-            
+            currentBanlist = select.value === 'none' ? null : BANLISTS.find(b => b.id === select.value);
             const removed = validateDeckWithBanlist();
-            if (removed > 0) {
-                alert(`制限ルールの変更により、制限枚数を超過していた ${removed} 枚のカードがデッキから外されました。`);
-            }
-            renderDeckList();
-            renderCardPool();
+            if (removed > 0) alert(`制限ルール変更により、 ${removed} 枚がデッキから外されました。`);
+            renderDeckList(); renderCardPool();
         }
 
         function validateDeckWithBanlist() {
             if (!currentBanlist) return 0;
-            let removedCount = 0;
-            const cardCounts = {};
-            
+            let removedCount = 0; const cardCounts = {};
             for (let i = currentDeck.length - 1; i >= 0; i--) {
-                const cardName = currentDeck[i].name;
-                cardCounts[cardName] = (cardCounts[cardName] || 0) + 1;
-                const limit = getCardLimit(cardName);
-                if (cardCounts[cardName] > limit) {
-                    currentDeck.splice(i, 1);
-                    cardCounts[cardName]--;
-                    removedCount++;
-                }
+                const cn = currentDeck[i].name; cardCounts[cn] = (cardCounts[cn] || 0) + 1;
+                if (cardCounts[cn] > getCardLimit(cn)) { currentDeck.splice(i, 1); cardCounts[cn]--; removedCount++; }
             }
             for (let i = currentExtraDeck.length - 1; i >= 0; i--) {
-                const cardName = currentExtraDeck[i].name;
-                cardCounts[cardName] = (cardCounts[cardName] || 0) + 1;
-                const limit = getCardLimit(cardName);
-                if (cardCounts[cardName] > limit) {
-                    currentExtraDeck.splice(i, 1);
-                    cardCounts[cardName]--;
-                    removedCount++;
-                }
+                const cn = currentExtraDeck[i].name; cardCounts[cn] = (cardCounts[cn] || 0) + 1;
+                if (cardCounts[cn] > getCardLimit(cn)) { currentExtraDeck.splice(i, 1); cardCounts[cn]--; removedCount++; }
             }
             return removedCount;
         }
@@ -573,25 +504,14 @@
         /* ==========================================================================
            2. APP STATE & VARIABLES
            ========================================================================== */
-        
-        let activeTab = 'gen1';
-        let currentDeck = [];
-        let currentExtraDeck = [];
-        let peer = null;
-        let conn = null;
-        let myPlayerId = 'P1';
-
-        let currentActionContext = null;
-
+        let activeTab = 'gen1'; let currentDeck = []; let currentExtraDeck = [];
+        let peer = null; let conn = null; let myPlayerId = 'P1'; let currentActionContext = null;
         let gameState = {
-            turnPlayer: 'P1',
-            phase: 'DP',
-            turnCount: 1,
+            turnPlayer: 'P1', phase: 'DP', turnCount: 1,
             p1: { name: 'Player 1', lp: 8000, deck: [], extraDeck: [], hand: [], monsters: Array(5).fill(null), spells: Array(5).fill(null), field: null, graveyard: [], banished: [] },
             p2: { name: 'Player 2', lp: 8000, deck: [], extraDeck: [], hand: [], monsters: Array(5).fill(null), spells: Array(5).fill(null), field: null, graveyard: [], banished: [] },
             logs: []
         };
-
         const BTN_STYLE_GRAVE = "w-full py-1.5 sm:py-2 bg-rose-950/80 hover:bg-rose-900 text-rose-200 font-bold rounded-lg text-[10px] sm:text-xs border border-rose-600 shadow transition flex items-center justify-center gap-1.5";
         const BTN_STYLE_DECK = "w-full py-1.5 sm:py-2 bg-amber-950/80 hover:bg-amber-900 text-amber-200 font-bold rounded-lg text-[10px] sm:text-xs border border-amber-600 shadow transition flex items-center justify-center gap-1.5";
         const BTN_STYLE_BANISH = "w-full py-1.5 sm:py-2 bg-purple-950/80 hover:bg-purple-900 text-purple-200 font-bold rounded-lg text-[10px] sm:text-xs border border-purple-500 shadow transition flex items-center justify-center gap-1.5";
@@ -602,214 +522,126 @@
         /* ==========================================================================
            3. NETWORK & PEERJS
            ========================================================================== */
+        window.onload = async function() { initPeer(); await loadCardPool(); await loadBanlists(); openDeckEditor(); };
 
-        window.onload = async function() {
-            initPeer();
-            await loadCardPool();
-            await loadBanlists();
-            openDeckEditor();
-        };
-
-        // 独自の固定IDを生成・取得する関数
         function generateOrGetMyId() {
             let id = sessionStorage.getItem('my_yugioh_id');
-            if (!id) {
-                // 6桁のランダムな大文字英数字を生成して保存
-                id = Math.random().toString(36).substring(2, 8).toUpperCase();
-                sessionStorage.setItem('my_yugioh_id', id);
-            }
+            if (!id) { id = Math.random().toString(36).substring(2, 8).toUpperCase(); sessionStorage.setItem('my_yugioh_id', id); }
             return id;
         }
 
         function initPeer() {
-            const myFixedId = generateOrGetMyId();
-
-            peer = new Peer(myFixedId, {
-                config: {
-                    'iceServers': [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' }
-                    ]
-                }
-            });
-
-            peer.on('open', (id) => {
-                document.getElementById('my-peer-id').innerText = id;
-                addLog(`WebRTC ID生成完了: ${id}`, false);
-            });
-
-            // ★スマホで裏画面に回って切断された時の再接続処理
-            peer.on('disconnected', () => {
-                addLog("サーバーから切断されました。再接続を試みます...", false);
-                peer.reconnect();
-            });
-
-            peer.on('connection', (c) => {
-                conn = c; myPlayerId = 'P1';
-                setupConnectionHandlers();
-                document.getElementById('role-badge').innerText = "ホスト";
-                document.getElementById('role-badge').className = "hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-900 text-emerald-300 border border-emerald-700";
-                addLog("相手が接続しました(P1)", false);
-            });
-
+            peer = new Peer(generateOrGetMyId(), { config: { 'iceServers': [ { urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' } ] } });
+            peer.on('open', (id) => { document.getElementById('my-peer-id').innerText = id; addLog(`WebRTC ID生成: ${id}`, false); });
+            peer.on('disconnected', () => { addLog("サーバーから切断。再接続を試みます...", false); peer.reconnect(); });
+            peer.on('connection', (c) => { conn = c; myPlayerId = 'P1'; setupConnectionHandlers(); document.getElementById('role-badge').innerText = "ホスト"; document.getElementById('role-badge').className = "hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-900 text-emerald-300 border border-emerald-700"; addLog("相手が接続(P1)", false); });
             peer.on('error', (err) => { 
                 addLog(`通信エラー: ${err.type}`, false); 
-                
-                // 万が一IDが重複して使えなくなった場合の復帰処理
-                if (err.type === 'unavailable-id') {
-                    sessionStorage.removeItem('my_yugioh_id');
-                    alert("IDが無効になりました。ページを再読み込みして再発行します。");
-                    location.reload();
-                }
+                if (err.type === 'unavailable-id') { sessionStorage.removeItem('my_yugioh_id'); alert("IDが無効です。再発行します。"); location.reload(); }
             });
         }
 
         function connectToPeer() {
             const targetId = document.getElementById('target-peer-id').value.trim();
             if (!targetId) return alert('相手のIDを入力してください');
-            conn = peer.connect(targetId);
-            myPlayerId = 'P2';
-            setupConnectionHandlers();
-            document.getElementById('role-badge').innerText = "ゲスト";
-            document.getElementById('role-badge').className = "hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-900 text-blue-300 border border-blue-700";
+            conn = peer.connect(targetId); myPlayerId = 'P2'; setupConnectionHandlers();
+            document.getElementById('role-badge').innerText = "ゲスト"; document.getElementById('role-badge').className = "hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-900 text-blue-300 border border-blue-700";
             addLog(`接続要求中...`, false);
         }
 
         function setupConnectionHandlers() {
-            conn.on('open', () => {
-                addLog("通信確立！対戦可能", false);
-                alert("通信が確立しました！対戦可能です。");
-                if (myPlayerId === 'P1') broadcastGameState();
-            });
-            conn.on('data', (data) => {
-                if (data.type === 'SYNC_STATE') { gameState = data.state; renderBoard(); }
-                else if (data.type === 'ACTION_LOG') { addLog(data.msg, false); }
-            });
-            conn.on('close', () => {
-                addLog("切断されました。", false);
-                document.getElementById('role-badge').innerText = "切断";
-            });
+            conn.on('open', () => { addLog("通信確立！対戦可能", false); alert("対戦可能です！"); if (myPlayerId === 'P1') broadcastGameState(); });
+            conn.on('data', (data) => { if (data.type === 'SYNC_STATE') { gameState = data.state; renderBoard(); } else if (data.type === 'ACTION_LOG') { addLog(data.msg, false); } });
+            conn.on('close', () => { addLog("切断されました。", false); document.getElementById('role-badge').innerText = "切断"; });
         }
 
-        function broadcastGameState() {
-            if (conn && conn.open) conn.send({ type: 'SYNC_STATE', state: gameState });
-            renderBoard();
-        }
-
+        function broadcastGameState() { if (conn && conn.open) conn.send({ type: 'SYNC_STATE', state: gameState }); renderBoard(); }
         function copyPeerId() {
             const idText = document.getElementById('my-peer-id').innerText;
-            if (idText && idText !== '発行中...') {
-                const el = document.createElement('textarea');
-                el.value = idText; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
-                alert('IDをコピーしました！');
-            }
+            if (idText && idText !== '発行中...') { const el = document.createElement('textarea'); el.value = idText; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); alert('IDコピー完了！'); }
         }
 
         /* ==========================================================================
            4. DECK BUILDER CONTROLLER
            ========================================================================== */
-
-        function isExtraCard(card) {
-            return card.sub === 'fusion' || card.sub === 'synchro' || card.sub === 'xyz';
-        }
-
-        function openDeckEditor() {
-            document.getElementById('deck-modal').classList.remove('hidden');
-            renderCardPool();
-            renderDeckList();
-        }
-
+        function isExtraCard(card) { return card.sub === 'fusion' || card.sub === 'synchro' || card.sub === 'xyz'; }
+        function openDeckEditor() { document.getElementById('deck-modal').classList.remove('hidden'); renderCardPool(); renderDeckList(); }
         function closeDeckEditor() {
-            if (currentDeck.length < 40 || currentDeck.length > 60 || currentExtraDeck.length > 15) {
-                if (!confirm("メイン40〜60枚、EX0〜15枚である必要があります。閉じますか？")) return;
-            }
+            if (currentDeck.length < 40 || currentDeck.length > 60 || currentExtraDeck.length > 15) { if (!confirm("メイン40〜60枚、EX0〜15枚である必要があります。閉じますか？")) return; }
             document.getElementById('deck-modal').classList.add('hidden');
         }
 
-        function switchCardTab(tab) {
-            activeTab = tab;
-            document.getElementById('tab-gen1').className = tab === 'gen1' ? 'flex-1 sm:flex-none px-2 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-bold rounded bg-amber-600 text-slate-950' : 'flex-1 sm:flex-none px-2 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-bold rounded bg-slate-800 text-slate-300 hover:bg-slate-700';
-            document.getElementById('tab-gen2').className = tab === 'gen2' ? 'flex-1 sm:flex-none px-2 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-bold rounded bg-amber-600 text-slate-950' : 'flex-1 sm:flex-none px-2 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-bold rounded bg-slate-800 text-slate-300 hover:bg-slate-700';
-            renderCardPool();
-        }
-
-        function clearFilters() {
-            document.getElementById('card-search-input').value = '';
-            if (document.getElementById('filter-frame')) document.getElementById('filter-frame').value = '';
-            if (document.getElementById('filter-attr')) document.getElementById('filter-attr').value = '';
-            if (document.getElementById('filter-st-type')) document.getElementById('filter-st-type').value = '';
-            if (document.getElementById('filter-race')) document.getElementById('filter-race').value = '';
-            if (document.getElementById('filter-level')) document.getElementById('filter-level').value = '';
-            filterCardPool();
-        }
+        function switchCardTab(tab) { activeTab = tab; document.getElementById('tab-gen1').className = tab === 'gen1' ? 'flex-1 sm:flex-none px-2 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-bold rounded bg-amber-600 text-slate-950' : 'flex-1 sm:flex-none px-2 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-bold rounded bg-slate-800 text-slate-300 hover:bg-slate-700'; document.getElementById('tab-gen2').className = tab === 'gen2' ? 'flex-1 sm:flex-none px-2 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-bold rounded bg-amber-600 text-slate-950' : 'flex-1 sm:flex-none px-2 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-bold rounded bg-slate-800 text-slate-300 hover:bg-slate-700'; renderCardPool(); }
+        function clearFilters() { document.getElementById('card-search-input').value = ''; ['filter-frame', 'filter-attr', 'filter-st-type', 'filter-race', 'filter-level'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ''; }); filterCardPool(); }
 
         function renderCardPool() {
             const pool = activeTab === 'gen1' ? GEN1_CARDS : GEN2_CARDS;
             const search = document.getElementById('card-search-input').value.toLowerCase();
-            const frameFilter = document.getElementById('filter-frame') ? document.getElementById('filter-frame').value : '';
-            const attrFilter = document.getElementById('filter-attr') ? document.getElementById('filter-attr').value : '';
-            const raceFilter = document.getElementById('filter-race') ? document.getElementById('filter-race').value : '';
-            const levelFilter = document.getElementById('filter-level') ? document.getElementById('filter-level').value : '';
-            const stTypeFilter = document.getElementById('filter-st-type') ? document.getElementById('filter-st-type').value : '';
-
-            const grid = document.getElementById('card-pool-grid');
-            grid.innerHTML = '';
+            const fFrame = document.getElementById('filter-frame') ? document.getElementById('filter-frame').value : '';
+            const fAttr = document.getElementById('filter-attr') ? document.getElementById('filter-attr').value : '';
+            const fRace = document.getElementById('filter-race') ? document.getElementById('filter-race').value : '';
+            const fLevel = document.getElementById('filter-level') ? document.getElementById('filter-level').value : '';
+            const fSt = document.getElementById('filter-st-type') ? document.getElementById('filter-st-type').value : '';
+            const grid = document.getElementById('card-pool-grid'); grid.innerHTML = '';
 
             pool.filter(c => {
                 if (search && !(c.name.toLowerCase().includes(search) || (c.desc && c.desc.toLowerCase().includes(search)))) return false;
-                if (frameFilter) {
-                    if (frameFilter === 'normal_monster' && !(c.type === 'monster' && (!c.sub || c.sub === 'normal'))) return false;
-                    if (frameFilter === 'effect_monster' && !(c.type === 'monster' && c.sub === 'effect')) return false;
-                    if (frameFilter === 'ritual_monster' && !(c.type === 'monster' && c.sub === 'ritual')) return false;
-                    if (frameFilter === 'fusion_monster' && !(c.type === 'monster' && c.sub === 'fusion')) return false;
-                    if (frameFilter === 'spell' && c.type !== 'spell') return false;
-                    if (frameFilter === 'trap' && c.type !== 'trap') return false;
+                if (fFrame) {
+                    if (fFrame === 'normal_monster' && !(c.type === 'monster' && (!c.sub || c.sub === 'normal'))) return false;
+                    if (fFrame === 'effect_monster' && !(c.type === 'monster' && c.sub === 'effect')) return false;
+                    if (fFrame === 'ritual_monster' && !(c.type === 'monster' && c.sub === 'ritual')) return false;
+                    if (fFrame === 'fusion_monster' && !(c.type === 'monster' && c.sub === 'fusion')) return false;
+                    if (fFrame === 'spell' && c.type !== 'spell') return false;
+                    if (fFrame === 'trap' && c.type !== 'trap') return false;
                 }
-                if (attrFilter && (c.type !== 'monster' || c.attr !== attrFilter)) return false;
-                if (raceFilter && (c.type !== 'monster' || !c.race || c.race.replace('族', '') !== raceFilter)) return false;
-                if (levelFilter && (c.type !== 'monster' || String(c.level) !== String(levelFilter))) return false;
-                if (stTypeFilter) {
+                if (fAttr && (c.type !== 'monster' || c.attr !== fAttr)) return false;
+                if (fRace && (c.type !== 'monster' || !c.race || c.race.replace('族', '') !== fRace)) return false;
+                if (fLevel && (c.type !== 'monster' || String(c.level) !== String(fLevel))) return false;
+                if (fSt) {
                     if (c.type !== 'spell' && c.type !== 'trap') return false;
-                    const validValues = { 'normal': ['normal', '通常'], 'continuous': ['continuous', '永続'], 'field': ['field', 'フィールド'], 'equip': ['equip', '装備'], 'quick-play': ['quick-play', '速攻'], 'ritual': ['ritual', '儀式'], 'counter': ['counter', 'カウンター'] }[stTypeFilter] || [stTypeFilter];
-                    if (!c.sub || !validValues.includes(c.sub)) { if (!(stTypeFilter === 'normal' && !c.sub)) return false; }
+                    const valid = { 'normal': ['normal', '通常'], 'continuous': ['continuous', '永続'], 'field': ['field', 'フィールド'], 'equip': ['equip', '装備'], 'quick-play': ['quick-play', '速攻'], 'ritual': ['ritual', '儀式'], 'counter': ['counter', 'カウンター'] }[fSt] || [fSt];
+                    if (!c.sub || !valid.includes(c.sub)) { if (!(fSt === 'normal' && !c.sub)) return false; }
                 }
                 return true;
             }).forEach(card => {
-                const isExtra = isExtraCard(card);
                 const count = [...currentDeck, ...currentExtraDeck].filter(c => c.name === card.name).length;
                 const maxCount = getCardLimit(card.name);
+                const isExtra = isExtraCard(card);
+                const isMax = count >= maxCount || (isExtra ? currentExtraDeck.length >= 15 : currentDeck.length >= 60);
 
                 const cardEl = document.createElement('div');
-                cardEl.className = `p-1 sm:p-1.5 rounded cursor-pointer border flex flex-col justify-between text-[8px] sm:text-[10px] transition transform hover:scale-102 ${getCardStyleClass(card)}`;
-                cardEl.onclick = () => updatePreview(card);
-
-                let statsHtml = card.type === 'monster' ? `<div class="font-bold text-[8px] sm:text-[10px] text-amber-200">★${card.level} ${card.atk}/${card.def}</div>` : `<div class="font-bold text-[8px] sm:text-[10px] text-teal-200">${card.type === 'spell' ? '魔法' : '罠'} [${card.sub || '通常'}]</div>`;
-
-                cardEl.innerHTML = `
-                    <div>
-                        <div class="flex items-center justify-between font-bold text-[9px] sm:text-[11px]">
-                            <span class="truncate">${card.name}</span>
-                            <span class="bg-slate-950/80 px-1 py-0.2 rounded border border-slate-700 text-white">${count}/${maxCount}</span>
-                        </div>
-                        ${statsHtml}
+                cardEl.className = `w-full flex flex-col p-0.5 sm:p-1 bg-slate-900 border border-slate-800 rounded transition transform hover:scale-102`;
+                
+                const imgContainer = document.createElement('div');
+                imgContainer.className = `w-full aspect-[3/4] rounded shadow-sm overflow-hidden relative cursor-pointer border ${getCardStyleClass(card)}`;
+                if (count >= maxCount) imgContainer.classList.add('opacity-50');
+                imgContainer.onclick = () => updatePreview(card);
+                imgContainer.innerHTML = `
+                    ${getCardAbstractArt(card, 'normal')}
+                    <div class="absolute bottom-0 right-0 bg-slate-950/80 text-white text-[8px] sm:text-[10px] px-1 rounded-tl-sm font-bold border-t border-l border-slate-700">
+                        ${count}/${maxCount}
                     </div>
-                    <button onclick="event.stopPropagation(); addCardToDeck('${card.id}')" ${count >= maxCount || (isExtra ? currentExtraDeck.length >= 15 : currentDeck.length >= 60) ? 'disabled' : ''} class="w-full mt-1 bg-slate-950/60 hover:bg-slate-950 disabled:opacity-40 text-amber-400 border border-slate-700 rounded py-0.5 text-[8px] sm:text-[10px] font-bold">
-                        + ${isExtra ? 'EX' : '追加'}
-                    </button>
                 `;
+
+                const btn = document.createElement('button');
+                const identifier = card.id || card.name; // IDがない場合は名前で代用
+                btn.onclick = (e) => { e.stopPropagation(); addCardToDeck(identifier); };
+                btn.disabled = isMax;
+                btn.className = `w-full mt-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-amber-400 border border-slate-600 rounded py-1 text-[9px] sm:text-[10px] font-bold transition shadow-sm`;
+                btn.innerHTML = `<i class="fa-solid fa-plus"></i> ${isExtra ? 'EX' : '追加'}`;
+
+                cardEl.appendChild(imgContainer);
+                cardEl.appendChild(btn);
                 grid.appendChild(cardEl);
             });
         }
-
         function filterCardPool() { renderCardPool(); }
 
-        function addCardToDeck(cardId) {
-            const card = ALL_CARDS.find(c => c.id === cardId);
-            if (!card) return;
+        function addCardToDeck(cardIdentifier) {
+            // IDがない場合は名前で検索するフォールバック
+            const card = ALL_CARDS.find(c => c.id === cardIdentifier || c.name === cardIdentifier); if (!card) return;
             const totalCount = [...currentDeck, ...currentExtraDeck].filter(c => c.name === card.name).length;
-            const limit = getCardLimit(card.name);
-            if (totalCount >= limit) return alert(`制限に達しています。`);
-
+            if (totalCount >= getCardLimit(card.name)) return alert(`制限に達しています。`);
             if (isExtraCard(card)) {
                 if (currentExtraDeck.length >= 15) return alert('EX上限は15枚です。');
                 currentExtraDeck.push({ ...card, uniqueId: 'c_' + Math.random().toString(36).substr(2, 9) });
@@ -818,6 +650,7 @@
                 currentDeck.push({ ...card, uniqueId: 'c_' + Math.random().toString(36).substr(2, 9) });
             }
             renderDeckList(); renderCardPool();
+            updatePreview(card); // プレビュー内のボタンのカウントを更新
         }
 
         function removeCardFromMainDeck(index) { currentDeck.splice(index, 1); renderDeckList(); renderCardPool(); }
@@ -828,30 +661,24 @@
             if (currentDeck.length === 0 && currentExtraDeck.length === 0) return alert('カードがありません。');
             const blob = new Blob([JSON.stringify({ main: currentDeck, extra: currentExtraDeck }, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = 'yugioh_deck.json'; a.click(); URL.revokeObjectURL(url);
-            addLog('デッキを保存しました。', false);
+            const a = document.createElement('a'); a.href = url; a.download = 'yugioh_deck.json'; a.click(); URL.revokeObjectURL(url); addLog('デッキ保存完了。', false);
         }
 
         function importDeckJSON(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+            const file = event.target.files[0]; if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const importedData = JSON.parse(e.target.result);
-                    let mainList = []; let extraList = [];
-                    if (Array.isArray(importedData)) importedData.forEach(c => isExtraCard(c) ? extraList.push(c) : mainList.push(c));
-                    else { mainList = importedData.main || []; extraList = importedData.extra || []; }
+                    const importedData = JSON.parse(e.target.result); let mainList = []; let extraList = [];
+                    if (Array.isArray(importedData)) importedData.forEach(c => isExtraCard(c) ? extraList.push(c) : mainList.push(c)); else { mainList = importedData.main || []; extraList = importedData.extra || []; }
                     currentDeck = mainList.map(c => { const matched = ALL_CARDS.find(p => p.id === c.id || p.name === c.name); return { ...(matched || c), uniqueId: 'c_' + Math.random().toString(36).substr(2, 9) }; });
                     currentExtraDeck = extraList.map(c => { const matched = ALL_CARDS.find(p => p.id === c.id || p.name === c.name); return { ...(matched || c), uniqueId: 'c_' + Math.random().toString(36).substr(2, 9) }; });
-                    validateDeckWithBanlist(); renderDeckList(); renderCardPool();
-                    addLog(`読込完了: メイン${currentDeck.length}/EX${currentExtraDeck.length}`, false);
+                    validateDeckWithBanlist(); renderDeckList(); renderCardPool(); addLog(`読込完了: メイン${currentDeck.length}/EX${currentExtraDeck.length}`, false);
                 } catch (err) { alert('読込失敗: ' + err.message); }
-            };
-            reader.readAsText(file); event.target.value = '';
+            }; reader.readAsText(file); event.target.value = '';
         }
 
-        function loadPresetDeck(type) {
+        function loadPresetDeck() {
             currentDeck = []; currentExtraDeck = [];
             const presetNames = ['青眼の白龍','青眼の白龍','青眼の白龍','融合','融合','サイクロプス','サイクロプス','サイクロプス','ブラック・ホール','落とし穴','落とし穴','闇・道化師のサギー','闇・道化師のサギー','闇・道化師のサギー','山','山','サンダー・ボルト','サンダー・ボルト','サンダー・ボルト','ミノタウルス','ミノタウルス','ミノタウルス','ケンタウロス','ケンタウロス','ケンタウロス','カオス・ソルジャー','カオス・ソルジャー','カオスの儀式','カオスの儀式','大嵐','ドーピング','サンダー・ドラゴン','サンダー・ドラゴン','サンダー・ドラゴン','はさみ撃ち','援軍','城壁','血の代償','自業自得','和睦の使者','青眼の究極竜','青眼の究極竜','青眼の究極竜','ミノケンタウロス','双頭の雷龍'];
             presetNames.forEach(name => {
@@ -862,24 +689,16 @@
         }
 
         function renderDeckList() {
-            const listEl = document.getElementById('deck-card-list');
-            listEl.innerHTML = '';
-            const mainCount = currentDeck.length; const extraCount = currentExtraDeck.length;
-            document.getElementById('deck-count').innerText = mainCount;
-            document.getElementById('extra-deck-count').innerText = extraCount;
-
-            const statusEl = document.getElementById('deck-count-status');
-            const extraStatusEl = document.getElementById('extra-count-status');
-            const saveBtn = document.getElementById('save-deck-btn');
-
+            const listEl = document.getElementById('deck-card-list'); listEl.innerHTML = '';
+            document.getElementById('deck-count').innerText = currentDeck.length; document.getElementById('extra-deck-count').innerText = currentExtraDeck.length;
+            const statusEl = document.getElementById('deck-count-status'); const extraStatusEl = document.getElementById('extra-count-status');
             let isValid = true;
-            if (mainCount < 40) { statusEl.innerText = 'メイン不足'; statusEl.className = 'px-1 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700'; isValid = false; }
-            else if (mainCount > 60) { statusEl.innerText = 'メイン超過'; statusEl.className = 'px-1 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700'; isValid = false; }
+            if (currentDeck.length < 40) { statusEl.innerText = 'メイン不足'; statusEl.className = 'px-1 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700'; isValid = false; }
+            else if (currentDeck.length > 60) { statusEl.innerText = 'メイン超過'; statusEl.className = 'px-1 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700'; isValid = false; }
             else { statusEl.innerText = 'メイン適正'; statusEl.className = 'px-1 py-0.5 rounded font-bold bg-emerald-900/60 text-emerald-300 border border-emerald-700'; }
-
-            if (extraCount > 15) { extraStatusEl.innerText = 'EX超過'; extraStatusEl.className = 'px-1 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700'; isValid = false; }
+            if (currentExtraDeck.length > 15) { extraStatusEl.innerText = 'EX超過'; extraStatusEl.className = 'px-1 py-0.5 rounded font-bold bg-rose-900/60 text-rose-300 border border-rose-700'; isValid = false; }
             else { extraStatusEl.innerText = 'EX適正'; extraStatusEl.className = 'px-1 py-0.5 rounded font-bold bg-emerald-900/60 text-emerald-300 border border-emerald-700'; }
-            saveBtn.disabled = !isValid;
+            document.getElementById('save-deck-btn').disabled = !isValid;
 
             if (currentExtraDeck.length > 0) {
                 const exHeader = document.createElement('div'); exHeader.className = 'text-[9px] sm:text-[10px] font-bold text-purple-400 border-b border-purple-800/60 pb-0.5 mb-1 mt-1'; exHeader.innerText = `【EX (${currentExtraDeck.length})】`; listEl.appendChild(exHeader);
@@ -890,7 +709,6 @@
                     listEl.appendChild(item);
                 });
             }
-
             const mainHeader = document.createElement('div'); mainHeader.className = 'text-[9px] sm:text-[10px] font-bold text-amber-400 border-b border-amber-800/60 pb-0.5 mb-1 mt-2'; mainHeader.innerText = `【メイン (${currentDeck.length})】`; listEl.appendChild(mainHeader);
             currentDeck.forEach((card, index) => {
                 const item = document.createElement('div'); item.className = 'flex items-center justify-between bg-slate-900 px-1 sm:px-2 py-0.5 rounded border border-slate-800 text-[9px] sm:text-[11px] cursor-pointer hover:bg-slate-800';
@@ -903,78 +721,42 @@
         function confirmDeck() {
             if (currentDeck.length < 40 || currentDeck.length > 60 || currentExtraDeck.length > 15) return;
             const playerKey = myPlayerId === 'P1' ? 'p1' : 'p2';
-            
-            // ★ 初期化時にオーナー情報を付与
-            const shuffled = [...currentDeck].map(c => ({ ...c, owner: myPlayerId })).sort(() => Math.random() - 0.5);
-            gameState[playerKey].deck = shuffled; 
+            gameState[playerKey].deck = [...currentDeck].map(c => ({ ...c, owner: myPlayerId })).sort(() => Math.random() - 0.5);
             gameState[playerKey].extraDeck = [...currentExtraDeck].map(c => ({ ...c, owner: myPlayerId }));
-            
-            gameState[playerKey].hand = []; 
-            gameState[playerKey].monsters = Array(5).fill(null); 
-            gameState[playerKey].spells = Array(5).fill(null); 
-            gameState[playerKey].field = null; 
-            gameState[playerKey].graveyard = []; 
-            gameState[playerKey].banished = [];
-            
+            gameState[playerKey].hand = []; gameState[playerKey].monsters = Array(5).fill(null); gameState[playerKey].spells = Array(5).fill(null); gameState[playerKey].field = null; gameState[playerKey].graveyard = []; gameState[playerKey].banished = [];
             for (let i = 0; i < 5; i++) if (gameState[playerKey].deck.length > 0) gameState[playerKey].hand.push(gameState[playerKey].deck.pop());
-            addLog(`${myPlayerId} がデッキをセットし5枚ドローしました。`);
-            closeDeckEditor(); broadcastGameState();
+            addLog(`${myPlayerId} がデッキセット完了(5ドロー)`); closeDeckEditor(); broadcastGameState();
         }
 
         /* ==========================================================================
            5. DECK SEARCH & MODAL CONTROLLERS
            ========================================================================== */
-
         function drawCard() {
             const meKey = myPlayerId === 'P1' ? 'p1' : 'p2'; const me = gameState[meKey];
             if (me.deck.length === 0) return alert('デッキが0枚です！');
-            me.hand.push(me.deck.pop());
-            addLog(`${myPlayerId} がドローしました。(手札:${me.hand.length})`);
-            broadcastGameState();
+            me.hand.push(me.deck.pop()); addLog(`${myPlayerId} がドロー。(手札:${me.hand.length})`); broadcastGameState();
         }
 
-        function openDeckSearchModal() {
-            const searchInput = document.getElementById('in-game-deck-search-input');
-            if (searchInput) searchInput.value = '';
-            renderInGameDeckSearch();
-            document.getElementById('deck-search-modal').classList.remove('hidden');
-        }
-
+        function openDeckSearchModal() { document.getElementById('in-game-deck-search-input').value = ''; renderInGameDeckSearch(); document.getElementById('deck-search-modal').classList.remove('hidden'); }
         function renderInGameDeckSearch() {
             const meKey = myPlayerId === 'P1' ? 'p1' : 'p2'; const deck = gameState[meKey].deck;
-            const searchInput = document.getElementById('in-game-deck-search-input');
-            const search = (searchInput ? searchInput.value : '').toLowerCase();
-            const container = document.getElementById('deck-search-container');
-            container.innerHTML = '';
-
+            const search = document.getElementById('in-game-deck-search-input').value.toLowerCase();
+            const container = document.getElementById('deck-search-container'); container.innerHTML = '';
             if (deck.length === 0) container.innerHTML = `<div class="col-span-full text-xs text-slate-500 py-4 w-full text-center">カードがありません。</div>`;
-            else {
-                deck.forEach((card, index) => {
-                    if (search && !card.name.toLowerCase().includes(search) && !(card.desc && card.desc.toLowerCase().includes(search))) return;
-                    const cardEl = document.createElement('div');
-                    cardEl.className = `w-full h-16 sm:h-20 rounded p-1 cursor-pointer border flex flex-col justify-between text-[8px] sm:text-[9px] transition transform hover:-translate-y-1 hover:scale-105 select-none ${getCardStyleClass(card)}`;
-                    cardEl.onclick = () => openCardActionModal('deck', index, 'me');
-                    cardEl.onmouseenter = () => updatePreview(card);
-                    cardEl.innerHTML = `<div class="font-bold leading-tight truncate">${card.name}</div><div class="text-[7px] sm:text-[8px] font-mono mt-auto font-bold opacity-90">${card.type === 'monster' ? `攻${card.atk}` : card.type}</div>`;
-                    container.appendChild(cardEl);
-                });
-            }
+            else deck.forEach((card, index) => {
+                if (search && !card.name.toLowerCase().includes(search) && !(card.desc && card.desc.toLowerCase().includes(search))) return;
+                const cardEl = document.createElement('div');
+                cardEl.className = `w-full aspect-[3/4] rounded cursor-pointer border transition transform hover:scale-105 select-none overflow-hidden shadow-sm ${getCardStyleClass(card)}`;
+                cardEl.onclick = () => openCardActionModal('deck', index, 'me'); cardEl.onmouseenter = () => updatePreview(card);
+                cardEl.innerHTML = getCardAbstractArt(card, 'normal');
+                container.appendChild(cardEl);
+            });
         }
-
-        function closeDeckSearchModal() {
-            document.getElementById('deck-search-modal').classList.add('hidden');
-            const meKey = myPlayerId === 'P1' ? 'p1' : 'p2';
-            if (gameState[meKey].deck.length > 0) {
-                gameState[meKey].deck.sort(() => Math.random() - 0.5);
-                addLog(`${myPlayerId} はデッキをシャッフルしました。`);
-                broadcastGameState();
-            }
-        }
+        function closeDeckSearchModal() { document.getElementById('deck-search-modal').classList.add('hidden'); const meKey = myPlayerId === 'P1' ? 'p1' : 'p2'; if (gameState[meKey].deck.length > 0) { gameState[meKey].deck.sort(() => Math.random() - 0.5); addLog(`${myPlayerId} はデッキをシャッフルしました。`); broadcastGameState(); } }
 
         /* ==========================================================================
            6. DUEL BOARD RENDERER
            ========================================================================== */
-
         function renderBoard() {
             const isP1 = myPlayerId === 'P1'; const meKey = isP1 ? 'p1' : 'p2'; const oppKey = isP1 ? 'p2' : 'p1';
             const me = gameState[meKey]; const opp = gameState[oppKey];
@@ -993,101 +775,79 @@
             document.getElementById('opp-hand-count').innerText = `手札:${opp.hand.length}`;
             for (let i = 0; i < opp.hand.length; i++) {
                 const cardBack = document.createElement('div');
-                cardBack.className = 'w-7 h-10 sm:w-9 sm:h-12 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[7px] sm:text-[9px] text-slate-600 font-black shadow card-back flex-none';
-                cardBack.innerText = '???';
-                oppHandContainer.appendChild(cardBack);
+                cardBack.className = 'w-10 h-14 sm:w-12 sm:h-16 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[7px] sm:text-[9px] text-slate-600 font-black shadow card-back flex-none';
+                cardBack.innerText = '???'; oppHandContainer.appendChild(cardBack);
             }
 
             const myHandContainer = document.getElementById('my-hand-container'); myHandContainer.innerHTML = '';
             document.getElementById('my-hand-count-text').innerText = `${me.hand.length}枚`;
             me.hand.forEach((card, index) => {
                 const cardEl = document.createElement('div');
-                // ★ 自分の手札のカードサイズを少し大きく（w-12 h-16 / sm:w-14 sm:h-20）
-                cardEl.className = `w-12 h-16 sm:w-14 sm:h-20 min-w-[48px] sm:min-w-[56px] rounded p-1 cursor-pointer border flex flex-col justify-between text-[7px] sm:text-[9px] transition transform hover:-translate-y-1 select-none flex-none ${getCardStyleClass(card)}`;
-                cardEl.onclick = () => openHandActionModal(index);
-                cardEl.onmouseenter = () => updatePreview(card);
-                cardEl.innerHTML = `<div class="font-bold leading-tight truncate">${card.name}</div><div class="text-[7px] sm:text-[8px] font-mono mt-auto font-bold opacity-90">${card.type === 'monster' ? `攻${card.atk}` : (card.type === 'spell' ? '魔法' : '罠')}</div>`;
+                cardEl.className = `w-10 h-14 sm:w-12 sm:h-16 rounded cursor-pointer border transition transform hover:-translate-y-1 select-none flex-none overflow-hidden shadow-sm ${getCardStyleClass(card)}`;
+                cardEl.onclick = () => openHandActionModal(index); cardEl.onmouseenter = () => updatePreview(card);
+                cardEl.innerHTML = getCardAbstractArt(card, 'normal');
                 myHandContainer.appendChild(cardEl);
             });
-
             renderFieldZones('my', me); renderFieldZones('opp', opp);
         }
 
         function renderFieldZones(prefix, playerState) {
             for (let i = 0; i < 5; i++) {
-                const slot = document.getElementById(`${prefix}-m-${i}`); slot.innerHTML = '';
-                const cardData = playerState.monsters[i];
+                const slot = document.getElementById(`${prefix}-m-${i}`); slot.innerHTML = ''; const cardData = playerState.monsters[i];
                 if (cardData) {
                     const card = cardData.card; const isFaceDown = cardData.position === 'DEF_FACE_DOWN' || cardData.position === 'ATK_FACE_DOWN'; const isAtk = cardData.position === 'ATK' || cardData.position === 'ATK_FACE_DOWN';
                     const cardEl = document.createElement('div');
+                    cardEl.className = `w-8 h-11 sm:w-10 sm:h-14 rounded border overflow-hidden shadow-sm ${getCardStyleClass(card)} ${isAtk ? 'atk-position' : 'def-position'}`;
                     if (isFaceDown && prefix === 'opp') {
                         cardEl.className = `w-8 h-11 sm:w-10 sm:h-14 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[7px] sm:text-[9px] font-bold text-slate-600 card-back ${isAtk ? 'atk-position' : 'def-position'}`;
                         cardEl.innerText = '???';
                     } else {
-                        cardEl.className = `w-8 h-11 sm:w-10 sm:h-14 rounded p-0.5 border text-[6px] sm:text-[8px] flex flex-col justify-between ${getCardStyleClass(card)} ${isAtk ? 'atk-position' : 'def-position'}`;
                         if (isFaceDown) cardEl.classList.add('opacity-75');
-                        cardEl.innerHTML = `<div class="font-bold leading-tight truncate">${card.name}</div><div class="text-[6px] sm:text-[7px] font-mono font-bold">${card.atk}/${card.def}</div>`;
+                        cardEl.innerHTML = getCardAbstractArt(card, 'normal');
                     }
-                    cardEl.onmouseenter = () => { if (!isFaceDown || prefix === 'my') updatePreview(card); };
-                    slot.appendChild(cardEl);
+                    cardEl.onmouseenter = () => { if (!isFaceDown || prefix === 'my') updatePreview(card); }; slot.appendChild(cardEl);
                 }
             }
 
             for (let i = 0; i < 5; i++) {
-                const slot = document.getElementById(`${prefix}-st-${i}`); slot.innerHTML = '';
-                const cardData = playerState.spells[i];
+                const slot = document.getElementById(`${prefix}-st-${i}`); slot.innerHTML = ''; const cardData = playerState.spells[i];
                 if (cardData) {
                     const card = cardData.card; const isFaceDown = cardData.position === 'FACE_DOWN';
                     const cardEl = document.createElement('div');
+                    cardEl.className = `w-8 h-11 sm:w-10 sm:h-14 rounded border overflow-hidden shadow-sm ${getCardStyleClass(card)}`;
                     if (isFaceDown && prefix === 'opp') {
-                        cardEl.className = 'w-8 h-11 sm:w-10 sm:h-14 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[7px] sm:text-[9px] font-bold text-slate-600 card-back';
+                        cardEl.className = `w-8 h-11 sm:w-10 sm:h-14 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[7px] sm:text-[9px] font-bold text-slate-600 card-back`;
                         cardEl.innerText = '???';
                     } else {
-                        cardEl.className = `w-8 h-11 sm:w-10 sm:h-14 rounded p-0.5 border text-[6px] sm:text-[8px] flex flex-col justify-between ${getCardStyleClass(card)}`;
                         if (isFaceDown) cardEl.classList.add('opacity-75');
-                        cardEl.innerHTML = `<div class="font-bold leading-tight truncate">${card.name}</div><div class="text-[6px] sm:text-[7px] font-mono font-bold">${card.type === 'spell' ? '魔法' : '罠'}</div>`;
+                        cardEl.innerHTML = getCardAbstractArt(card, 'normal');
                     }
-                    cardEl.onmouseenter = () => { if (!isFaceDown || prefix === 'my') updatePreview(card); };
-                    slot.appendChild(cardEl);
+                    cardEl.onmouseenter = () => { if (!isFaceDown || prefix === 'my') updatePreview(card); }; slot.appendChild(cardEl);
                 }
             }
 
-            const fieldSlot = document.getElementById(`${prefix}-field-zone`); fieldSlot.innerHTML = '';
-            const fieldData = playerState.field;
+            const fieldSlot = document.getElementById(`${prefix}-field-zone`); fieldSlot.innerHTML = ''; const fieldData = playerState.field;
             if (fieldData) {
                 const card = fieldData.card; const isFaceDown = fieldData.position === 'FACE_DOWN';
                 const cardEl = document.createElement('div');
+                cardEl.className = `w-8 h-11 sm:w-10 sm:h-14 rounded border overflow-hidden shadow-sm ${getCardStyleClass(card)}`;
                 if (isFaceDown && prefix === 'opp') {
-                    cardEl.className = 'w-8 h-11 sm:w-10 sm:h-14 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[7px] sm:text-[9px] font-bold text-slate-600 card-back';
+                    cardEl.className = `w-8 h-11 sm:w-10 sm:h-14 rounded border border-slate-700 bg-slate-900 flex items-center justify-center text-[7px] sm:text-[9px] font-bold text-slate-600 card-back`;
                     cardEl.innerText = '???';
                 } else {
-                    cardEl.className = `w-8 h-11 sm:w-10 sm:h-14 rounded p-0.5 border text-[6px] sm:text-[8px] flex flex-col justify-between ${getCardStyleClass(card)}`;
                     if (isFaceDown) cardEl.classList.add('opacity-75');
-                    cardEl.innerHTML = `<div class="font-bold leading-tight truncate">${card.name}</div><div class="text-[6px] sm:text-[7px] font-mono font-bold">F</div>`;
+                    cardEl.innerHTML = getCardAbstractArt(card, 'normal');
                 }
-                cardEl.onmouseenter = () => { if (!isFaceDown || prefix === 'my') updatePreview(card); };
-                fieldSlot.appendChild(cardEl);
+                cardEl.onmouseenter = () => { if (!isFaceDown || prefix === 'my') updatePreview(card); }; fieldSlot.appendChild(cardEl);
             } else fieldSlot.innerText = 'F';
         }
 
         /* ==========================================================================
            7. UNIFIED CARD MOVE ENGINE & DYNAMIC ACTION MODAL
            ========================================================================== */
-
-        function modifyLP(target, amount) {
-            const isP1 = myPlayerId === 'P1'; let playerKey = target === 'me' ? (isP1 ? 'p1' : 'p2') : (isP1 ? 'p2' : 'p1');
-            gameState[playerKey].lp = Math.max(0, gameState[playerKey].lp + amount);
-            addLog(`${target === 'me' ? '自分' : '相手'}のLPが ${amount>0?'+':''}${amount} 変更 (${gameState[playerKey].lp})`);
-            broadcastGameState();
-        }
-
+        function modifyLP(target, amount) { const isP1 = myPlayerId === 'P1'; let pk = target === 'me' ? (isP1 ? 'p1' : 'p2') : (isP1 ? 'p2' : 'p1'); gameState[pk].lp = Math.max(0, gameState[pk].lp + amount); addLog(`${target === 'me' ? '自分' : '相手'}のLPが ${amount>0?'+':''}${amount} (${gameState[pk].lp})`); broadcastGameState(); }
         function openHandActionModal(index) { openCardActionModal('hand', index, 'me'); }
-        function handleZoneClick(side, type, idx) {
-            const isP1 = myPlayerId === 'P1'; const pk = side === 'me' ? (isP1 ? 'p1' : 'p2') : (isP1 ? 'p2' : 'p1');
-            const state = gameState[pk]; let slot = null;
-            if (type === 'monster') slot = state.monsters[idx]; else if (type === 'spell') slot = state.spells[idx]; else if (type === 'field') slot = state.field;
-            if (slot) openCardActionModal(type, idx, side);
-        }
+        function handleZoneClick(side, type, idx) { const isP1 = myPlayerId === 'P1'; const pk = side === 'me' ? (isP1 ? 'p1' : 'p2') : (isP1 ? 'p2' : 'p1'); const state = gameState[pk]; let slot = null; if (type === 'monster') slot = state.monsters[idx]; else if (type === 'spell') slot = state.spells[idx]; else if (type === 'field') slot = state.field; if (slot) openCardActionModal(type, idx, side); }
 
         function openCardActionModal(sourceType, index, side = 'me') {
             const isP1 = myPlayerId === 'P1'; const playerKey = side === 'me' ? (isP1 ? 'p1' : 'p2') : (isP1 ? 'p2' : 'p1');
@@ -1103,74 +863,44 @@
             else if (sourceType === 'deck') card = player.deck[index];
 
             if (!card) return;
-            currentActionContext = { sourceType, index, side, playerKey, card, slotData };
-            updatePreview(card);
-
+            currentActionContext = { sourceType, index, side, playerKey, card, slotData }; updatePreview(card);
             const titles = { hand: '手札', monster: 'フィールド', spell: 'フィールド', field: 'フィールド', graveyard: '墓地', banished: '除外', extra: 'EX', deck: 'デッキ' };
             document.getElementById('action-modal-title').innerText = `${titles[sourceType]||'操作'}: ${card.name}`;
-
-            const buttonsContainer = document.getElementById('action-modal-buttons');
-            buttonsContainer.innerHTML = '';
-
-            let statsText = '';
-            if (card.type === 'monster') statsText = `★${card.level} ${card.attr || '地'}/${card.race || '戦士'} | ATK:${card.atk} DEF:${card.def}`;
-            else statsText = `${card.type === 'spell' ? '魔法' : '罠'} [${card.sub || '通常'}]`;
+            const btnBox = document.getElementById('action-modal-buttons'); btnBox.innerHTML = '';
             
-            const cardInfoHtml = `
-                <div class="mb-2 p-1.5 sm:p-2 bg-slate-950 rounded border border-slate-700 text-[10px] sm:text-xs">
-                    <div class="font-bold text-amber-300 mb-0.5 sm:mb-1">${statsText}</div>
-                    <div class="text-slate-300 leading-snug max-h-20 sm:max-h-28 overflow-y-auto pr-1">${card.desc}</div>
-                </div>
-            `;
-            buttonsContainer.innerHTML += cardInfoHtml;
+            let statsText = card.type === 'monster' ? `★${card.level} ${card.attr || '地'}/${card.race || '戦士'} | ATK:${card.atk} DEF:${card.def}` : `${card.type === 'spell' ? '魔法' : '罠'} [${card.sub || '通常'}]`;
+            btnBox.innerHTML += `<div class="mb-2 p-1.5 sm:p-2 bg-slate-950 rounded border border-slate-700 text-[10px] sm:text-xs"><div class="font-bold text-amber-300 mb-0.5 sm:mb-1">${statsText}</div><div class="text-slate-300 leading-snug max-h-20 sm:max-h-28 overflow-y-auto pr-1">${card.desc}</div></div>`;
 
-            if (sourceType !== 'hand') buttonsContainer.innerHTML += `<button onclick="executeAction('hand')" class="${BTN_STYLE_HAND}">手札に戻す</button>`;
-
-            // ★ コントロール奪取用の追加ボタン
-            if (side === 'opp' && (sourceType === 'monster' || sourceType === 'spell' || sourceType === 'field')) {
-                if (sourceType === 'monster') {
-                    buttonsContainer.innerHTML += `<button onclick="executeAction('steal_monster')" class="${BTN_STYLE_FIELD}">コントロールを得る</button>`;
-                }
-                buttonsContainer.innerHTML += `<button onclick="executeAction('steal_spell')" class="${BTN_STYLE_FIELD}">装備化して奪う</button>`;
+            if (sourceType !== 'hand') btnBox.innerHTML += `<button onclick="executeAction('hand')" class="${BTN_STYLE_HAND}">手札に戻す</button>`;
+            if (side === 'opp' && ['monster', 'spell', 'field'].includes(sourceType)) {
+                if (sourceType === 'monster') btnBox.innerHTML += `<button onclick="executeAction('steal_monster')" class="${BTN_STYLE_FIELD}">コントロールを得る</button>`;
+                btnBox.innerHTML += `<button onclick="executeAction('steal_spell')" class="${BTN_STYLE_FIELD}">装備化して奪う</button>`;
             }
-
             if (sourceType === 'monster' && side === 'me' && slotData) {
                 const pos = slotData.position;
-                if (pos !== 'ATK') buttonsContainer.innerHTML += `<button onclick="changePosition('ATK')" class="${BTN_STYLE_FIELD}">表側攻撃に変更</button>`;
-                if (pos !== 'DEF_FACE_UP') buttonsContainer.innerHTML += `<button onclick="changePosition('DEF_FACE_UP')" class="${BTN_STYLE_FIELD}">表側守備に変更</button>`;
-                if (pos !== 'DEF_FACE_DOWN') buttonsContainer.innerHTML += `<button onclick="changePosition('DEF_FACE_DOWN')" class="${BTN_STYLE_FIELD}">裏側守備に変更</button>`;
-                if (pos === 'ATK') buttonsContainer.innerHTML += `<button onclick="declareAttack()" class="w-full py-1.5 sm:py-2 bg-red-950/80 hover:bg-red-900 text-red-200 font-bold rounded-lg text-[10px] sm:text-xs border border-red-600 shadow transition">攻撃宣言 ⚔</button>`;
+                if (pos !== 'ATK') btnBox.innerHTML += `<button onclick="changePosition('ATK')" class="${BTN_STYLE_FIELD}">表側攻撃に変更</button>`;
+                if (pos !== 'DEF_FACE_UP') btnBox.innerHTML += `<button onclick="changePosition('DEF_FACE_UP')" class="${BTN_STYLE_FIELD}">表側守備に変更</button>`;
+                if (pos !== 'DEF_FACE_DOWN') btnBox.innerHTML += `<button onclick="changePosition('DEF_FACE_DOWN')" class="${BTN_STYLE_FIELD}">裏側守備に変更</button>`;
+                if (pos === 'ATK') btnBox.innerHTML += `<button onclick="declareAttack()" class="w-full py-1.5 sm:py-2 bg-red-950/80 hover:bg-red-900 text-red-200 font-bold rounded-lg text-[10px] sm:text-xs border border-red-600 shadow transition">攻撃宣言 ⚔</button>`;
             } else if ((sourceType === 'spell' || sourceType === 'field') && side === 'me' && slotData && slotData.position === 'FACE_DOWN') {
-                buttonsContainer.innerHTML += `<button onclick="activateSetSpellTrap()" class="${BTN_STYLE_FIELD}">表側にして発動</button>`;
+                btnBox.innerHTML += `<button onclick="activateSetSpellTrap()" class="${BTN_STYLE_FIELD}">表側にして発動</button>`;
             }
 
             if (!['monster', 'spell', 'field'].includes(sourceType)) {
-                if (card.type === 'monster') {
-                    buttonsContainer.innerHTML += `<button onclick="executeAction('field_atk')" class="${BTN_STYLE_FIELD}">攻撃表示で出す</button>`;
-                    buttonsContainer.innerHTML += `<button onclick="executeAction('field_def')" class="${BTN_STYLE_FIELD}">守備表示で出す</button>`;
-                    buttonsContainer.innerHTML += `<button onclick="executeAction('field_set')" class="${BTN_STYLE_FIELD}">裏側守備でセット</button>`;
-                } else {
-                    buttonsContainer.innerHTML += `<button onclick="executeAction('field_atk')" class="${BTN_STYLE_FIELD}">発動 / 配置</button>`;
-                    buttonsContainer.innerHTML += `<button onclick="executeAction('field_set')" class="${BTN_STYLE_FIELD}">セットする</button>`;
-                }
+                if (card.type === 'monster') { btnBox.innerHTML += `<button onclick="executeAction('field_atk')" class="${BTN_STYLE_FIELD}">攻撃表示で出す</button><button onclick="executeAction('field_def')" class="${BTN_STYLE_FIELD}">守備表示で出す</button><button onclick="executeAction('field_set')" class="${BTN_STYLE_FIELD}">裏側守備でセット</button>`; }
+                else { btnBox.innerHTML += `<button onclick="executeAction('field_atk')" class="${BTN_STYLE_FIELD}">発動 / 配置</button><button onclick="executeAction('field_set')" class="${BTN_STYLE_FIELD}">セットする</button>`; }
             }
-
-            if (sourceType !== 'graveyard') buttonsContainer.innerHTML += `<button onclick="executeAction('grave')" class="${BTN_STYLE_GRAVE}">墓地へ送る</button>`;
-            if (isExtraCard(card)) { if (sourceType !== 'extra') buttonsContainer.innerHTML += `<button onclick="executeAction('extra')" class="${BTN_STYLE_EXTRA}">EXへ戻す</button>`; }
-            else { if (sourceType !== 'deck') buttonsContainer.innerHTML += `<button onclick="executeAction('deck')" class="${BTN_STYLE_DECK}">デッキへ戻す</button>`; }
-            if (sourceType !== 'banished') buttonsContainer.innerHTML += `<button onclick="executeAction('banish')" class="${BTN_STYLE_BANISH}">除外する</button>`;
+            if (sourceType !== 'graveyard') btnBox.innerHTML += `<button onclick="executeAction('grave')" class="${BTN_STYLE_GRAVE}">墓地へ送る</button>`;
+            if (isExtraCard(card)) { if (sourceType !== 'extra') btnBox.innerHTML += `<button onclick="executeAction('extra')" class="${BTN_STYLE_EXTRA}">EXへ戻す</button>`; }
+            else { if (sourceType !== 'deck') btnBox.innerHTML += `<button onclick="executeAction('deck')" class="${BTN_STYLE_DECK}">デッキへ戻す</button>`; }
+            if (sourceType !== 'banished') btnBox.innerHTML += `<button onclick="executeAction('banish')" class="${BTN_STYLE_BANISH}">除外する</button>`;
 
             document.getElementById('action-modal').classList.remove('hidden');
         }
 
         function executeAction(destination) { if (currentActionContext) moveCard(currentActionContext, destination); }
-
         function moveCard(sourceInfo, targetDestination) {
-            const { sourceType, index, playerKey, side } = sourceInfo;
-            const player = gameState[playerKey]; // 現在置かれているプレイヤー状態
-            let card = null; let originalPosition = null;
-
-            // 元の場所からカードを取り出す
+            const { sourceType, index, playerKey, side } = sourceInfo; const player = gameState[playerKey]; let card = null; let originalPosition = null;
             if (sourceType === 'hand') card = player.hand.splice(index, 1)[0];
             else if (sourceType === 'monster') { const s = player.monsters[index]; if (s) { card = s.card; originalPosition = s.position; player.monsters[index] = null; } }
             else if (sourceType === 'spell') { const s = player.spells[index]; if (s) { card = s.card; originalPosition = s.position; player.spells[index] = null; } }
@@ -1179,93 +909,45 @@
             else if (sourceType === 'banished') { if (!player.banished) player.banished = []; card = player.banished.splice(index, 1)[0]; }
             else if (sourceType === 'extra') card = player.extraDeck.splice(index, 1)[0];
             else if (sourceType === 'deck') card = player.deck.splice(index, 1)[0];
-
             if (!card) return;
-            const pName = myPlayerId.toUpperCase();
 
-            // ★ オーナー判定ロジック
-            const myKey = myPlayerId === 'P1' ? 'p1' : 'p2';
-            // 古いデータとの互換のため、owner未設定時は現在のプレイヤーをオーナーとみなす
-            const ownerKey = card.owner ? (card.owner === 'P1' ? 'p1' : 'p2') : playerKey;
-            const ownerPlayer = gameState[ownerKey];
+            const pName = myPlayerId.toUpperCase(); const myKey = myPlayerId === 'P1' ? 'p1' : 'p2';
+            const ownerKey = card.owner ? (card.owner === 'P1' ? 'p1' : 'p2') : playerKey; const ownerPlayer = gameState[ownerKey];
             const ownerStr = (card.owner === myPlayerId || (!card.owner && playerKey === myKey)) ? '自分' : '相手';
 
-            // ★ コントロール奪取
             if (targetDestination === 'steal_monster') {
                 const freeIdx = gameState[myKey].monsters.findIndex(m => m === null);
                 if (freeIdx === -1) { alert('Mゾーンが一杯です。'); restoreCardToSource(playerKey, sourceType, index, card, originalPosition); return; }
-                gameState[myKey].monsters[freeIdx] = { card: card, position: 'ATK', isAttacked: false };
-                addLog(`${pName}が相手の[${card.name}]のコントロールを得た`);
-            }
-            else if (targetDestination === 'steal_spell') {
+                gameState[myKey].monsters[freeIdx] = { card: card, position: 'ATK', isAttacked: false }; addLog(`${pName}が相手の[${card.name}]を奪った`);
+            } else if (targetDestination === 'steal_spell') {
                 const freeIdx = gameState[myKey].spells.findIndex(s => s === null);
                 if (freeIdx === -1) { alert('魔/罠ゾーンが一杯です。'); restoreCardToSource(playerKey, sourceType, index, card, originalPosition); return; }
-                gameState[myKey].spells[freeIdx] = { card: card, position: 'FACE_UP' };
-                addLog(`${pName}が相手の[${card.name}]を装備・永続化して奪った`);
-            }
-            // ★ 通常のゾーン移動 (非フィールド) はオーナーの領域へ
-            else if (targetDestination === 'hand') { 
-                ownerPlayer.hand.push(card); 
-                addLog(`${pName}が[${card.name}]を${ownerStr}の手札へ戻した`); 
-            }
-            else if (targetDestination === 'grave') { 
-                ownerPlayer.graveyard.push(card); 
-                addLog(`${pName}が[${card.name}]を${ownerStr}の墓地へ送った`); 
-            }
-            else if (targetDestination === 'banish') { 
-                if (!ownerPlayer.banished) ownerPlayer.banished = []; 
-                ownerPlayer.banished.push(card); 
-                addLog(`${pName}が[${card.name}]を${ownerStr}の除外へ送った`); 
-            }
+                gameState[myKey].spells[freeIdx] = { card: card, position: 'FACE_UP' }; addLog(`${pName}が相手の[${card.name}]を奪った`);
+            } else if (targetDestination === 'hand') { ownerPlayer.hand.push(card); addLog(`${pName}が[${card.name}]を${ownerStr}の手札へ戻した`); }
+            else if (targetDestination === 'grave') { ownerPlayer.graveyard.push(card); addLog(`${pName}が[${card.name}]を${ownerStr}の墓地へ`); }
+            else if (targetDestination === 'banish') { if (!ownerPlayer.banished) ownerPlayer.banished = []; ownerPlayer.banished.push(card); addLog(`${pName}が[${card.name}]を${ownerStr}の除外へ`); }
             else if (targetDestination === 'deck') {
-                if (isExtraCard(card)) { 
-                    ownerPlayer.extraDeck.push(card); 
-                    addLog(`${pName}がEXに[${card.name}]を戻した`); 
-                } else { 
-                    ownerPlayer.deck.push(card); 
-                    ownerPlayer.deck.sort(()=>Math.random()-0.5); 
-                    addLog(`${pName}が${ownerStr}のデッキに[${card.name}]を戻した`); 
-                }
+                if (isExtraCard(card)) { ownerPlayer.extraDeck.push(card); addLog(`${pName}がEXに[${card.name}]を戻した`); }
+                else { ownerPlayer.deck.push(card); ownerPlayer.deck.sort(()=>Math.random()-0.5); addLog(`${pName}が${ownerStr}のデッキに[${card.name}]を戻した`); }
             }
-            else if (targetDestination === 'extra') { 
-                ownerPlayer.extraDeck.push(card); 
-                addLog(`${pName}が${ownerStr}のEXに[${card.name}]を戻した`); 
-            }
-            // ★ フィールドへ配置 (自分の場へ)
+            else if (targetDestination === 'extra') { ownerPlayer.extraDeck.push(card); addLog(`${pName}が${ownerStr}のEXに[${card.name}]を戻した`); }
             else if (targetDestination.startsWith('field_')) {
                 const targetPlayer = gameState[myKey]; 
                 if (card.sub === 'field') {
-                    if (targetPlayer.field !== null) {
-                        // 上書きされた古いフィールド魔法は、元の持ち主の墓地へ
-                        const oldCard = targetPlayer.field.card;
-                        const oldOwnerKey = oldCard.owner ? (oldCard.owner === 'P1' ? 'p1' : 'p2') : myKey;
-                        gameState[oldOwnerKey].graveyard.push(oldCard);
-                    }
+                    if (targetPlayer.field !== null) { const oldCard = targetPlayer.field.card; const oldOwnerKey = oldCard.owner ? (oldCard.owner === 'P1' ? 'p1' : 'p2') : myKey; gameState[oldOwnerKey].graveyard.push(oldCard); }
                     targetPlayer.field = { card: card, position: targetDestination === 'field_set' ? 'FACE_DOWN' : 'FACE_UP' };
-                    if (targetDestination === 'field_set') {
-                        addLogWithOpponentMask(`${pName}がフィールド魔法[${card.name}]をセット`, `${pName}がフィールド魔法を裏側でセット`);
-                    } else {
-                        addLog(`${pName}がフィールド魔法[${card.name}]を配置`);
-                    }
+                    targetDestination === 'field_set' ? addLogWithOpponentMask(`${pName}がF魔法[${card.name}]をセット`, `${pName}がF魔法を裏側でセット`) : addLog(`${pName}がF魔法[${card.name}]を配置`);
                 } else if (card.type === 'monster') {
                     const freeIdx = targetPlayer.monsters.findIndex(m => m === null);
                     if (freeIdx === -1) { alert('Mゾーンが一杯です。'); restoreCardToSource(playerKey, sourceType, index, card, originalPosition); return; }
                     let pos = 'ATK'; if(targetDestination==='field_def')pos='DEF_FACE_UP'; if(targetDestination==='field_set')pos='DEF_FACE_DOWN';
                     targetPlayer.monsters[freeIdx] = { card: card, position: pos, isAttacked: false };
-                    if (pos === 'DEF_FACE_DOWN') {
-                        addLogWithOpponentMask(`${pName}が[${card.name}]を裏側守備でセット`, `${pName}がモンスターを裏側守備でセット`);
-                    } else {
-                        addLog(`${pName}が[${card.name}]を出した`);
-                    }
+                    pos === 'DEF_FACE_DOWN' ? addLogWithOpponentMask(`${pName}が[${card.name}]を裏側守備でセット`, `${pName}がMを裏側守備でセット`) : addLog(`${pName}が[${card.name}]を出した`);
                 } else {
                     const freeIdx = targetPlayer.spells.findIndex(s => s === null);
                     if (freeIdx === -1) { alert('魔/罠ゾーンが一杯です。'); restoreCardToSource(playerKey, sourceType, index, card, originalPosition); return; }
                     targetPlayer.spells[freeIdx] = { card: card, position: targetDestination === 'field_set' ? 'FACE_DOWN' : 'FACE_UP' };
-                    if (targetDestination === 'field_set') {
-                        addLogWithOpponentMask(`${pName}が[${card.name}]をセット`, `${pName}がカードをセット`);
-                    } else {
-                        addLog(`${pName}が魔/罠[${card.name}]を配置`);
-                    }
+                    targetDestination === 'field_set' ? addLogWithOpponentMask(`${pName}が[${card.name}]をセット`, `${pName}がカードをセット`) : addLog(`${pName}が魔/罠[${card.name}]を配置`);
                 }
             }
             closeActionModal(); refreshActiveViewers(side || 'me'); broadcastGameState();
@@ -1288,63 +970,33 @@
             if (!document.getElementById('deck-search-modal').classList.contains('hidden')) openDeckSearchModal();
         }
 
-        function changePosition(newPos) {
-            if (!currentActionContext) return; const { playerKey, index, card } = currentActionContext;
-            const slot = gameState[playerKey].monsters[index];
-            if (slot) { slot.position = newPos; addLog(`${myPlayerId}が[${card.name}]の表示形式を変更`); closeActionModal(); broadcastGameState(); }
-        }
-
-        function declareAttack() {
-            if (!currentActionContext) return; const { card } = currentActionContext;
-            addLog(`⚔️ ${myPlayerId}の[${card.name}]が攻撃宣言！`); closeActionModal(); broadcastGameState();
-        }
-
-        function activateSetSpellTrap() {
-            if (!currentActionContext) return; const { playerKey, sourceType, index } = currentActionContext;
-            let slot = null; if (sourceType === 'spell') slot = gameState[playerKey].spells[index]; else if (sourceType === 'field') slot = gameState[playerKey].field;
-            if (slot) { slot.position = 'FACE_UP'; addLog(`${myPlayerId}がセットカードを発動！`); closeActionModal(); broadcastGameState(); }
-        }
-
-        function openExtraViewer(side) {
-            const isP1 = myPlayerId === 'P1'; let pk = side === 'me' ? (isP1 ? 'p1' : 'p2') : (isP1 ? 'p2' : 'p1');
-            const arr = gameState[pk].extraDeck; const c = document.getElementById('grave-modal-content');
-            document.getElementById('grave-modal-title').innerText = `${side === 'me' ? '自分' : '相手'}のEX (${arr.length})`; c.innerHTML = '';
-            if (arr.length === 0) c.innerHTML = `<div class="col-span-full text-center text-slate-500 text-xs py-4">カードなし</div>`;
-            else arr.forEach((card, idx) => {
-                const el = document.createElement('div'); el.className = `p-1 sm:p-1.5 rounded border text-[8px] sm:text-[10px] flex flex-col justify-between cursor-pointer ${getCardStyleClass(card)}`;
-                el.onclick = () => openCardActionModal('extra', idx, side); el.onmouseenter = () => updatePreview(card);
-                el.innerHTML = `<div class="font-bold truncate">${card.name}</div><div class="text-[7px] sm:text-[8px] font-mono">${card.type === 'monster' ? `ATK:${card.atk}` : card.type}</div>`; c.appendChild(el);
-            });
-            document.getElementById('grave-modal').classList.remove('hidden');
-        }
-
-        function openBanishViewer(side) {
-            const isP1 = myPlayerId === 'P1'; let pk = side === 'me' ? (isP1 ? 'p1' : 'p2') : (isP1 ? 'p2' : 'p1');
-            const arr = gameState[pk].banished || []; const c = document.getElementById('grave-modal-content');
-            document.getElementById('grave-modal-title').innerText = `${side === 'me' ? '自分' : '相手'}の除外 (${arr.length})`; c.innerHTML = '';
-            if (arr.length === 0) c.innerHTML = `<div class="col-span-full text-center text-slate-500 text-xs py-4">カードなし</div>`;
-            else arr.forEach((card, idx) => {
-                const el = document.createElement('div'); el.className = `p-1 sm:p-1.5 rounded border text-[8px] sm:text-[10px] flex flex-col justify-between cursor-pointer ${getCardStyleClass(card)}`;
-                el.onclick = () => openCardActionModal('banished', idx, side); el.onmouseenter = () => updatePreview(card);
-                el.innerHTML = `<div class="font-bold truncate">${card.name}</div><div class="text-[7px] sm:text-[8px] font-mono">${card.type === 'monster' ? `ATK:${card.atk}` : card.type}</div>`; c.appendChild(el);
-            });
-            document.getElementById('grave-modal').classList.remove('hidden');
-        }
-
-        function openGraveViewer(side) {
-            const isP1 = myPlayerId === 'P1'; let pk = side === 'me' ? (isP1 ? 'p1' : 'p2') : (isP1 ? 'p2' : 'p1');
-            const arr = gameState[pk].graveyard; const c = document.getElementById('grave-modal-content');
-            document.getElementById('grave-modal-title').innerText = `${side === 'me' ? '自分' : '相手'}の墓地 (${arr.length})`; c.innerHTML = '';
-            if (arr.length === 0) c.innerHTML = `<div class="col-span-full text-center text-slate-500 text-xs py-4">カードなし</div>`;
-            else arr.forEach((card, idx) => {
-                const el = document.createElement('div'); el.className = `p-1 sm:p-1.5 rounded border text-[8px] sm:text-[10px] flex flex-col justify-between cursor-pointer ${getCardStyleClass(card)}`;
-                el.onclick = () => openCardActionModal('graveyard', idx, side); el.onmouseenter = () => updatePreview(card);
-                el.innerHTML = `<div class="font-bold truncate">${card.name}</div><div class="text-[7px] sm:text-[8px] font-mono">${card.type === 'monster' ? `ATK:${card.atk}` : card.type}</div>`; c.appendChild(el);
-            });
-            document.getElementById('grave-modal').classList.remove('hidden');
-        }
-
+        function changePosition(newPos) { if (!currentActionContext) return; const { playerKey, index, card } = currentActionContext; const slot = gameState[playerKey].monsters[index]; if (slot) { slot.position = newPos; addLog(`${myPlayerId}が[${card.name}]の表示形式を変更`); closeActionModal(); broadcastGameState(); } }
+        function declareAttack() { if (!currentActionContext) return; addLog(`⚔️ ${myPlayerId}の[${currentActionContext.card.name}]が攻撃宣言！`); closeActionModal(); broadcastGameState(); }
+        function activateSetSpellTrap() { if (!currentActionContext) return; const { playerKey, sourceType, index } = currentActionContext; let slot = null; if (sourceType === 'spell') slot = gameState[playerKey].spells[index]; else if (sourceType === 'field') slot = gameState[playerKey].field; if (slot) { slot.position = 'FACE_UP'; addLog(`${myPlayerId}がセットカードを発動！`); closeActionModal(); broadcastGameState(); } }
+        function openExtraViewer(side) { createListModal(side, 'extraDeck', 'EX'); }
+        function openBanishViewer(side) { createListModal(side, 'banished', '除外'); }
+        function openGraveViewer(side) { createListModal(side, 'graveyard', '墓地'); }
         function closeGraveViewer() { document.getElementById('grave-modal').classList.add('hidden'); }
+        
+        function createListModal(side, arrayName, titleStr) {
+            const isP1 = myPlayerId === 'P1'; let pk = side === 'me' ? (isP1 ? 'p1' : 'p2') : (isP1 ? 'p2' : 'p1');
+            const arr = gameState[pk][arrayName] || []; const c = document.getElementById('grave-modal-content');
+            document.getElementById('grave-modal-title').innerText = `${side === 'me' ? '自分' : '相手'}の${titleStr} (${arr.length})`; c.innerHTML = '';
+            if (arr.length === 0) c.innerHTML = `<div class="col-span-full text-center text-slate-500 text-xs py-4">カードなし</div>`;
+            else arr.forEach((card, idx) => {
+                const el = document.createElement('div'); 
+                el.className = `w-full aspect-[3/4] rounded border cursor-pointer transition transform hover:scale-105 overflow-hidden shadow-sm ${getCardStyleClass(card)}`;
+                
+                // 【修正ポイント】EXデッキの場合に正しいキーワード「extra」へ変換
+                const sType = arrayName === 'extraDeck' ? 'extra' : arrayName;
+                
+                el.onclick = () => openCardActionModal(sType, idx, side); el.onmouseenter = () => updatePreview(card);
+                el.innerHTML = getCardAbstractArt(card, 'normal'); 
+                c.appendChild(el);
+            });
+            document.getElementById('grave-modal').classList.remove('hidden');
+        }
+
         function setPhase(phase) { gameState.phase = phase; addLog(`フェイズ: ${phase}`); broadcastGameState(); }
         function nextTurn() { gameState.turnPlayer = gameState.turnPlayer === 'P1' ? 'P2' : 'P1'; gameState.turnCount++; gameState.phase = 'DP'; addLog(`ターン終了 ➔ T${gameState.turnCount}(${gameState.turnPlayer})`); broadcastGameState(); }
         function closeActionModal() { document.getElementById('action-modal').classList.add('hidden'); currentActionContext = null; }
@@ -1352,47 +1004,51 @@
         /* ==========================================================================
            8. UTILITIES & PREVIEW
            ========================================================================== */
-
         function updatePreview(card) {
+            const isDeckEditorOpen = !document.getElementById('deck-modal').classList.contains('hidden');
+            let addBtnHtml = '';
+            
+            if (isDeckEditorOpen) {
+                const count = [...currentDeck, ...currentExtraDeck].filter(c => c.name === card.name).length;
+                const maxCount = getCardLimit(card.name);
+                const isExtra = isExtraCard(card);
+                const isMax = count >= maxCount || (isExtra ? currentExtraDeck.length >= 15 : currentDeck.length >= 60);
+
+                // 【修正ポイント】IDがない場合は名前を参照するフォールバック
+                const identifier = card.id || card.name;
+                
+                addBtnHtml = `
+                    <button onclick="addCardToDeck('${identifier}')" ${isMax ? 'disabled' : ''} class="w-full mt-2 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-slate-950 font-black rounded py-1.5 text-[10px] sm:text-xs transition shadow-md flex-none">
+                        <i class="fa-solid fa-plus mr-1"></i> ${isExtra ? 'EXデッキに追加' : 'デッキに追加'} (${count}/${maxCount})
+                    </button>
+                `;
+            }
+
             const containers = [document.getElementById('card-preview-container'), document.getElementById('deck-preview-container')];
-            let statsHtml = card.type === 'monster' ? `<div class="flex items-center space-x-2 my-0.5 sm:my-1 text-[10px] sm:text-xs"><span class="font-bold text-amber-900">★${card.level}</span><span class="text-slate-800">${card.attr || '地'}/${card.race || '戦士族'}</span></div><div class="font-mono text-[10px] sm:text-xs font-black text-slate-900">ATK/${card.atk} DEF/${card.def}</div>` : `<div class="text-[10px] sm:text-xs font-bold text-teal-300 my-0.5 sm:my-1">${card.type === 'spell' ? '魔法' : '罠'} [${card.sub || '通常'}]</div>`;
-            const html = `<div class="w-full p-1.5 sm:p-2 rounded border flex flex-col items-center ${getCardStyleClass(card)}"><h4 class="font-bold text-[10px] sm:text-xs text-center mb-0.5">${card.name}</h4>${statsHtml}<p class="text-[8px] sm:text-[10px] opacity-90 mt-1 text-left bg-slate-950/50 p-1 sm:p-1.5 rounded border border-slate-700/50 w-full leading-snug text-slate-100">${card.desc}</p></div>`;
+            let statsHtml = card.type === 'monster' ? `<div class="flex items-center justify-center space-x-2 my-0.5 sm:my-1 text-[10px] sm:text-xs"><span class="font-bold text-amber-900">★${card.level}</span><span class="text-slate-800">${card.attr || '地'}/${card.race || '戦士族'}</span></div><div class="font-mono text-[10px] sm:text-xs font-black text-slate-900">ATK/${card.atk} DEF/${card.def}</div>` : `<div class="text-[10px] sm:text-xs font-bold text-teal-300 my-0.5 sm:my-1">${card.type === 'spell' ? '魔法' : '罠'} [${card.sub || '通常'}]</div>`;
+            const html = `
+                <div class="w-full p-1.5 sm:p-2 rounded border flex flex-col items-center h-full ${getCardStyleClass(card)}">
+                    <h4 class="font-bold text-[10px] sm:text-xs text-center mb-0.5 flex-none">${card.name}</h4>
+                    <div class="w-20 h-20 sm:w-28 sm:h-28 my-1 rounded border-2 border-slate-700 shadow-md overflow-hidden flex-none">${getCardAbstractArt(card, 'large')}</div>
+                    ${statsHtml}
+                    <div class="opacity-90 mt-1 text-left bg-slate-950/50 p-1 sm:p-1.5 rounded border border-slate-700/50 w-full text-slate-100 flex-1 overflow-y-auto">
+                        <p class="text-[8px] sm:text-[10px] leading-snug whitespace-pre-wrap">${card.desc}</p>
+                    </div>
+                    ${addBtnHtml}
+                </div>
+            `;
             containers.forEach(c => { if (c) c.innerHTML = html; });
         }
-
+        
         function getCardStyleClass(c) { if(c.type==='spell')return'card-spell'; if(c.type==='trap')return'card-trap'; if(c.sub==='fusion')return'card-fusion'; if(c.sub==='ritual')return'card-ritual'; if(c.sub==='effect')return'card-effect'; return'card-normal'; }
         function getCardTextColor(c) { if(c.type==='spell')return'text-teal-400'; if(c.type==='trap')return'text-pink-400'; if(c.sub==='fusion')return'text-purple-400'; if(c.sub==='ritual')return'text-blue-400'; if(c.sub==='effect')return'text-orange-400'; return'text-amber-400'; }
         
-        function addLog(msg, sendRemote = true) {
-            gameState.logs.push(msg); const logBox = document.getElementById('log-box');
-            if(logBox){ const item = document.createElement('div'); item.className = 'py-0.5 border-b border-slate-900/50'; item.innerText = msg; logBox.appendChild(item); logBox.scrollTop = logBox.scrollHeight; }
-            if (sendRemote && conn && conn.open) conn.send({ type: 'ACTION_LOG', msg: msg });
-        }
-        
-        function addLogWithOpponentMask(myMsg, oppMsg) {
-            gameState.logs.push(myMsg); const logBox = document.getElementById('log-box');
-            if(logBox){ const item = document.createElement('div'); item.className = 'py-0.5 border-b border-slate-900/50'; item.innerText = myMsg; logBox.appendChild(item); logBox.scrollTop = logBox.scrollHeight; }
-            if (conn && conn.open) conn.send({ type: 'ACTION_LOG', msg: oppMsg });
-        }
-        
+        function addLog(msg, sendRemote = true) { gameState.logs.push(msg); const logBox = document.getElementById('log-box'); if(logBox){ const item = document.createElement('div'); item.className = 'py-0.5 border-b border-slate-900/50'; item.innerText = msg; logBox.appendChild(item); logBox.scrollTop = logBox.scrollHeight; } if (sendRemote && conn && conn.open) conn.send({ type: 'ACTION_LOG', msg: msg }); }
+        function addLogWithOpponentMask(myMsg, oppMsg) { gameState.logs.push(myMsg); const logBox = document.getElementById('log-box'); if(logBox){ const item = document.createElement('div'); item.className = 'py-0.5 border-b border-slate-900/50'; item.innerText = myMsg; logBox.appendChild(item); logBox.scrollTop = logBox.scrollHeight; } if (conn && conn.open) conn.send({ type: 'ACTION_LOG', msg: oppMsg }); }
         function clearLog() { const logBox = document.getElementById('log-box'); if(logBox) logBox.innerHTML = ''; }
 
-        /* ==========================================================================
-           9. DICE & COIN
-           ========================================================================== */
-        function rollDice() {
-            const result = Math.floor(Math.random() * 6) + 1;
-            const msg = `🎲 ${myPlayerId} がサイコロを振った: 【 ${result} 】`;
-            addLog(msg, true);
-            alert(`サイコロの結果: ${result}`);
-        }
-
-        function tossCoin() {
-            const result = Math.random() < 0.5 ? 'オモテ' : 'ウラ';
-            const msg = `🪙 ${myPlayerId} がコイントス: 【 ${result} 】`;
-            addLog(msg, true);
-            alert(`コイントスの結果: ${result}`);
-        }
+        function rollDice() { const result = Math.floor(Math.random() * 6) + 1; addLog(`🎲 ${myPlayerId} がサイコロを振った: 【 ${result} 】`, true); alert(`サイコロの結果: ${result}`); }
+        function tossCoin() { const result = Math.random() < 0.5 ? 'オモテ' : 'ウラ'; addLog(`🪙 ${myPlayerId} がコイントス: 【 ${result} 】`, true); alert(`コイントスの結果: ${result}`); }
     </script>
 </body>
 </html>
