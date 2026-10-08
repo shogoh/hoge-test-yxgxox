@@ -624,7 +624,8 @@
                 `;
 
                 const btn = document.createElement('button');
-                btn.onclick = (e) => { e.stopPropagation(); addCardToDeck(card.id); };
+                const identifier = card.id || card.name; // IDがない場合は名前で代用
+                btn.onclick = (e) => { e.stopPropagation(); addCardToDeck(identifier); };
                 btn.disabled = isMax;
                 btn.className = `w-full mt-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-amber-400 border border-slate-600 rounded py-1 text-[9px] sm:text-[10px] font-bold transition shadow-sm`;
                 btn.innerHTML = `<i class="fa-solid fa-plus"></i> ${isExtra ? 'EX' : '追加'}`;
@@ -636,8 +637,9 @@
         }
         function filterCardPool() { renderCardPool(); }
 
-        function addCardToDeck(cardId) {
-            const card = ALL_CARDS.find(c => c.id === cardId); if (!card) return;
+        function addCardToDeck(cardIdentifier) {
+            // IDがない場合は名前で検索するフォールバック
+            const card = ALL_CARDS.find(c => c.id === cardIdentifier || c.name === cardIdentifier); if (!card) return;
             const totalCount = [...currentDeck, ...currentExtraDeck].filter(c => c.name === card.name).length;
             if (totalCount >= getCardLimit(card.name)) return alert(`制限に達しています。`);
             if (isExtraCard(card)) {
@@ -648,6 +650,7 @@
                 currentDeck.push({ ...card, uniqueId: 'c_' + Math.random().toString(36).substr(2, 9) });
             }
             renderDeckList(); renderCardPool();
+            updatePreview(card); // プレビュー内のボタンのカウントを更新
         }
 
         function removeCardFromMainDeck(index) { currentDeck.splice(index, 1); renderDeckList(); renderCardPool(); }
@@ -880,7 +883,7 @@
                 if (pos !== 'DEF_FACE_DOWN') btnBox.innerHTML += `<button onclick="changePosition('DEF_FACE_DOWN')" class="${BTN_STYLE_FIELD}">裏側守備に変更</button>`;
                 if (pos === 'ATK') btnBox.innerHTML += `<button onclick="declareAttack()" class="w-full py-1.5 sm:py-2 bg-red-950/80 hover:bg-red-900 text-red-200 font-bold rounded-lg text-[10px] sm:text-xs border border-red-600 shadow transition">攻撃宣言 ⚔</button>`;
             } else if ((sourceType === 'spell' || sourceType === 'field') && side === 'me' && slotData && slotData.position === 'FACE_DOWN') {
-                btnBox.innerHTML += `<button onclick="activateSetSpellTrap()" class="${BTN_STYLE_FIELD}">表側にして発発動</button>`;
+                btnBox.innerHTML += `<button onclick="activateSetSpellTrap()" class="${BTN_STYLE_FIELD}">表側にして発動</button>`;
             }
 
             if (!['monster', 'spell', 'field'].includes(sourceType)) {
@@ -983,7 +986,11 @@
             else arr.forEach((card, idx) => {
                 const el = document.createElement('div'); 
                 el.className = `w-full aspect-[3/4] rounded border cursor-pointer transition transform hover:scale-105 overflow-hidden shadow-sm ${getCardStyleClass(card)}`;
-                el.onclick = () => openCardActionModal(arrayName, idx, side); el.onmouseenter = () => updatePreview(card);
+                
+                // 【修正ポイント】EXデッキの場合に正しいキーワード「extra」へ変換
+                const sType = arrayName === 'extraDeck' ? 'extra' : arrayName;
+                
+                el.onclick = () => openCardActionModal(sType, idx, side); el.onmouseenter = () => updatePreview(card);
                 el.innerHTML = getCardAbstractArt(card, 'normal'); 
                 c.appendChild(el);
             });
@@ -998,6 +1005,25 @@
            8. UTILITIES & PREVIEW
            ========================================================================== */
         function updatePreview(card) {
+            const isDeckEditorOpen = !document.getElementById('deck-modal').classList.contains('hidden');
+            let addBtnHtml = '';
+            
+            if (isDeckEditorOpen) {
+                const count = [...currentDeck, ...currentExtraDeck].filter(c => c.name === card.name).length;
+                const maxCount = getCardLimit(card.name);
+                const isExtra = isExtraCard(card);
+                const isMax = count >= maxCount || (isExtra ? currentExtraDeck.length >= 15 : currentDeck.length >= 60);
+
+                // 【修正ポイント】IDがない場合は名前を参照するフォールバック
+                const identifier = card.id || card.name;
+                
+                addBtnHtml = `
+                    <button onclick="addCardToDeck('${identifier}')" ${isMax ? 'disabled' : ''} class="w-full mt-2 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-slate-950 font-black rounded py-1.5 text-[10px] sm:text-xs transition shadow-md flex-none">
+                        <i class="fa-solid fa-plus mr-1"></i> ${isExtra ? 'EXデッキに追加' : 'デッキに追加'} (${count}/${maxCount})
+                    </button>
+                `;
+            }
+
             const containers = [document.getElementById('card-preview-container'), document.getElementById('deck-preview-container')];
             let statsHtml = card.type === 'monster' ? `<div class="flex items-center justify-center space-x-2 my-0.5 sm:my-1 text-[10px] sm:text-xs"><span class="font-bold text-amber-900">★${card.level}</span><span class="text-slate-800">${card.attr || '地'}/${card.race || '戦士族'}</span></div><div class="font-mono text-[10px] sm:text-xs font-black text-slate-900">ATK/${card.atk} DEF/${card.def}</div>` : `<div class="text-[10px] sm:text-xs font-bold text-teal-300 my-0.5 sm:my-1">${card.type === 'spell' ? '魔法' : '罠'} [${card.sub || '通常'}]</div>`;
             const html = `
@@ -1008,6 +1034,7 @@
                     <div class="opacity-90 mt-1 text-left bg-slate-950/50 p-1 sm:p-1.5 rounded border border-slate-700/50 w-full text-slate-100 flex-1 overflow-y-auto">
                         <p class="text-[8px] sm:text-[10px] leading-snug whitespace-pre-wrap">${card.desc}</p>
                     </div>
+                    ${addBtnHtml}
                 </div>
             `;
             containers.forEach(c => { if (c) c.innerHTML = html; });
